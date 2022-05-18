@@ -1,0 +1,5 @@
+.idea
+bazel-bin
+bazel-payment-service
+bazel-out
+bazel-testlogs
