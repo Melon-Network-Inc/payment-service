@@ -16,7 +16,7 @@ bazel build //...
 ---------------------
 
 ```bash
-bazel run cmd/server:start
+bazel run cmd/server:server
 ```
 
 ## Update dependencies for Bazel build
