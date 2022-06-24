@@ -23,12 +23,8 @@ func main() {
 	fmt.Println("Payment Service Started")
 	DB := db.Init()
 	h := transaction.New(DB)
-	r := mux.NewRouter()
-	// Routes consist of a path and a handler function.
-	r.HandleFunc("/", TransactionHandler)
 
-	// Bind to a port and pass our router in
-
+	// Bind to a port and pass our router
 	r.HandleFunc("/transactions", h.GetAllTransactions).Methods(http.MethodGet)
 	r.HandleFunc("/transactions/{id}", h.GetTransaction).Methods(http.MethodGet)
 	r.HandleFunc("/transactions", h.AddTransaction).Methods(http.MethodPost)
