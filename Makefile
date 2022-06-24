@@ -1,35 +1,35 @@
+.PHONY: all
 all:
 	bazel clean //...
 	gofmt -w -s pkg/ cmd/
 	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
 	bazel build //...
-.PHONY: all
 
+.PHONY: all
 build:
 	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
 	bazel build //...
-.PHONY: all
 
+.PHONY: test
 test:
 	bazel test //...
-.PHONY: test
 
+.PHONY: clean
 clean:
 	bazel clean
-.PHONY: clean
 
+.PHONY: run
 run:
 	bazel run //cmd/server:server
-.PHONY: run
 
+.PHONY: fmt
 fmt:
 	gofmt -w -s pkg/ cmd/
-.PHONY: fmt
 
+.PHONY: gazelle
 gazelle:
 	bazel run //:gazelle
-.PHONY: gazelle
 
+.PHONY: dependency
 dependency:
 	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
-.PHONY: dependency

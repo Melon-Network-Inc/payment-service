@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -20,9 +19,10 @@ func TransactionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fmt.Println("Payment Service Started")
+	log.Println("Payment Service Started")
 	DB := db.Init()
 	h := transaction.New(DB)
+	r := mux.NewRouter()
 
 	// Bind to a port and pass our router
 	r.HandleFunc("/transactions", h.GetAllTransactions).Methods(http.MethodGet)
