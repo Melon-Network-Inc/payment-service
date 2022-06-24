@@ -14,15 +14,24 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RegisterHandlers() string {
-	return "Transaction Received!"
+type handler struct {
+	DB *gorm.DB
+}
+
+func RegisterHandlers(r *mux.Router, db *gorm.DB) {
+	h := handler{DB: db}
+
+	r.HandleFunc("/transactions", h.GetAllTransactions).Methods(http.MethodGet)
+	r.HandleFunc("/transactions/{id}", h.GetTransaction).Methods(http.MethodGet)
+	r.HandleFunc("/transactions", h.AddTransaction).Methods(http.MethodPost)
+	r.HandleFunc("/transactions/{id}", h.UpdateTransaction).Methods(http.MethodPut)
+	r.HandleFunc("/transactions/{id}", h.DeleteTransaction).Methods(http.MethodDelete)
 }
 
 func (h handler) AddTransaction(w http.ResponseWriter, r *http.Request) {
 	// Read to request body
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -99,7 +108,6 @@ func (h handler) UpdateTransaction(w http.ResponseWriter, r *http.Request) {
 	// Read request body
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -122,14 +130,4 @@ func (h handler) UpdateTransaction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode("Updated")
-}
-
-// handlers.go
-
-type handler struct {
-	DB *gorm.DB
-}
-
-func New(db *gorm.DB) handler {
-	return handler{db}
 }
