@@ -1,3 +1,7 @@
+// @title Payment Service
+// @version 1.0
+// @description The MelonWallet microservice responsible for dealing with payment and crypto transaction information.
+
 package main
 
 import (
@@ -5,7 +9,8 @@ import (
 	"log"
 	"net/http"
 
-	transaction "github.com/Melon-Network-Inc/payment-service/api/transaction"
+	"github.com/Melon-Network-Inc/payment-service/pkg/db"
+	transaction "github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 	"github.com/gorilla/mux"
 )
 
@@ -16,11 +21,16 @@ func TransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("Payment Service Started")
-	r := mux.NewRouter()
-	// Routes consist of a path and a handler function.
-	r.HandleFunc("/", TransactionHandler)
+	DB := db.Init()
+	h := transaction.New(DB)
 
-	// Bind to a port and pass our router in
+	// Bind to a port and pass our router
+	r.HandleFunc("/transactions", h.GetAllTransactions).Methods(http.MethodGet)
+	r.HandleFunc("/transactions/{id}", h.GetTransaction).Methods(http.MethodGet)
+	r.HandleFunc("/transactions", h.AddTransaction).Methods(http.MethodPost)
+	r.HandleFunc("/transactions/{id}", h.UpdateTransaction).Methods(http.MethodPut)
+	r.HandleFunc("/transactions/{id}", h.DeleteTransaction).Methods(http.MethodDelete)
+
 	log.Println("Going to listen on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
