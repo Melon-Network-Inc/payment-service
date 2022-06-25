@@ -2,13 +2,19 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "transaction",
-    srcs = ["api.go"],
+    srcs = [
+        "api.go",
+        "repository.go",
+        "service.go",
+    ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/transaction",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/dbcontext",
         "//pkg/entity",
-        "@com_github_gorilla_mux//:go_default_library",
-        "@io_gorm_gorm//:go_default_library",
+        "//pkg/log",
+        "@com_github_gorilla_mux//:mux",
+        "@io_gorm_gorm//:gorm",
     ],
 )
 

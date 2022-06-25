@@ -4,36 +4,42 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
-	"gorm.io/gorm"
-
 	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
+	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
 
 type handler struct {
 	DB *gorm.DB
 }
 
-func RegisterHandlers(r *mux.Router, db *gorm.DB) {
+func RegisterHandlers(r *mux.Router, service Service, db *gorm.DB, logger log.Logger) {
 	h := handler{DB: db}
+	res := resource{service, logger}
 
-	r.HandleFunc("/transactions", h.GetAllTransactions).Methods(http.MethodGet)
-	r.HandleFunc("/transactions/{id}", h.GetTransaction).Methods(http.MethodGet)
-	r.HandleFunc("/transactions", h.AddTransaction).Methods(http.MethodPost)
-	r.HandleFunc("/transactions/{id}", h.UpdateTransaction).Methods(http.MethodPut)
-	r.HandleFunc("/transactions/{id}", h.DeleteTransaction).Methods(http.MethodDelete)
+	routes := r.PathPrefix("/transactions/").Subrouter()
+	routes.HandleFunc("/{id}", res.GetTransaction).Methods(http.MethodGet)
+	routes.HandleFunc("/", h.GetAllTransactions).Methods(http.MethodGet)
+	routes.HandleFunc("/", h.AddTransaction).Methods(http.MethodPost)
+	routes.HandleFunc("/{id}", h.UpdateTransaction).Methods(http.MethodPut)
+	routes.HandleFunc("/{id}", h.DeleteTransaction).Methods(http.MethodDelete)
 }
 
-func (h handler) AddTransaction(w http.ResponseWriter, r *http.Request) {
+type resource struct {
+	service Service
+	logger  log.Logger
+}
+
+func (h handler) AddTransaction(writer http.ResponseWriter, response *http.Request) {
 	// Read to request body
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
 	}
 
 	var transaction entity.Transaction
@@ -45,14 +51,14 @@ func (h handler) AddTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send a 201 created response
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode("Created")
+	writer.Header().Add("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(writer).Encode("Created")
 }
 
-func (h handler) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
+func (h handler) DeleteTransaction(res http.ResponseWriter, req *http.Request) {
 	// Read the dynamic id parameter
-	vars := mux.Vars(r)
+	vars := mux.Vars(req)
 	id, _ := strconv.Atoi(vars["id"])
 
 	// Find the transaction by Id
@@ -66,50 +72,52 @@ func (h handler) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
 	// Delete that transaction
 	h.DB.Delete(&transaction)
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Deleted")
+	res.Header().Add("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	json.NewEncoder(res).Encode("Deleted")
 }
 
-func (h handler) GetAllTransactions(w http.ResponseWriter, r *http.Request) {
+func (h handler) GetAllTransactions(res http.ResponseWriter, req *http.Request) {
 	var transactions []entity.Transaction
 
 	if result := h.DB.Find(&transactions); result.Error != nil {
 		fmt.Println(result.Error)
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(transactions)
+	res.Header().Add("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	json.NewEncoder(res).Encode(transactions)
 }
 
-func (h handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
+func (r resource) GetTransaction(res http.ResponseWriter, req *http.Request) {
 	// Read dynamic id parameter
-	vars := mux.Vars(r)
+	vars := mux.Vars(req)
 	id, _ := strconv.Atoi(vars["id"])
 
 	// Find transaction by Id
-	var transaction entity.Transaction
+	var transaction Transaction
 
-	if result := h.DB.First(&transaction, id); result.Error != nil {
-		fmt.Println(result.Error)
+	transaction, err := r.service.Get(req.Context(), id)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(transaction)
+	res.Header().Add("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	json.NewEncoder(res).Encode(transaction)
 }
 
-func (h handler) UpdateTransaction(w http.ResponseWriter, r *http.Request) {
+func (h handler) UpdateTransaction(res http.ResponseWriter, req *http.Request) {
 	// Read dynamic id parameter
-	vars := mux.Vars(r)
+	vars := mux.Vars(req)
 	id, _ := strconv.Atoi(vars["id"])
 
 	// Read request body
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
+	defer req.Body.Close()
+	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
 	}
 
 	var updatedTransaction entity.Transaction
@@ -127,7 +135,7 @@ func (h handler) UpdateTransaction(w http.ResponseWriter, r *http.Request) {
 
 	h.DB.Save(&transaction)
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Updated")
+	res.Header().Add("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	json.NewEncoder(res).Encode("Updated")
 }
