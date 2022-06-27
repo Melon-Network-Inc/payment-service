@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "dbcontext",
+    srcs = ["db.go"],
+    importpath = "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/entity",
+        "@io_gorm_driver_postgres//:postgres",
+        "@io_gorm_gorm//:gorm",
+    ],
+)

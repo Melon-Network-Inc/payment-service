@@ -5,5 +5,5 @@ go_library(
     srcs = ["docs.go"],
     importpath = "github.com/Melon-Network-Inc/payment-service/cmd/server/docs",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_swaggo_swag//:go_default_library"],
+    deps = ["@com_github_swaggo_swag//:swag"],
 )
