@@ -174,7 +174,7 @@ func (r resource) UpdateTransaction(res http.ResponseWriter, req *http.Request) 
 		fmt.Println(err)
 	}
 
-	var updatedTransaction UpdateTransaction
+	var updatedTransaction UpdateTransactionRequest
 	json.Unmarshal(body, &updatedTransaction)
 
 	var transaction Transaction

@@ -14,7 +14,7 @@ import (
 type Service interface {
 	Add(ctx context.Context, req AddTransaction) (Transaction, error)
 	Get(c context.Context, id int) (Transaction, error)
-	Update(ctx context.Context, id string, input UpdateTransaction) (Transaction, error)
+	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
 	List(ctx context.Context) ([]Transaction, error)
 	Delete(ctx context.Context, id int) (Transaction, error)
 }
@@ -50,8 +50,8 @@ func (m AddTransaction) Validate() error {
 }
 
 //July 7
-// UpdateAddressRequest represents an address update request.
-type UpdateTransaction struct {
+// UpdateTransactionRequest represents an address update request.
+type UpdateTransactionRequest struct {
 	Id           string `json:"id"`
 	Name         string `json:"name"`
 	Message      string // 控制字符200 character
@@ -60,7 +60,7 @@ type UpdateTransaction struct {
 
 //July 7
 // Validate validates the CreateAddressRequest fields.
-func (m UpdateTransaction) Validate() error {
+func (m UpdateTransactionRequest) Validate() error {
 	return validation.ValidateStruct(&m,
 		validation.Field(&m.Name, validation.Required, validation.Length(0, 128)),
 	)
@@ -112,9 +112,8 @@ func (s service) Add(ctx context.Context, req AddTransaction) (Transaction, erro
 	return s.Get(ctx, int(req.Id))
 }
 
-// need service update
 // July 7
-func (s service) Update(ctx context.Context, id string, input UpdateTransaction) (Transaction, error) {
+func (s service) Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error) {
 	if err := input.Validate(); err != nil {
 		return Transaction{}, err
 	}
