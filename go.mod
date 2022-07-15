@@ -48,6 +48,7 @@ require (
 require (
 	github.com/go-ozzo/ozzo-dbx v1.5.0
 	github.com/go-ozzo/ozzo-routing/v2 v2.4.0
+	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
 	github.com/stretchr/testify v1.7.1

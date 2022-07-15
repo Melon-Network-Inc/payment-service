@@ -1,32 +1,71 @@
 package transaction
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"strconv"
+	"strings"
+	"testing"
 
-	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
+
+// APITestCase represents the data needed to describe an API test case.
+type APITestCase struct {
+	Name         string
+	Method, URL  string
+	Body         string
+	Header       http.Header
+	WantStatus   int
+	WantResponse string
+}
+
+// Endpoint tests an HTTP endpoint using the given APITestCase spec.
+func Endpoint(t *testing.T, router *routing.Router, tc APITestCase) {
+	t.Run(tc.Name, func(t *testing.T) {
+		req, _ := http.NewRequest(tc.Method, tc.URL, bytes.NewBufferString(tc.Body))
+		if tc.Header != nil {
+			req.Header = tc.Header
+		}
+		res := httptest.NewRecorder()
+		if req.Header.Get("Content-Type") == "" {
+			req.Header.Set("Content-Type", "application/json")
+		}
+		router.ServeHTTP(res, req)
+		assert.Equal(t, tc.WantStatus, res.Code, "status mismatch")
+		if tc.WantResponse != "" {
+			pattern := strings.Trim(tc.WantResponse, "*")
+			if pattern != tc.WantResponse {
+				assert.Contains(t, res.Body.String(), pattern, "response mismatch")
+			} else {
+				assert.JSONEq(t, tc.WantResponse, res.Body.String(), "response mismatch")
+			}
+		}
+	})
+}
 
 type handler struct {
 	DB *gorm.DB
 }
 
-func RegisterHandlers(r *mux.Router, service Service, db *gorm.DB, logger log.Logger) {
-	h := handler{DB: db}
+func RegisterHandlers(r *mux.Router, service Service, logger log.Logger) {
+	// h := handler{DB: db}
 	res := resource{service, logger}
 
 	routes := r.PathPrefix("/transactions/").Subrouter()
 	routes.HandleFunc("/{id}", res.GetTransaction).Methods(http.MethodGet)
-	routes.HandleFunc("/", h.GetAllTransactions).Methods(http.MethodGet)
-	routes.HandleFunc("/", h.AddTransaction).Methods(http.MethodPost)
-	routes.HandleFunc("/{id}", h.UpdateTransaction).Methods(http.MethodPut)
-	routes.HandleFunc("/{id}", h.DeleteTransaction).Methods(http.MethodDelete)
+	routes.HandleFunc("/", res.GetAllTransactions).Methods(http.MethodGet)
+	routes.HandleFunc("/", res.AddTransaction).Methods(http.MethodPost)
+	routes.HandleFunc("/{id}", res.UpdateTransaction).Methods(http.MethodPut)
+	routes.HandleFunc("/{id}", res.DeleteTransaction).Methods(http.MethodDelete)
 }
 
 type resource struct {
@@ -34,7 +73,8 @@ type resource struct {
 	logger  log.Logger
 }
 
-func (h handler) AddTransaction(writer http.ResponseWriter, response *http.Request) {
+func (r resource) AddTransaction(writer http.ResponseWriter, response *http.Request) {
+
 	// Read to request body
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
@@ -42,13 +82,15 @@ func (h handler) AddTransaction(writer http.ResponseWriter, response *http.Reque
 		fmt.Println(err)
 	}
 
-	var transaction entity.Transaction
+	var addTransaction AddTransaction
+	json.Unmarshal(body, &addTransaction)
+
+	var transaction Transaction
 	json.Unmarshal(body, &transaction)
 
 	// Append to the Transaction table
-	if result := h.DB.Create(&transaction); result.Error != nil {
-		fmt.Println(result.Error)
-	}
+	// if result := r.service.Create(&transaction); result.Error != nil { //not sure
+	r.service.Add(response.Context(), addTransaction)
 
 	// Send a 201 created response
 	writer.Header().Add("Content-Type", "application/json")
@@ -56,48 +98,39 @@ func (h handler) AddTransaction(writer http.ResponseWriter, response *http.Reque
 	json.NewEncoder(writer).Encode("Created")
 }
 
-func (h handler) DeleteTransaction(res http.ResponseWriter, req *http.Request) {
-	// Read the dynamic id parameter
-	vars := mux.Vars(req)
-	id, _ := strconv.Atoi(vars["id"])
-
-	// Find the transaction by Id
-
-	var transaction entity.Transaction
-
-	if result := h.DB.First(&transaction, id); result.Error != nil {
-		fmt.Println(result.Error)
-	}
-
-	// Delete that transaction
-	h.DB.Delete(&transaction)
-
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode("Deleted")
-}
-
-func (h handler) GetAllTransactions(res http.ResponseWriter, req *http.Request) {
-	var transactions []entity.Transaction
-
-	if result := h.DB.Find(&transactions); result.Error != nil {
-		fmt.Println(result.Error)
-	}
-
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode(transactions)
-}
-
-func (r resource) GetTransaction(res http.ResponseWriter, req *http.Request) {
+func (r resource) DeleteTransaction(res http.ResponseWriter, req *http.Request) {
 	// Read dynamic id parameter
 	vars := mux.Vars(req)
 	id, _ := strconv.Atoi(vars["id"])
 
-	// Find transaction by Id
 	var transaction Transaction
 
-	transaction, err := r.service.Get(req.Context(), id)
+	// api layer calls service layer get to get transaction
+	transaction, err := r.service.Get(req.Context(), id) // fill in transaction table (service)
+
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// Delete that transaction
+	r.service.Delete(req.Context(), id)
+
+	res.Header().Add("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	json.NewEncoder(res).Encode(transaction)
+}
+
+// need service layer GetAll first
+func (r resource) GetAllTransactions(res http.ResponseWriter, req *http.Request) {
+	// Read dynamic id parameter
+	vars := mux.Vars(req)
+	id, _ := strconv.Atoi(vars["id"])
+
+	var transaction Transaction
+	// api layer calls service layer get to get transaction
+	transaction, err := r.service.Get(req.Context(), id) // fill in transaction table (service)
+
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusNotFound)
 		return
@@ -108,7 +141,28 @@ func (r resource) GetTransaction(res http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(res).Encode(transaction)
 }
 
-func (h handler) UpdateTransaction(res http.ResponseWriter, req *http.Request) {
+func (r resource) GetTransaction(res http.ResponseWriter, req *http.Request) {
+	// Read dynamic id parameter
+	vars := mux.Vars(req)
+	id, _ := strconv.Atoi(vars["id"])
+
+	// Find transaction by Id
+	var transaction Transaction
+
+	// api layer calls service layer get to get transaction
+	transaction, err := r.service.Get(req.Context(), id) // fill in transaction table (service)
+	// use r.service layer (dont need handler class h.DB)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	res.Header().Add("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	json.NewEncoder(res).Encode(transaction)
+}
+
+func (r resource) UpdateTransaction(res http.ResponseWriter, req *http.Request) {
 	// Read dynamic id parameter
 	vars := mux.Vars(req)
 	id, _ := strconv.Atoi(vars["id"])
@@ -120,22 +174,28 @@ func (h handler) UpdateTransaction(res http.ResponseWriter, req *http.Request) {
 		fmt.Println(err)
 	}
 
-	var updatedTransaction entity.Transaction
+	var updatedTransaction UpdateTransactionRequest
 	json.Unmarshal(body, &updatedTransaction)
 
-	var transaction entity.Transaction
+	var transaction Transaction
 
-	if result := h.DB.First(&transaction, id); result.Error != nil {
-		fmt.Println(result.Error)
+	// api layer calls service layer get to get transaction
+	transaction, err = r.service.Get(req.Context(), id)
+	if err != nil { // fill in transaction table (service)
+		// use r.service layer (dont need handler class h.DB)
+		http.Error(res, err.Error(), http.StatusNotFound)
+		return
 	}
-
+	ID, err := strconv.Atoi(updatedTransaction.Id)
+	transaction.Id = uint(ID)
 	transaction.Name = updatedTransaction.Name
-	transaction.Status = updatedTransaction.Status
-	transaction.Amount = updatedTransaction.Amount
+	transaction.Message = updatedTransaction.Message
+	transaction.SenderPubkey = updatedTransaction.SenderPubkey
 
-	h.DB.Save(&transaction)
+	string_id := strconv.Itoa(id)
+	r.service.Update(req.Context(), string_id, updatedTransaction) //has error
 
 	res.Header().Add("Content-Type", "application/json")
 	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode("Updated")
+	json.NewEncoder(res).Encode(transaction)
 }
