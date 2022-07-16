@@ -2,17 +2,13 @@ package transaction
 
 import (
 	"context"
-	"strconv"
-	"time"
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 // Service encapsulates usecase logic for transactions.
 type Service interface {
-	Add(ctx context.Context, req AddTransaction) (Transaction, error)
 	Get(c context.Context, id int) (Transaction, error)
 	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
 	List(ctx context.Context) ([]Transaction, error)
@@ -24,7 +20,6 @@ type Transaction struct {
 	entity.Transaction
 }
 
-//July 7
 // AddAddressRequest represents an address creation request.
 type AddTransaction struct {
 	Id             uint
@@ -41,7 +36,6 @@ type AddTransaction struct {
 	Message        string
 }
 
-//July 7
 // Validate validates the CreateAddressRequest fields.
 func (m AddTransaction) Validate() error {
 	return validation.ValidateStruct(&m,
@@ -49,7 +43,6 @@ func (m AddTransaction) Validate() error {
 	)
 }
 
-//July 7
 // UpdateTransactionRequest represents an address update request.
 type UpdateTransactionRequest struct {
 	Id           string `json:"id"`
@@ -58,31 +51,11 @@ type UpdateTransactionRequest struct {
 	SenderPubkey uint64 //public key有const：看metamask PK（改成string of hex）
 }
 
-//July 7
 // Validate validates the CreateAddressRequest fields.
 func (m UpdateTransactionRequest) Validate() error {
 	return validation.ValidateStruct(&m,
 		validation.Field(&m.Name, validation.Required, validation.Length(0, 128)),
 	)
-}
-
-type service struct {
-	repo   Repository
-	logger log.Logger
-}
-
-// NewService creates a new address service.
-func NewService(repo Repository, logger log.Logger) Service {
-	return service{repo, logger}
-}
-
-// Get returns the address with the specified the address ID.
-func (s service) Get(ctx context.Context, id int) (Transaction, error) {
-	transaction, err := s.repo.Get(ctx, id)
-	if err != nil {
-		return Transaction{}, err
-	}
-	return Transaction{transaction}, nil
 }
 
 // Create creates a new address.
@@ -112,7 +85,6 @@ func (s service) Add(ctx context.Context, req AddTransaction) (Transaction, erro
 	return s.Get(ctx, int(req.Id))
 }
 
-// July 7
 func (s service) Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error) {
 	if err := input.Validate(); err != nil {
 		return Transaction{}, err
@@ -133,8 +105,6 @@ func (s service) Update(ctx context.Context, id string, input UpdateTransactionR
 	}
 	return Transaction{transaction}, nil
 }
-
-// add, delete, List/GetAll
 
 // Get returns the address with the specified the address ID.
 func (s service) List(ctx context.Context) ([]Transaction, error) {
