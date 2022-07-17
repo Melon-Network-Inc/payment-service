@@ -120,7 +120,7 @@ func (h handler) UpdateTransaction(res http.ResponseWriter, req *http.Request) {
 		fmt.Println(err)
 	}
 
-	var updatedTransaction entity.Transaction
+	var updatedTransaction UpdateTransactionRequest
 	json.Unmarshal(body, &updatedTransaction)
 
 	var transaction entity.Transaction
