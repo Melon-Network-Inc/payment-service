@@ -186,7 +186,9 @@ func (r resource) UpdateTransaction(res http.ResponseWriter, req *http.Request) 
 		http.Error(res, err.Error(), http.StatusNotFound)
 		return
 	}
-	ID, err := strconv.Atoi(updatedTransaction.Id)
+	// ID, err := strconv.Atoi(updatedTransaction.Id)
+	ID := updatedTransaction.Id
+
 	transaction.Id = uint(ID)
 	transaction.Name = updatedTransaction.Name
 	transaction.Message = updatedTransaction.Message
