@@ -13,7 +13,6 @@ import (
 
 // Service encapsulates usecase logic for transactions.
 type Service interface {
-	Add(ctx context.Context, req AddTransaction) (Transaction, error)
 	Get(c context.Context, id int) (Transaction, error)
 	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
 	List(ctx context.Context) ([]Transaction, error)
@@ -25,7 +24,6 @@ type Transaction struct {
 	entity.Transaction
 }
 
-//July 7
 // AddAddressRequest represents an address creation request.
 type AddTransaction struct {
 	Id             uint   `json:"id"` // string of hex? then use "hexadecimal"
@@ -43,7 +41,6 @@ type AddTransaction struct {
 	Message string `json:"message" validate:"ls=200"`
 }
 
-//July 7
 // Validate validates the AddTransaction fields.
 func (m AddTransaction) Validate() error {
 	// return validation.ValidateStruct(&m,
@@ -59,7 +56,6 @@ func (m AddTransaction) Validate() error {
 	return err
 }
 
-//July 7
 // UpdateTransactionRequest represents an address update request.
 type UpdateTransactionRequest struct {
 	Id           uint   `json:"id"`
@@ -68,7 +64,6 @@ type UpdateTransactionRequest struct {
 	SenderPubkey uint64 `json:"sender_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
 }
 
-//July 7
 // Validate validates the UpdateTransactionRequest fields.
 func (m UpdateTransactionRequest) Validate() error {
 	validate := validator.New()
@@ -125,7 +120,6 @@ func (s service) Add(ctx context.Context, req AddTransaction) (Transaction, erro
 	return s.Get(ctx, int(req.Id))
 }
 
-// July 7
 func (s service) Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error) {
 	if err := input.Validate(); err != nil {
 		return Transaction{}, err
