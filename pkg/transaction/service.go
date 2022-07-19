@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
@@ -13,10 +12,11 @@ import (
 
 // Service encapsulates usecase logic for transactions.
 type Service interface {
-	Get(c context.Context, id int) (Transaction, error)
-	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
+	Add(ctx context.Context, input AddTransactionRequest) (Transaction, error)
+	Get(c context.Context, id string) (Transaction, error)
 	List(ctx context.Context) ([]Transaction, error)
-	Delete(ctx context.Context, id int) (Transaction, error)
+	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
+	Delete(ctx context.Context, id string) error
 }
 
 // address represents the data about an address.
@@ -26,30 +26,21 @@ type Transaction struct {
 
 //July 7
 // AddAddressRequest represents an address creation request.
-type AddTransaction struct {
-	Id             uint   `json:"id"` // string of hex? then use "hexadecimal"
-	Name           string `json:"name" validate:"required"`
-	Status         string
-	Amount         uint      `json:"amount" validate:"required,uint"`
-	Currency       string    `json:"currency" validate:"required,iso4217"` //currency code
-	SenderId       uint64    `json:"sender_id" validate:"uuid"`
-	SenderPubkey   uint64    `json:"sender_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
-	ReceiverId     uint64    `json:"receiver_id" validate:"uuid"`
-	ReceiverPubkey uint64    `json:"receiver_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
-	CreatedAt      time.Time `json:"creat_at" validate:"required,datetime"`
-	UpdatedAt      time.Time `json:"update_at" validate:"required,datetime"`
-	// message should be less than 200 characters
-	Message string `json:"message" validate:"ls=200"`
+type AddTransactionRequest struct {
+	Name           string `json:"name"        validate:"required"`
+	Status         string `json:"status"`
+	Amount         uint   `json:"amount"      validate:"required,uint"`
+	Currency       string `json:"currency"    validate:"required,iso4217"` //currency code
+	SenderId       uint64 `json:"sender_id"   validate:"uuid"`
+	SenderPubkey   uint64 `json:"sender_pk"   validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
+	ReceiverId     uint64 `json:"receiver_id" validate:"uuid"`
+	ReceiverPubkey uint64 `json:"receiver_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
+	Message        string `json:"message"     validate:"ls=200"`
 }
 
 //July 7
 // Validate validates the AddTransaction fields.
-func (m AddTransaction) Validate() error {
-	// return validation.ValidateStruct(&m,
-	// 	validation.Field(&m.Name, validation.Required, validation.Length(0, 128)),
-	// )
-
-	// run `go get gopkg.in/go-playground/validator.v9`
+func (m AddTransactionRequest) Validate() error {
 	validate := validator.New()
 	err := validate.StructExcept(m, "Status")
 	if err != nil {
@@ -61,10 +52,10 @@ func (m AddTransaction) Validate() error {
 //July 7
 // UpdateTransactionRequest represents an address update request.
 type UpdateTransactionRequest struct {
-	Id           uint   `json:"id"`
-	Name         string `json:"name" validate:"required"`
-	Message      string `json:"message" validate:"ls=200"`
-	SenderPubkey uint64 `json:"sender_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
+	Id      uint   `json:"id"`
+	Name    string `json:"name"    validate:"required"`
+	Message string `json:"message" validate:"ls=200"`
+	Status  string `json:"status"`
 }
 
 //July 7
@@ -88,23 +79,13 @@ func NewService(repo Repository, logger log.Logger) Service {
 	return service{repo, logger}
 }
 
-// Get returns the transaction with the specified the transaction ID.
-func (s service) Get(ctx context.Context, id int) (Transaction, error) {
-	transaction, err := s.repo.Get(ctx, id)
-	if err != nil {
-		return Transaction{}, err
-	}
-	return Transaction{transaction}, nil
-}
-
 // Create creates a new transaction.
-func (s service) Add(ctx context.Context, req AddTransaction) (Transaction, error) {
+func (s service) Add(ctx context.Context, req AddTransactionRequest) (Transaction, error) {
 	if err := req.Validate(); err != nil {
 		return Transaction{}, err
 	}
 
-	err := s.repo.Add(ctx, entity.Transaction{
-		Id:             req.Id,
+	transaction, err := s.repo.Add(ctx, entity.Transaction{
 		Name:           req.Name,
 		Status:         req.Status,
 		Amount:         req.Amount,
@@ -113,39 +94,28 @@ func (s service) Add(ctx context.Context, req AddTransaction) (Transaction, erro
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
 		ReceiverPubkey: req.ReceiverPubkey,
-		CreatedAt:      req.CreatedAt,
-		UpdatedAt:      req.UpdatedAt,
 		Message:        req.Message,
 	})
 	if err != nil {
-		return Transaction{}, err
-	}
-
-	return s.Get(ctx, int(req.Id))
-}
-
-// July 7
-func (s service) Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error) {
-	if err := input.Validate(); err != nil {
-		return Transaction{}, err
-	}
-
-	uid, err := strconv.Atoi(id)
-
-	transaction, err := s.repo.Get(ctx, uid)
-	if err != nil {
-		return Transaction{}, err
-	}
-	transaction.Name = input.Name
-	transaction.UpdatedAt = time.Now()
-
-	if err := s.repo.Update(ctx, transaction); err != nil {
 		return Transaction{}, err
 	}
 	return Transaction{transaction}, nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
+func (s service) Get(ctx context.Context, id string) (Transaction, error) {
+	uid, err := strconv.Atoi(id)
+	if err != nil {
+		return Transaction{}, err
+	}
+	transaction, err := s.repo.Get(ctx, uid)
+	if err != nil {
+		return Transaction{}, err
+	}
+	return Transaction{transaction}, nil
+}
+
+// Get returns the a list of transactions associated to a user.
 func (s service) List(ctx context.Context) ([]Transaction, error) {
 	transaction, err := s.repo.List(ctx)
 	if err != nil {
@@ -158,15 +128,40 @@ func (s service) List(ctx context.Context) ([]Transaction, error) {
 	return listTransaction, nil
 }
 
-// Delete deletes the transaction with the specified ID.
-func (s service) Delete(ctx context.Context, id int) (Transaction, error) {
-	transaction, err := s.repo.Get(ctx, id)
+// Update updates the transaction with the specified the transaction ID.
+func (s service) Update(
+	ctx context.Context,
+	id string,
+	input UpdateTransactionRequest,
+) (Transaction, error) {
+	if err := input.Validate(); err != nil {
+		return Transaction{}, err
+	}
+
+	uid, err := strconv.Atoi(id)
 	if err != nil {
 		return Transaction{}, err
 	}
 
-	if err = s.repo.Delete(ctx, id); err != nil {
+	transaction, err := s.repo.Get(ctx, uid)
+	if err != nil {
+		return Transaction{}, err
+	}
+	transaction.Name = input.Name
+	transaction.Status = input.Status
+	transaction.Message = input.Message
+
+	if err := s.repo.Update(ctx, transaction); err != nil {
 		return Transaction{}, err
 	}
 	return Transaction{transaction}, nil
+}
+
+// Delete deletes the transaction with the specified ID.
+func (s service) Delete(ctx context.Context, id string) error {
+	uid, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+	return s.repo.Delete(ctx, uid)
 }

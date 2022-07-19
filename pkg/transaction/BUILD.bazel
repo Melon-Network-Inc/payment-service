@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "transaction",
@@ -14,12 +14,6 @@ go_library(
         "//pkg/entity",
         "//pkg/log",
         "@com_github_gorilla_mux//:mux",
-        "@io_gorm_gorm//:gorm",
+        "@in_gopkg_go_playground_validator_v9//:validator_v9",
     ],
-)
-
-go_test(
-    name = "transaction_test",
-    srcs = ["api_test.go"],
-    embed = [":transaction"],
 )

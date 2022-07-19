@@ -5,4 +5,8 @@ go_library(
     srcs = ["transaction.go"],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/entity",
     visibility = ["//visibility:public"],
+    deps = [
+        "@in_gopkg_go_playground_validator_v9//:validator_v9",
+        "@io_gorm_gorm//:gorm",
+    ],
 )
