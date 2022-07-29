@@ -43,7 +43,7 @@ func main() {
 	r := mux.NewRouter()
 
 	transactionRepo := transaction.NewRepository(dbcontext.New(db), logger)
-	transaction.RegisterHandlers(r, transaction.NewService(transactionRepo, logger), db, logger)
+	transaction.RegisterHandlers(r, transaction.NewService(transactionRepo, logger), logger)
 
 	srv := &http.Server{
 		Addr: "0.0.0.0:8080",

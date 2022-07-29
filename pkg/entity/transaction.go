@@ -1,20 +1,32 @@
 package entity
 
-import "time"
+import (
+	"fmt"
+
+	"gopkg.in/go-playground/validator.v9"
+	"gorm.io/gorm"
+)
 
 type Transaction struct {
-	Id   uint // primary_key
-	Name string
-	// Type            enum
-	Status   string
-	Amount   uint
-	Currency string
-	// Description     null
-	SenderId       uint64
-	SenderPubkey   uint64
-	ReceiverId     uint64
-	ReceiverPubkey uint64
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	Message        string
+	gorm.Model            // adds ID, created_at etc.
+	Name           string `json:"name"        validate:"required"`
+	Status         string `json:"status"`
+	Amount         uint   `json:"amount"      validate:"required,uint"`
+	Currency       string `json:"currency"    validate:"required,iso4217"` //currency code
+	SenderId       uint64 `json:"sender_id"   validate:"uuid"`
+	SenderPubkey   uint64 `json:"sender_pk"   validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
+	ReceiverId     uint64 `json:"receiver_id" validate:"uuid"`
+	ReceiverPubkey uint64 `json:"receiver_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
+	// message should be less than 200 characters
+	Message string `json:"message"     validate:"ls=200"`
+}
+
+// Validate validates the UpdateTransactionRequest fields.
+func (m Transaction) Validate() error {
+	validate := validator.New()
+	err := validate.StructExcept(m, "Status")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return err
 }

@@ -109,6 +109,18 @@ def go_dependencies():
         version = "v2.4.0",
     )
     go_repository(
+        name = "com_github_go_playground_locales",
+        importpath = "github.com/go-playground/locales",
+        sum = "h1:u50s323jtVGugKlcYeyzC0etD1HifMjqmJqb8WugfUU=",
+        version = "v0.14.0",
+    )
+    go_repository(
+        name = "com_github_go_playground_universal_translator",
+        importpath = "github.com/go-playground/universal-translator",
+        sum = "h1:82dyy6p4OuJq4/CByFNOn/jYrnRPArHwAcmLoJZxyho=",
+        version = "v0.18.0",
+    )
+    go_repository(
         name = "com_github_go_sql_driver_mysql",
         importpath = "github.com/go-sql-driver/mysql",
         sum = "h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=",
@@ -295,6 +307,12 @@ def go_dependencies():
         version = "v1.2.1",
     )
     go_repository(
+        name = "com_github_leodido_go_urn",
+        importpath = "github.com/leodido/go-urn",
+        sum = "h1:BqpAaACuzVSgi/VLzGZIobT2z4v53pjosyNd9Yv6n/w=",
+        version = "v1.2.1",
+    )
+    go_repository(
         name = "com_github_lib_pq",
         importpath = "github.com/lib/pq",
         sum = "h1:jbk+ZieJ0D7EVGJYpL9QTz7/YW6UHbmdnZWYyK5cdBs=",
@@ -455,6 +473,12 @@ def go_dependencies():
         importpath = "gopkg.in/errgo.v2",
         sum = "h1:0vLT13EuvQ0hNvakwLuFZ/jYrLp5F3kcWHXdRggjCE8=",
         version = "v2.1.0",
+    )
+    go_repository(
+        name = "in_gopkg_go_playground_validator_v9",
+        importpath = "gopkg.in/go-playground/validator.v9",
+        sum = "h1:bmXmP2RSNtFES+bn4uYuHT7iJFJv7Vj+an+ZQdDaD1M=",
+        version = "v9.31.0",
     )
     go_repository(
         name = "in_gopkg_inconshreveable_log15_v2",
