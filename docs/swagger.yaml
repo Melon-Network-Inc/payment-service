@@ -182,7 +182,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete a Transaction
+      description: Delete a transaction
       operationId: delete-transaction
       parameters:
       - description: Transaction ID
@@ -201,13 +201,13 @@ paths:
           description: ""
         "404":
           description: ""
-      summary: Delete a Transaction
+      summary: Delete a transaction
       tags:
       - transactions
     get:
       consumes:
       - application/json
-      description: List all Transactiones of an Account
+      description: List all transactiones of an account
       operationId: list-transactions
       parameters:
       - description: Transaction ID
@@ -226,13 +226,13 @@ paths:
             type: array
         "404":
           description: ""
-      summary: List all Transactiones of an Account
+      summary: List all transactiones of an account
       tags:
       - transactions
     post:
       consumes:
       - application/json
-      description: Add a Transaction to Account
+      description: Add a transaction to account
       operationId: add-address
       parameters:
       - description: Transaction Data
@@ -252,13 +252,13 @@ paths:
           description: ""
         "404":
           description: ""
-      summary: Add a Transaction to Account
+      summary: Add a transaction to account
       tags:
       - addresses
     put:
       consumes:
       - application/json
-      description: Update a Transaction
+      description: Update a transaction
       operationId: update-transaction
       parameters:
       - description: Transaction Data
@@ -278,14 +278,14 @@ paths:
           description: ""
         "404":
           description: ""
-      summary: Update a Transaction
+      summary: Update a transaction
       tags:
       - transactions
   /transaction/{id}:
     get:
       consumes:
       - application/json
-      description: Get an Transaction
+      description: Get an transaction
       operationId: get-transaction
       parameters:
       - description: Transaction ID
@@ -302,7 +302,7 @@ paths:
             $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "404":
           description: ""
-      summary: Get an Transaction
+      summary: Get an transaction
       tags:
       - transactions
 swagger: "2.0"

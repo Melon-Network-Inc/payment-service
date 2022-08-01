@@ -14,7 +14,6 @@ go_library(
         "@com_github_spf13_viper//:viper",
         "@com_github_swaggo_files//:files",
         "@com_github_swaggo_gin_swagger//:gin-swagger",
-        "@com_github_swaggo_gin_swagger//swaggerFiles",
     ],
 )
 

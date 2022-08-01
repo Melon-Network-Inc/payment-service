@@ -24,8 +24,8 @@ type resource struct {
 }
 
 // AddTransaction    godoc
-// @Summary      Add a Transaction to Account
-// @Description  Add a Transaction to Account
+// @Summary      Add a transaction to account
+// @Description  Add a transaction to account
 // @ID           add-address
 // @Tags         addresses
 // @Param transaction body AddTransactionRequest true "Transaction Data"
@@ -52,8 +52,8 @@ func (r resource) AddTransaction(c *gin.Context) {
 }
 
 // GetAddress    godoc
-// @Summary      Get an Transaction
-// @Description  Get an Transaction
+// @Summary      Get an transaction
+// @Description  Get an transaction
 // @ID           get-transaction
 // @Tags         transactions
 // @Param id path int true "Transaction ID"
@@ -72,8 +72,8 @@ func (r resource) GetTransaction(c *gin.Context) {
 }
 
 // GetAddress    godoc
-// @Summary      List all Transactiones of an Account
-// @Description  List all Transactiones of an Account
+// @Summary      List all transactiones of an account
+// @Description  List all transactiones of an account
 // @ID           list-transactions
 // @Tags         transactions
 // @Param id path int true "Transaction ID"
@@ -93,8 +93,8 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 }
 
 // UpdateTransaction godoc
-// @Summary      Update a Transaction
-// @Description  Update a Transaction
+// @Summary      Update a transaction
+// @Description  Update a transaction
 // @ID           update-transaction
 // @Tags         transactions
 // @Param transaction body UpdateTransactionRequest true "Transaction Data"
@@ -122,8 +122,8 @@ func (r resource) UpdateTransaction(c *gin.Context) {
 }
 
 // DeleteTransaction godoc
-// @Summary      Delete a Transaction
-// @Description  Delete a Transaction
+// @Summary      Delete a transaction
+// @Description  Delete a transaction
 // @ID           delete-transaction
 // @Tags         transactions
 // @Param id path int true "Transaction ID"

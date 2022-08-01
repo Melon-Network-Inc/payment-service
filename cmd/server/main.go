@@ -74,8 +74,8 @@ func buildHandlers(router *gin.RouterGroup, db *dbcontext.DB, cache *dbcontext.C
 }
 
 func buildSwagger() {
-	docs.SwaggerInfo.Title = "Account Service API"
-	docs.SwaggerInfo.Description = "This is account server for Melon Wallet."
+	docs.SwaggerInfo.Title = "Payment Service API"
+	docs.SwaggerInfo.Description = "This is payment server for Melon Wallet."
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/api/v1"

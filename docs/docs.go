@@ -18,7 +18,7 @@ const docTemplate = `{
     "paths": {
         "/transaction": {
             "get": {
-                "description": "List all Transactiones of an Account",
+                "description": "List all transactiones of an account",
                 "consumes": [
                     "application/json"
                 ],
@@ -28,7 +28,7 @@ const docTemplate = `{
                 "tags": [
                     "transactions"
                 ],
-                "summary": "List all Transactiones of an Account",
+                "summary": "List all transactiones of an account",
                 "operationId": "list-transactions",
                 "parameters": [
                     {
@@ -55,7 +55,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update a Transaction",
+                "description": "Update a transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -65,7 +65,7 @@ const docTemplate = `{
                 "tags": [
                     "transactions"
                 ],
-                "summary": "Update a Transaction",
+                "summary": "Update a transaction",
                 "operationId": "update-transaction",
                 "parameters": [
                     {
@@ -94,7 +94,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add a Transaction to Account",
+                "description": "Add a transaction to account",
                 "consumes": [
                     "application/json"
                 ],
@@ -104,7 +104,7 @@ const docTemplate = `{
                 "tags": [
                     "addresses"
                 ],
-                "summary": "Add a Transaction to Account",
+                "summary": "Add a transaction to account",
                 "operationId": "add-address",
                 "parameters": [
                     {
@@ -133,7 +133,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a Transaction",
+                "description": "Delete a transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -143,7 +143,7 @@ const docTemplate = `{
                 "tags": [
                     "transactions"
                 ],
-                "summary": "Delete a Transaction",
+                "summary": "Delete a transaction",
                 "operationId": "delete-transaction",
                 "parameters": [
                     {
@@ -172,7 +172,7 @@ const docTemplate = `{
         },
         "/transaction/{id}": {
             "get": {
-                "description": "Get an Transaction",
+                "description": "Get an transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -182,7 +182,7 @@ const docTemplate = `{
                 "tags": [
                     "transactions"
                 ],
-                "summary": "Get an Transaction",
+                "summary": "Get an transaction",
                 "operationId": "get-transaction",
                 "parameters": [
                     {
