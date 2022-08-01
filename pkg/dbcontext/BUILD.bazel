@@ -10,8 +10,8 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/entity",
-        "@com_github_gin_gonic_gin//:go_default_library",
-        "@com_github_go_redis_redis_v9//:go_default_library",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_go_redis_redis_v9//:redis",
         "@io_gorm_driver_postgres//:postgres",
         "@io_gorm_gorm//:gorm",
     ],

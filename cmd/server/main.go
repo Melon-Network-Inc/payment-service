@@ -17,7 +17,6 @@ import (
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // Version indicates the current version of the application.
@@ -70,7 +69,7 @@ func buildHandlers(router *gin.RouterGroup, db *dbcontext.DB, cache *dbcontext.C
 
 	if swagHandler != nil {
 		buildSwagger()
-		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 }
 
