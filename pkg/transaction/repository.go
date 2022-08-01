@@ -19,7 +19,7 @@ type Repository interface {
 	// Update returns the transaction with the specified address ID.
 	Update(c context.Context, transaction entity.Transaction) error
 	// Delete deletes the transaction with the specified ID.
-	Delete(c context.Context, id int) error
+	Delete(c context.Context, id int) (entity.Transaction, error)
 }
 
 // repository persists addresses in database
@@ -67,10 +67,10 @@ func (r repository) Update(c context.Context, transaction entity.Transaction) er
 }
 
 // Delete deletes the transaction with the specified ID.
-func (r repository) Delete(c context.Context, id int) error {
+func (r repository) Delete(c context.Context, id int) (entity.Transaction, error) {
 	transaction, err := r.Get(c, id)
 	if err != nil {
-		return err
+		return entity.Transaction{}, err
 	}
-	return r.db.With(c).Delete(&transaction).Error
+	return transaction, r.db.With(c).Delete(&transaction).Error
 }
