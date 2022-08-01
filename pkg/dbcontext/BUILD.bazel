@@ -2,11 +2,16 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "dbcontext",
-    srcs = ["db.go"],
+    srcs = [
+        "cache.go",
+        "db.go",
+    ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/entity",
+        "@com_github_gin_gonic_gin//:go_default_library",
+        "@com_github_go_redis_redis_v9//:go_default_library",
         "@io_gorm_driver_postgres//:postgres",
         "@io_gorm_gorm//:gorm",
     ],

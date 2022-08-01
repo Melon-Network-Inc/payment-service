@@ -1,24 +1,21 @@
 package transaction
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func RegisterHandlers(r *mux.Router, service Service, logger log.Logger) {
+func RegisterHandlers(r *gin.RouterGroup, service Service, logger log.Logger) {
 	res := resource{service, logger}
 
-	routes := r.PathPrefix("/transactions/").Subrouter()
-	routes.HandleFunc("/{id}", res.GetTransaction).Methods(http.MethodGet)
-	routes.HandleFunc("/", res.GetAllTransactions).Methods(http.MethodGet)
-	routes.HandleFunc("/", res.AddTransaction).Methods(http.MethodPost)
-	routes.HandleFunc("/{id}", res.UpdateTransaction).Methods(http.MethodPut)
-	routes.HandleFunc("/{id}", res.DeleteTransaction).Methods(http.MethodDelete)
+	routes := r.Group("/transactions")
+	routes.POST("/", res.AddTransaction)
+	routes.GET("/", res.GetAllTransactions)
+	routes.GET("/:id", res.GetTransaction)
+	routes.PUT("/:id", res.UpdateTransaction)
+	routes.DELETE("/:id", res.DeleteTransaction)
 }
 
 type resource struct {
@@ -26,84 +23,121 @@ type resource struct {
 	logger  log.Logger
 }
 
-func (r resource) AddTransaction(res http.ResponseWriter, req *http.Request) {
-	// Read to request body
-	defer req.Body.Close()
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-
+// AddTransaction    godoc
+// @Summary      Add a Transaction to Account
+// @Description  Add a Transaction to Account
+// @ID           add-address
+// @Tags         addresses
+// @Param transaction body AddTransactionRequest true "Transaction Data"
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} Transaction
+// @Failure      400
+// @Failure      404
+// @Router       /transaction [post]
+func (r resource) AddTransaction(c *gin.Context) {
 	var input AddTransactionRequest
-	json.Unmarshal(body, &input)
-
-	var transaction Transaction
-	transaction, err = r.service.Add(req.Context(), input)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusBadRequest)
+	// getting request's body
+	if err := c.BindJSON(&input); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	// Send a 201 created response
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusCreated)
-	json.NewEncoder(res).Encode(&transaction)
+	transaction, err := r.service.Add(c, input)
+	if err != nil {
+		c.AbortWithError(http.StatusNotFound, err)
+		return
+	}
+	c.JSON(http.StatusCreated, &transaction)
 }
 
-func (r resource) GetTransaction(res http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	transaction, err := r.service.Get(req.Context(), vars["id"])
+// GetAddress    godoc
+// @Summary      Get an Transaction
+// @Description  Get an Transaction
+// @ID           get-transaction
+// @Tags         transactions
+// @Param id path int true "Transaction ID"
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} Transaction
+// @Failure      404
+// @Router       /transaction/{id} [get]
+func (r resource) GetTransaction(c *gin.Context) {
+	transaction, err := r.service.Get(c, c.Param("id"))
 	if err != nil {
-		http.Error(res, err.Error(), http.StatusNotFound)
+		c.AbortWithError(http.StatusNotFound, err)
 		return
 	}
-
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode(transaction)
+	c.JSON(http.StatusOK, &transaction)
 }
 
-func (r resource) GetAllTransactions(res http.ResponseWriter, req *http.Request) {
-	transactions, err := r.service.List(req.Context())
+// GetAddress    godoc
+// @Summary      List all Transactiones of an Account
+// @Description  List all Transactiones of an Account
+// @ID           list-transactions
+// @Tags         transactions
+// @Param id path int true "Transaction ID"
+// @Accept       json
+// @Produce      json
+// @Success      200 {array} Transaction
+// @Failure      404
+// @Router       /transaction [get]
+func (r resource) GetAllTransactions(c *gin.Context) {
+	transactions, err := r.service.List(c)
 	if err != nil {
-		http.Error(res, err.Error(), http.StatusNotFound)
+		c.AbortWithError(http.StatusNotFound, err)
 		return
 	}
 
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode(transactions)
+	c.JSON(http.StatusOK, &transactions)
 }
 
-func (r resource) UpdateTransaction(res http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-
-	// Read request body
-	defer req.Body.Close()
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusBadRequest)
-		return
-	}
-
+// UpdateTransaction godoc
+// @Summary      Update a Transaction
+// @Description  Update a Transaction
+// @ID           update-transaction
+// @Tags         transactions
+// @Param transaction body UpdateTransactionRequest true "Transaction Data"
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} Transaction
+// @Failure      400
+// @Failure      404
+// @Router       /transaction [put]
+func (r resource) UpdateTransaction(c *gin.Context) {
 	var input UpdateTransactionRequest
-	json.Unmarshal(body, &input)
-
-	r.service.Update(req.Context(), vars["id"], input)
-
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode("Updated")
-}
-
-func (r resource) DeleteTransaction(res http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	if err := r.service.Delete(req.Context(), vars["id"]); err != nil {
-		http.Error(res, err.Error(), http.StatusBadRequest)
+	// getting request's body
+	if err := c.BindJSON(&input); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	res.Header().Add("Content-Type", "application/json")
-	res.WriteHeader(http.StatusOK)
-	json.NewEncoder(res).Encode("Deleted")
+	transaction, err := r.service.Update(c, c.Param("id"), input)
+	if err != nil {
+		c.AbortWithError(http.StatusNotFound, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, &transaction)
+}
+
+// DeleteTransaction godoc
+// @Summary      Delete a Transaction
+// @Description  Delete a Transaction
+// @ID           delete-transaction
+// @Tags         transactions
+// @Param id path int true "Transaction ID"
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} Transaction
+// @Failure      400
+// @Failure      404
+// @Router       /transaction [delete]
+func (r resource) DeleteTransaction(c *gin.Context) {
+	transaction, err := r.service.Delete(c, c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusNotFound, err)
+		return
+	}
+	c.JSON(http.StatusOK, &transaction)
 }

@@ -13,7 +13,7 @@ go_library(
         "//pkg/dbcontext",
         "//pkg/entity",
         "//pkg/log",
-        "@com_github_gorilla_mux//:mux",
+        "@com_github_gin_gonic_gin//:go_default_library",
         "@in_gopkg_go_playground_validator_v9//:validator_v9",
     ],
 )

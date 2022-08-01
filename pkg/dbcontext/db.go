@@ -15,7 +15,7 @@ type DB struct {
 }
 
 // New returns a new DB connection that wraps the given dbx.DB instance.
-func New(db *gorm.DB) *DB {
+func NewDatabase(db *gorm.DB) *DB {
 	return &DB{db}
 }
 
@@ -32,7 +32,7 @@ func (db *DB) With(c context.Context) *gorm.DB {
 }
 
 // DB returns the gorm.DB wrapped by this object.
-func Connect(dbURL string) (*gorm.DB, error) {
+func ConnectToDatabase(dbURL string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {

@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "docs",
     srcs = ["docs.go"],
-    importpath = "github.com/Melon-Network-Inc/payment-service/cmd/server/docs",
+    importpath = "github.com/Melon-Network-Inc/payment-service/docs",
     visibility = ["//visibility:public"],
     deps = ["@com_github_swaggo_swag//:swag"],
 )

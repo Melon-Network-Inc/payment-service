@@ -6,78 +6,80 @@ package main
 
 import (
 	"context"
-	"flag"
-	"net/http"
 	"os"
-	"os/signal"
-	"time"
 
+	"github.com/Melon-Network-Inc/payment-service/docs"
 	dbcontext "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
-	transaction "github.com/Melon-Network-Inc/payment-service/pkg/transaction"
-	"github.com/gorilla/mux"
+	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // Version indicates the current version of the application.
 var Version = "1.0.0"
+var swagHandler gin.HandlerFunc
+
+func init() {
+	swagHandler = ginSwagger.WrapHandler(swaggerfiles.Handler)
+}
 
 func main() {
-
 	// create root logger tagged with server version
 	logger := log.New().With(context.Background(), "version", Version)
 	logger.Info("Payment Service Started")
 
-	var wait time.Duration
-	flag.DurationVar(
-		&wait,
-		"graceful-timeout",
-		time.Second*15,
-		"the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m",
-	)
-	flag.Parse()
+	viper.SetConfigFile("./pkg/envs/.env")
 
-	db, err := dbcontext.Connect("postgres://postgres:123456@localhost:5432/melon_service")
+	var port, dbUrl, redisUrl string
+	if err := viper.ReadInConfig(); err == nil {
+		port = viper.Get("DB_PORT").(string)
+		dbUrl = viper.Get("DB_URL").(string)
+		redisUrl = viper.Get("CACHE_URL").(string)
+	} else {
+		port = ":8080"
+		dbUrl = "postgres://postgres:postgres@localhost:5432/melon_service"
+		redisUrl = "localhost:6379"
+	}
+	
+	router := gin.Default()
+	db, err := dbcontext.ConnectToDatabase(dbUrl)
 	if err != nil {
 		logger.Error(err)
+		os.Exit(-1)
 	}
-	r := mux.NewRouter()
+	
+	cache := dbcontext.ConnectToCache(redisUrl)
 
-	transactionRepo := transaction.NewRepository(dbcontext.New(db), logger)
-	transaction.RegisterHandlers(r, transaction.NewService(transactionRepo, logger), logger)
+	buildHandlers(router.Group(""), dbcontext.NewDatabase(db), dbcontext.NewCache(cache), logger)
 
-	srv := &http.Server{
-		Addr: "0.0.0.0:8080",
-		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
-		Handler:      r, // Pass our instance of gorilla/mux in.
-	}
-
-	// Run our server in a goroutine so that it doesn't block.
-	go func() {
-		if err := srv.ListenAndServe(); err != nil {
-			logger.Info(err)
-		}
-	}()
-
-	c := make(chan os.Signal, 1)
-	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
-	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
-	signal.Notify(c, os.Interrupt)
-
-	// Block until we receive our signal.
-	<-c
-
-	// Create a deadline to wait for.
-	ctx, cancel := context.WithTimeout(context.Background(), wait)
-	defer cancel()
-	// Doesn't block if no connections, but will otherwise wait
-	// until the timeout deadline.
-	srv.Shutdown(ctx)
-	// Optionally, you could run srv.Shutdown in a goroutine and block on
-	// <-ctx.Done() if your application should wait for other services
-	// to finalize based on context cancellation.
-	logger.Info("shutting down")
-	os.Exit(0)
+	router.Run(port)
 }
+
+func buildHandlers(router *gin.RouterGroup, db *dbcontext.DB, cache *dbcontext.Cache, logger log.Logger) {
+	transactionrRepo := transaction.NewRepository(db, logger)
+
+	transactionService := transaction.NewService(transactionrRepo, logger)
+
+	v1 := router.Group("api/v1")
+	transaction.RegisterHandlers(v1, transactionService, logger)
+
+	if swagHandler != nil {
+		buildSwagger()
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+}
+
+func buildSwagger() {
+	docs.SwaggerInfo.Title = "Account Service API"
+	docs.SwaggerInfo.Description = "This is account server for Melon Wallet."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+}
+

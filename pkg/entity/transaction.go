@@ -7,6 +7,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// Transaction transaction
+//
+// swagger:model transaction
 type Transaction struct {
 	gorm.Model            // adds ID, created_at etc.
 	Name           string `json:"name"        validate:"required"`

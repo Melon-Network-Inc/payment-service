@@ -16,7 +16,7 @@ type Service interface {
 	Get(c context.Context, id string) (Transaction, error)
 	List(ctx context.Context) ([]Transaction, error)
 	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id string) (Transaction, error)
 }
 
 // address represents the data about an address.
@@ -158,10 +158,14 @@ func (s service) Update(
 }
 
 // Delete deletes the transaction with the specified ID.
-func (s service) Delete(ctx context.Context, id string) error {
+func (s service) Delete(ctx context.Context, id string) (Transaction, error) {
 	uid, err := strconv.Atoi(id)
 	if err != nil {
-		return err
+		return Transaction{}, err
 	}
-	return s.repo.Delete(ctx, uid)
+	transaction, err := s.repo.Delete(ctx, uid)
+	if err != nil {
+		return Transaction{}, err
+	}
+	return Transaction{transaction}, nil
 }
