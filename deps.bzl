@@ -280,8 +280,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_go_redis_redis_v9",
         importpath = "github.com/go-redis/redis/v9",
-        sum = "h1:ZSr84TsnQyKMAg8gnV+oawuQezeJR11/09THcWCQzr4=",
-        version = "v9.0.0-beta.2",
+        sum = "h1:oW3jlPic5HhGUbYMH0lidnP+72BgsT+lCwlVud6o2Mc=",
+        version = "v9.0.0-beta.1",
     )
 
     go_repository(
@@ -725,8 +725,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_onsi_gomega",
         importpath = "github.com/onsi/gomega",
-        sum = "h1:8W0cWlwFkflGPLltQvLRB7ZVD5HuP6ng320w2IS245Q=",
-        version = "v1.20.0",
+        sum = "h1:4ieX6qQjPP/BfC3mpsAtIGGlxTWPeA3Inl/7DtXw1tw=",
+        version = "v1.19.0",
     )
     go_repository(
         name = "com_github_otiai10_copy",

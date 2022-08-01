@@ -10,10 +10,11 @@ go_library(
         "//pkg/dbcontext",
         "//pkg/log",
         "//pkg/transaction",
-        "@com_github_gin_gonic_gin//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
-        "@com_github_swaggo_files//:go_default_library",
-        "@com_github_swaggo_gin_swagger//:go_default_library",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_swaggo_files//:files",
+        "@com_github_swaggo_gin_swagger//:gin-swagger",
+        "@com_github_swaggo_gin_swagger//swaggerFiles",
     ],
 )
 

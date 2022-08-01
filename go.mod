@@ -76,7 +76,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-ozzo/ozzo-dbx v1.5.0
 	github.com/go-ozzo/ozzo-routing/v2 v2.4.0
-	github.com/go-redis/redis/v9 v9.0.0-beta.2
+	github.com/go-redis/redis/v9 v9.0.0-beta.1
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
 	github.com/spf13/viper v1.12.0
