@@ -6,6 +6,10 @@ server: ## run the server
 run: ## run the server with bazel
 	bazel run //cmd/server:server
 
+.PHONY: prod
+prod: ## run the production server with bazel
+	bazel run --action_env=GIN_MODE=release //cmd/server:server
+
 .PHONY: build
 build: ## update dependency and build using bazel
 	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
