@@ -233,7 +233,7 @@ paths:
       consumes:
       - application/json
       description: Add a transaction to account
-      operationId: add-address
+      operationId: add-transaction
       parameters:
       - description: Transaction Data
         in: body
@@ -254,7 +254,7 @@ paths:
           description: ""
       summary: Add a transaction to account
       tags:
-      - addresses
+      - transactions
     put:
       consumes:
       - application/json

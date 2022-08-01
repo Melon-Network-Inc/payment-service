@@ -26,8 +26,8 @@ type resource struct {
 // AddTransaction    godoc
 // @Summary      Add a transaction to account
 // @Description  Add a transaction to account
-// @ID           add-address
-// @Tags         addresses
+// @ID           add-transaction
+// @Tags         transactions
 // @Param transaction body AddTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
@@ -51,7 +51,7 @@ func (r resource) AddTransaction(c *gin.Context) {
 	c.JSON(http.StatusCreated, &transaction)
 }
 
-// GetAddress    godoc
+// GetTransaction    godoc
 // @Summary      Get an transaction
 // @Description  Get an transaction
 // @ID           get-transaction
@@ -71,7 +71,7 @@ func (r resource) GetTransaction(c *gin.Context) {
 	c.JSON(http.StatusOK, &transaction)
 }
 
-// GetAddress    godoc
+// GetAllTransactions    godoc
 // @Summary      List all transactiones of an account
 // @Description  List all transactiones of an account
 // @ID           list-transactions

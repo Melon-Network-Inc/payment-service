@@ -19,13 +19,12 @@ type Service interface {
 	Delete(ctx context.Context, id string) (Transaction, error)
 }
 
-// address represents the data about an address.
+// transaction represents the data about a transaction.
 type Transaction struct {
 	entity.Transaction
 }
 
-//July 7
-// AddAddressRequest represents an address creation request.
+// AddTransactionRequest represents an transaction creation request.
 type AddTransactionRequest struct {
 	Name           string `json:"name"        validate:"required"`
 	Status         string `json:"status"`
@@ -38,7 +37,6 @@ type AddTransactionRequest struct {
 	Message        string `json:"message"     validate:"ls=200"`
 }
 
-//July 7
 // Validate validates the AddTransaction fields.
 func (m AddTransactionRequest) Validate() error {
 	validate := validator.New()
@@ -49,8 +47,7 @@ func (m AddTransactionRequest) Validate() error {
 	return err
 }
 
-//July 7
-// UpdateTransactionRequest represents an address update request.
+// UpdateTransactionRequest represents an transaction update request.
 type UpdateTransactionRequest struct {
 	Id      uint   `json:"id"`
 	Name    string `json:"name"    validate:"required"`
@@ -58,7 +55,6 @@ type UpdateTransactionRequest struct {
 	Status  string `json:"status"`
 }
 
-//July 7
 // Validate validates the UpdateTransactionRequest fields.
 func (m UpdateTransactionRequest) Validate() error {
 	validate := validator.New()

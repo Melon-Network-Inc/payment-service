@@ -102,10 +102,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "addresses"
+                    "transactions"
                 ],
                 "summary": "Add a transaction to account",
-                "operationId": "add-address",
+                "operationId": "add-transaction",
                 "parameters": [
                     {
                         "description": "Transaction Data",

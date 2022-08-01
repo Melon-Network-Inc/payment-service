@@ -12,17 +12,17 @@ import (
 type Repository interface {
 	// Add creates the transaction.
 	Add(c context.Context, transaction entity.Transaction) (entity.Transaction, error)
-	// Get returns the transaction with the specified address ID.
+	// Get returns the transaction with the specified transaction ID.
 	Get(c context.Context, id int) (entity.Transaction, error)
 	// List returns the transaction associated to target user.
 	List(c context.Context) ([]entity.Transaction, error)
-	// Update returns the transaction with the specified address ID.
+	// Update returns the transaction with the specified transaction ID.
 	Update(c context.Context, transaction entity.Transaction) error
 	// Delete deletes the transaction with the specified ID.
 	Delete(c context.Context, id int) (entity.Transaction, error)
 }
 
-// repository persists addresses in database
+// repository persists transactions in database
 type repository struct {
 	db     *db.DB
 	logger log.Logger
@@ -46,9 +46,9 @@ func (r repository) Add(
 
 // Get reads the transaction with the specified ID from the database.
 func (r repository) Get(c context.Context, id int) (entity.Transaction, error) {
-	var address entity.Transaction
-	result := r.db.With(c).First(&address, id)
-	return address, result.Error
+	var transaction entity.Transaction
+	result := r.db.With(c).First(&transaction, id)
+	return transaction, result.Error
 }
 
 // Add creates the transaction.
@@ -58,7 +58,7 @@ func (r repository) List(c context.Context) ([]entity.Transaction, error) {
 	return transactions, result.Error
 }
 
-// Update returns the transaction with the specified address ID.
+// Update returns the transaction with the specified transaction ID.
 func (r repository) Update(c context.Context, transaction entity.Transaction) error {
 	if result := r.db.With(c).First(&transaction, transaction.ID); result.Error != nil {
 		return result.Error
