@@ -51,14 +51,14 @@ func (r repository) Get(c context.Context, id int) (entity.Transaction, error) {
 	return transaction, result.Error
 }
 
-// Add creates the transaction.
+// Lists lists all transactions.
 func (r repository) List(c context.Context) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
 	result := r.db.With(c).Find(&transactions, entity.Transaction{})
 	return transactions, result.Error
 }
 
-// Update returns the transaction with the specified transaction ID.
+// Update updates the transaction with the specified transaction ID.
 func (r repository) Update(c context.Context, transaction entity.Transaction) error {
 	if result := r.db.With(c).First(&transaction, transaction.ID); result.Error != nil {
 		return result.Error
