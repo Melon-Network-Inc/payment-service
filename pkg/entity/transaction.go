@@ -16,9 +16,9 @@ type Transaction struct {
 	Status         string `json:"status"`
 	Amount         uint   `json:"amount"      validate:"required,uint"`
 	Currency       string `json:"currency"    validate:"required,iso4217"` //currency code
-	SenderId       uint64 `json:"sender_id"   validate:"uuid"`
+	SenderId       uint   `json:"sender_id"   validate:"uuid"`
 	SenderPubkey   uint64 `json:"sender_pk"   validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
-	ReceiverId     uint64 `json:"receiver_id" validate:"uuid"`
+	ReceiverId     uint   `json:"receiver_id" validate:"uuid"`
 	ReceiverPubkey uint64 `json:"receiver_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
 	// message should be less than 200 characters
 	Message string `json:"message"     validate:"ls=200"`
