@@ -40,7 +40,7 @@ func main() {
 		dbUrl = viper.Get("DB_URL").(string)
 		redisUrl = viper.Get("CACHE_URL").(string)
 	} else {
-		port = ":8080"
+		port = ":7000"
 		dbUrl = "postgres://postgres:postgres@localhost:5432/melon_service"
 		redisUrl = "localhost:6379"
 	}
@@ -77,7 +77,7 @@ func buildSwagger() {
 	docs.SwaggerInfo.Title = "Payment Service API"
 	docs.SwaggerInfo.Description = "This is payment server for Melon Wallet."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = "localhost:7000"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 }
