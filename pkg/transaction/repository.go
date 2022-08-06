@@ -3,8 +3,8 @@ package transaction
 import (
 	"context"
 
+	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
 	db "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext"
-	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

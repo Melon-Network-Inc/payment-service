@@ -3,6 +3,7 @@ package transaction
 import (
 	"net/http"
 
+	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 	"github.com/gin-gonic/gin"
 )
@@ -36,7 +37,7 @@ type resource struct {
 // @Failure      404
 // @Router       /transaction [post]
 func (r resource) AddTransaction(c *gin.Context) {
-	var input AddTransactionRequest
+	var input api.AddTransactionRequest
 	// getting request's body
 	if err := c.BindJSON(&input); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -105,7 +106,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Failure      404
 // @Router       /transaction [put]
 func (r resource) UpdateTransaction(c *gin.Context) {
-	var input UpdateTransactionRequest
+	var input api.UpdateTransactionRequest
 	// getting request's body
 	if err := c.BindJSON(&input); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

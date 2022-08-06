@@ -2,66 +2,25 @@ package transaction
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
-	"github.com/Melon-Network-Inc/payment-service/pkg/entity"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // Service encapsulates usecase logic for transactions.
 type Service interface {
-	Add(ctx context.Context, input AddTransactionRequest) (Transaction, error)
+	Add(ctx context.Context, input api.AddTransactionRequest) (Transaction, error)
 	Get(c context.Context, id string) (Transaction, error)
 	List(ctx context.Context) ([]Transaction, error)
-	Update(ctx context.Context, id string, input UpdateTransactionRequest) (Transaction, error)
+	Update(ctx context.Context, id string, input api.UpdateTransactionRequest) (Transaction, error)
 	Delete(ctx context.Context, id string) (Transaction, error)
 }
 
 // transaction represents the data about a transaction.
 type Transaction struct {
 	entity.Transaction
-}
-
-// AddTransactionRequest represents an transaction creation request.
-type AddTransactionRequest struct {
-	Name           string `json:"name"        validate:"required"`
-	Status         string `json:"status"`
-	Amount         uint   `json:"amount"      validate:"required,uint"`
-	Currency       string `json:"currency"    validate:"required,iso4217"` //currency code
-	SenderId       uint   `json:"sender_id"   validate:"uuid"`
-	SenderPubkey   uint64 `json:"sender_pk"   validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
-	ReceiverId     uint   `json:"receiver_id" validate:"uuid"`
-	ReceiverPubkey uint64 `json:"receiver_pk" validate:"required, oneof='eth_addr' 'btc_addr'"` // ETH or BTC address
-	Message        string `json:"message"     validate:"ls=200"`
-}
-
-// Validate validates the AddTransaction fields.
-func (m AddTransactionRequest) Validate() error {
-	validate := validator.New()
-	err := validate.StructExcept(m, "Status")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	return err
-}
-
-// UpdateTransactionRequest represents an transaction update request.
-type UpdateTransactionRequest struct {
-	Name    string `json:"name"    validate:"required"`
-	Message string `json:"message" validate:"ls=200"`
-	Status  string `json:"status"`
-}
-
-// Validate validates the UpdateTransactionRequest fields.
-func (m UpdateTransactionRequest) Validate() error {
-	validate := validator.New()
-	err := validate.StructExcept(m, "Status")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	return err
 }
 
 type service struct {
@@ -75,7 +34,7 @@ func NewService(repo Repository, logger log.Logger) Service {
 }
 
 // Create creates a new transaction.
-func (s service) Add(ctx context.Context, req AddTransactionRequest) (Transaction, error) {
+func (s service) Add(ctx context.Context, req api.AddTransactionRequest) (Transaction, error) {
 	if err := req.Validate(); err != nil {
 		return Transaction{}, err
 	}
@@ -127,7 +86,7 @@ func (s service) List(ctx context.Context) ([]Transaction, error) {
 func (s service) Update(
 	ctx context.Context,
 	id string,
-	input UpdateTransactionRequest,
+	input api.UpdateTransactionRequest,
 ) (Transaction, error) {
 	if err := input.Validate(); err != nil {
 		return Transaction{}, err

@@ -11,9 +11,9 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/dbcontext",
-        "//pkg/entity",
         "//pkg/log",
         "@com_github_gin_gonic_gin//:gin",
-        "@in_gopkg_go_playground_validator_v9//:validator_v9",
+        "@com_github_melon_network_inc_entity_repo//pkg/api",
+        "@com_github_melon_network_inc_entity_repo//pkg/entity",
     ],
 )
