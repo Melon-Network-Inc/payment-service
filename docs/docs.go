@@ -45,7 +45,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
+                                "$ref": "#/definitions/pkg_transaction.Transaction"
                             }
                         }
                     },
@@ -74,7 +74,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.UpdateTransactionRequest"
+                            "$ref": "#/definitions/api.UpdateTransactionRequest"
                         }
                     }
                 ],
@@ -82,7 +82,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
+                            "$ref": "#/definitions/pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -113,7 +113,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.AddTransactionRequest"
+                            "$ref": "#/definitions/api.AddTransactionRequest"
                         }
                     }
                 ],
@@ -121,7 +121,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
+                            "$ref": "#/definitions/pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -158,7 +158,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
+                            "$ref": "#/definitions/pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -197,7 +197,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
+                            "$ref": "#/definitions/pkg_transaction.Transaction"
                         }
                     },
                     "404": {
@@ -208,7 +208,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github.com_Melon-Network-Inc_payment-service_pkg_transaction.AddTransactionRequest": {
+        "api.AddTransactionRequest": {
             "type": "object",
             "required": [
                 "amount",
@@ -244,6 +244,23 @@ const docTemplate = `{
                 "sender_pk": {
                     "description": "ETH or BTC address",
                     "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.UpdateTransactionRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
@@ -305,26 +322,6 @@ const docTemplate = `{
                 }
             }
         },
-        "github.com_Melon-Network-Inc_payment-service_pkg_transaction.UpdateTransactionRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -334,48 +331,6 @@ const docTemplate = `{
                 "valid": {
                     "description": "Valid is true if Time is not NULL",
                     "type": "boolean"
-                }
-            }
-        },
-        "pkg_transaction.AddTransactionRequest": {
-            "type": "object",
-            "required": [
-                "amount",
-                "currency",
-                "name",
-                "receiver_pk",
-                "sender_pk"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "currency": {
-                    "description": "currency code",
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "receiver_id": {
-                    "type": "integer"
-                },
-                "receiver_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
-                },
-                "sender_id": {
-                    "type": "integer"
-                },
-                "sender_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "string"
                 }
             }
         },
@@ -430,26 +385,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "pkg_transaction.UpdateTransactionRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
                     "type": "string"
                 }
             }

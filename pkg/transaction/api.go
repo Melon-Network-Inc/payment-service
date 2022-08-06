@@ -29,7 +29,7 @@ type resource struct {
 // @Description  Add a transaction to account
 // @ID           add-transaction
 // @Tags         transactions
-// @Param transaction body AddTransactionRequest true "Transaction Data"
+// @Param transaction body api.AddTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
 // @Success      201 {object} Transaction
@@ -98,7 +98,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Description  Update a transaction
 // @ID           update-transaction
 // @Tags         transactions
-// @Param transaction body UpdateTransactionRequest true "Transaction Data"
+// @Param transaction body api.UpdateTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
 // @Success      200 {object} Transaction

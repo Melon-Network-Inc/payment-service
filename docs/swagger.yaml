@@ -1,5 +1,5 @@
 definitions:
-  github.com_Melon-Network-Inc_payment-service_pkg_transaction.AddTransactionRequest:
+  api.AddTransactionRequest:
     properties:
       amount:
         type: integer
@@ -28,6 +28,17 @@ definitions:
     - name
     - receiver_pk
     - sender_pk
+    type: object
+  api.UpdateTransactionRequest:
+    properties:
+      message:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+    required:
+    - name
     type: object
   github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction:
     properties:
@@ -68,19 +79,6 @@ definitions:
     - receiver_pk
     - sender_pk
     type: object
-  github.com_Melon-Network-Inc_payment-service_pkg_transaction.UpdateTransactionRequest:
-    properties:
-      id:
-        type: integer
-      message:
-        type: string
-      name:
-        type: string
-      status:
-        type: string
-    required:
-    - name
-    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -88,36 +86,6 @@ definitions:
       valid:
         description: Valid is true if Time is not NULL
         type: boolean
-    type: object
-  pkg_transaction.AddTransactionRequest:
-    properties:
-      amount:
-        type: integer
-      currency:
-        description: currency code
-        type: string
-      message:
-        type: string
-      name:
-        type: string
-      receiver_id:
-        type: integer
-      receiver_pk:
-        description: ETH or BTC address
-        type: integer
-      sender_id:
-        type: integer
-      sender_pk:
-        description: ETH or BTC address
-        type: integer
-      status:
-        type: string
-    required:
-    - amount
-    - currency
-    - name
-    - receiver_pk
-    - sender_pk
     type: object
   pkg_transaction.Transaction:
     properties:
@@ -158,19 +126,6 @@ definitions:
     - receiver_pk
     - sender_pk
     type: object
-  pkg_transaction.UpdateTransactionRequest:
-    properties:
-      id:
-        type: integer
-      message:
-        type: string
-      name:
-        type: string
-      status:
-        type: string
-    required:
-    - name
-    type: object
 info:
   contact: {}
   description: The MelonWallet microservice responsible for dealing with payment and
@@ -196,7 +151,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -222,7 +177,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+              $ref: '#/definitions/pkg_transaction.Transaction'
             type: array
         "404":
           description: ""
@@ -240,14 +195,14 @@ paths:
         name: transaction
         required: true
         schema:
-          $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.AddTransactionRequest'
+          $ref: '#/definitions/api.AddTransactionRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -266,14 +221,14 @@ paths:
         name: transaction
         required: true
         schema:
-          $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.UpdateTransactionRequest'
+          $ref: '#/definitions/api.UpdateTransactionRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -299,7 +254,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "404":
           description: ""
       summary: Get an transaction
