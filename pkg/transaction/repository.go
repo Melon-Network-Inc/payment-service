@@ -13,13 +13,13 @@ type Repository interface {
 	// Add creates the transaction.
 	Add(c context.Context, transaction entity.Transaction) (entity.Transaction, error)
 	// Get returns the transaction with the specified transaction ID.
-	Get(c context.Context, id int) (entity.Transaction, error)
+	Get(c context.Context, ID int) (entity.Transaction, error)
 	// List returns the transaction associated to target user.
-	List(c context.Context) ([]entity.Transaction, error)
+	List(c context.Context, ID int) ([]entity.Transaction, error)
 	// Update returns the transaction with the specified transaction ID.
 	Update(c context.Context, transaction entity.Transaction) error
 	// Delete deletes the transaction with the specified ID.
-	Delete(c context.Context, id int) (entity.Transaction, error)
+	Delete(c context.Context, ID int) (entity.Transaction, error)
 }
 
 // repository persists transactions in database
@@ -45,16 +45,16 @@ func (r repository) Add(
 }
 
 // Get reads the transaction with the specified ID from the database.
-func (r repository) Get(c context.Context, id int) (entity.Transaction, error) {
+func (r repository) Get(c context.Context, ID int) (entity.Transaction, error) {
 	var transaction entity.Transaction
-	result := r.db.With(c).First(&transaction, id)
+	result := r.db.With(c).First(&transaction, ID)
 	return transaction, result.Error
 }
 
 // Lists lists all transactions.
-func (r repository) List(c context.Context) ([]entity.Transaction, error) {
+func (r repository) List(c context.Context, ID int) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
-	result := r.db.With(c).Find(&transactions, entity.Transaction{})
+	result := r.db.With(c).Find(&transactions, ID)
 	return transactions, result.Error
 }
 
@@ -67,8 +67,8 @@ func (r repository) Update(c context.Context, transaction entity.Transaction) er
 }
 
 // Delete deletes the transaction with the specified ID.
-func (r repository) Delete(c context.Context, id int) (entity.Transaction, error) {
-	transaction, err := r.Get(c, id)
+func (r repository) Delete(c context.Context, ID int) (entity.Transaction, error) {
+	transaction, err := r.Get(c, ID)
 	if err != nil {
 		return entity.Transaction{}, err
 	}

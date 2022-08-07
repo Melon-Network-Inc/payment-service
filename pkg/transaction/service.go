@@ -1,21 +1,21 @@
 package transaction
 
 import (
-	"context"
-	"strconv"
-
 	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
 	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
+	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
+	"github.com/gin-gonic/gin"
 )
 
 // Service encapsulates usecase logic for transactions.
 type Service interface {
-	Add(ctx context.Context, input api.AddTransactionRequest) (Transaction, error)
-	Get(c context.Context, id string) (Transaction, error)
-	List(ctx context.Context) ([]Transaction, error)
-	Update(ctx context.Context, id string, input api.UpdateTransactionRequest) (Transaction, error)
-	Delete(ctx context.Context, id string) (Transaction, error)
+	Add(ctx *gin.Context, input api.AddTransactionRequest) (Transaction, error)
+	Get(c *gin.Context, id string) (Transaction, error)
+	List(ctx *gin.Context) ([]Transaction, error)
+	Update(ctx *gin.Context, id string, input api.UpdateTransactionRequest) (Transaction, error)
+	Delete(ctx *gin.Context, id string) (Transaction, error)
 }
 
 // transaction represents the data about a transaction.
@@ -34,7 +34,7 @@ func NewService(repo Repository, logger log.Logger) Service {
 }
 
 // Create creates a new transaction.
-func (s service) Add(ctx context.Context, req api.AddTransactionRequest) (Transaction, error) {
+func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (Transaction, error) {
 	if err := req.Validate(); err != nil {
 		return Transaction{}, err
 	}
@@ -57,8 +57,8 @@ func (s service) Add(ctx context.Context, req api.AddTransactionRequest) (Transa
 }
 
 // Get returns the transaction with the specified the transaction ID.
-func (s service) Get(ctx context.Context, id string) (Transaction, error) {
-	uid, err := strconv.Atoi(id)
+func (s service) Get(ctx *gin.Context, ID string) (Transaction, error) {
+	uid, err := utils.Int(ID)
 	if err != nil {
 		return Transaction{}, err
 	}
@@ -70,8 +70,13 @@ func (s service) Get(ctx context.Context, id string) (Transaction, error) {
 }
 
 // Get returns the a list of transactions associated to a user.
-func (s service) List(ctx context.Context) ([]Transaction, error) {
-	transaction, err := s.repo.List(ctx)
+func (s service) List(ctx *gin.Context) ([]Transaction, error) {
+	userID, err := utils.Int(processor.GetUserID(ctx))
+	if err != nil {
+		return []Transaction{}, err
+	}
+
+	transaction, err := s.repo.List(ctx, userID)
 	if err != nil {
 		return []Transaction{}, err
 	}
@@ -84,20 +89,20 @@ func (s service) List(ctx context.Context) ([]Transaction, error) {
 
 // Update updates the transaction with the specified the transaction ID.
 func (s service) Update(
-	ctx context.Context,
-	id string,
+	ctx *gin.Context,
+	ID string,
 	input api.UpdateTransactionRequest,
 ) (Transaction, error) {
 	if err := input.Validate(); err != nil {
 		return Transaction{}, err
 	}
 
-	uid, err := strconv.Atoi(id)
+	UID, err := utils.Int(ID)
 	if err != nil {
 		return Transaction{}, err
 	}
 
-	transaction, err := s.repo.Get(ctx, uid)
+	transaction, err := s.repo.Get(ctx, UID)
 	if err != nil {
 		return Transaction{}, err
 	}
@@ -112,8 +117,8 @@ func (s service) Update(
 }
 
 // Delete deletes the transaction with the specified ID.
-func (s service) Delete(ctx context.Context, id string) (Transaction, error) {
-	uid, err := strconv.Atoi(id)
+func (s service) Delete(ctx *gin.Context, ID string) (Transaction, error) {
+	uid, err := utils.Int(ID)
 	if err != nil {
 		return Transaction{}, err
 	}
