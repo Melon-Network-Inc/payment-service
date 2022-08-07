@@ -18,7 +18,7 @@ type Service interface {
 	Add(ctx *gin.Context, input api.AddTransactionRequest) (Transaction, error)
 	Get(c *gin.Context, ID string) (Transaction, error)
 	List(ctx *gin.Context) ([]Transaction, error)
-	ListByUser(ctx *gin.Context, ID string) ([]Transaction, error)
+	ListByUser(ctx *gin.Context, ID string, showPrivate bool) ([]Transaction, error)
 	Update(ctx *gin.Context, ID string, input api.UpdateTransactionRequest) (Transaction, error)
 	Delete(ctx *gin.Context, ID string) (Transaction, error)
 }
@@ -61,6 +61,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (Transacti
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
 		ReceiverPubkey: req.ReceiverPubkey,
+		IsPublic: 		req.IsPublic,
 		Message:        req.Message,
 	})
 	if err != nil {
@@ -84,17 +85,17 @@ func (s service) Get(ctx *gin.Context, ID string) (Transaction, error) {
 
 // Get returns the a list of transactions associated to the requester.
 func (s service) List(ctx *gin.Context) ([]Transaction, error) {
-	return s.ListByUser(ctx, processor.GetUserID(ctx))
+	return s.ListByUser(ctx, processor.GetUserID(ctx), true)
 }
 
 // Get returns the a list of transactions associated to a user.
-func (s service) ListByUser(ctx *gin.Context, ID string) ([]Transaction, error) {
+func (s service) ListByUser(ctx *gin.Context, ID string, showPrivate bool) ([]Transaction, error) {
 	userID, err := utils.Int(ID)
 	if err != nil {
 		return []Transaction{}, err
 	}
 
-	transaction, err := s.repo.List(ctx, userID)
+	transaction, err := s.repo.List(ctx, userID, showPrivate)
 	if err != nil {
 		return []Transaction{}, err
 	}
@@ -136,6 +137,7 @@ func (s service) Update(
 	transaction.Name = input.Name
 	transaction.Status = input.Status
 	transaction.Message = input.Message
+	transaction.IsPublic = input.IsPublic
 
 	if err := s.repo.Update(ctx, transaction); err != nil {
 		return Transaction{}, err

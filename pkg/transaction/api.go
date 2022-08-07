@@ -106,7 +106,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Failure      404
 // @Router       /transaction [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
-	transactions, err := r.service.ListByUser(c, c.Param("id"))
+	transactions, err := r.service.ListByUser(c, c.Param("id"), false)
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)
 		return

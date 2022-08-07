@@ -5,6 +5,7 @@ import (
 	db "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // Repository encapsulates the logic to access transactions from the data source.
@@ -14,7 +15,7 @@ type Repository interface {
 	// Get returns the transaction with the specified transaction ID.
 	Get(c *gin.Context, ID int) (entity.Transaction, error)
 	// List returns the transaction associated to target user.
-	List(c *gin.Context, ID int) ([]entity.Transaction, error)
+	List(c *gin.Context, ID int, showPrivate bool) ([]entity.Transaction, error)
 	// Update returns the transaction with the specified transaction ID.
 	Update(c *gin.Context, transaction entity.Transaction) error
 	// Delete deletes the transaction.
@@ -51,13 +52,23 @@ func (r repository) Get(c *gin.Context, ID int) (entity.Transaction, error) {
 }
 
 // Lists lists all transactions.
-func (r repository) List(c *gin.Context, ID int) ([]entity.Transaction, error) {
+func (r repository) List(c *gin.Context, ID int, showPrivate bool) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
-	result := r.db.With(c).
-			Where("sender_id = ?", ID).
-			Or("receiver_id = ?", ID).
-			Order("updated_at desc").
-			Find(&transactions)
+	var result *gorm.DB
+	if showPrivate {
+		result = r.db.With(c).
+				Where("sender_id = ?", ID).
+				Or("receiver_id = ?", ID).
+				Order("updated_at desc").
+				Find(&transactions)
+	} else {
+		result = r.db.With(c).
+				Where("sender_id = ?", ID).
+				Or("receiver_id = ?", ID).
+				Where("is_public = ?", true).
+				Order("updated_at desc").
+				Find(&transactions)
+	}
 	return transactions, result.Error
 }
 

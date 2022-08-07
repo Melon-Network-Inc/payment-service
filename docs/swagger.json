@@ -216,6 +216,9 @@
                     "description": "currency code",
                     "type": "string"
                 },
+                "is_public": {
+                    "type": "boolean"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -247,6 +250,9 @@
                 "name"
             ],
             "properties": {
+                "is_public": {
+                    "type": "boolean"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -283,6 +289,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_public": {
+                    "type": "boolean"
                 },
                 "message": {
                     "description": "message should be less than 200 characters",
@@ -350,6 +359,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_public": {
+                    "type": "boolean"
                 },
                 "message": {
                     "description": "message should be less than 200 characters",
