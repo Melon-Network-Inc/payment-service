@@ -18,7 +18,7 @@ const docTemplate = `{
     "paths": {
         "/transaction": {
             "get": {
-                "description": "List all transactiones of an account",
+                "description": "List all transactiones by an account",
                 "consumes": [
                     "application/json"
                 ],
@@ -28,8 +28,8 @@ const docTemplate = `{
                 "tags": [
                     "transactions"
                 ],
-                "summary": "List all transactiones of an account",
-                "operationId": "list-transactions",
+                "summary": "List all transactiones by an account",
+                "operationId": "list-transactions-by-user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -45,7 +45,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/pkg_transaction.Transaction"
+                                "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                             }
                         }
                     },
@@ -82,7 +82,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -121,7 +121,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -158,7 +158,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -197,7 +197,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "404": {

@@ -151,7 +151,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -162,8 +162,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: List all transactiones of an account
-      operationId: list-transactions
+      description: List all transactiones by an account
+      operationId: list-transactions-by-user
       parameters:
       - description: Transaction ID
         in: path
@@ -177,11 +177,11 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/pkg_transaction.Transaction'
+              $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
             type: array
         "404":
           description: ""
-      summary: List all transactiones of an account
+      summary: List all transactiones by an account
       tags:
       - transactions
     post:
@@ -202,7 +202,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -228,7 +228,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -254,7 +254,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "404":
           description: ""
       summary: Get an transaction

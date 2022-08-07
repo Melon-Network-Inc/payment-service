@@ -9,7 +9,7 @@
     "paths": {
         "/transaction": {
             "get": {
-                "description": "List all transactiones of an account",
+                "description": "List all transactiones by an account",
                 "consumes": [
                     "application/json"
                 ],
@@ -19,8 +19,8 @@
                 "tags": [
                     "transactions"
                 ],
-                "summary": "List all transactiones of an account",
-                "operationId": "list-transactions",
+                "summary": "List all transactiones by an account",
+                "operationId": "list-transactions-by-user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -36,7 +36,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/pkg_transaction.Transaction"
+                                "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                             }
                         }
                     },
@@ -73,7 +73,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -112,7 +112,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -149,7 +149,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -188,7 +188,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "404": {
