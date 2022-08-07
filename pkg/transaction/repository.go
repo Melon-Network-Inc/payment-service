@@ -1,25 +1,24 @@
 package transaction
 
 import (
-	"context"
-
 	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
 	db "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	"github.com/gin-gonic/gin"
 )
 
 // Repository encapsulates the logic to access transactions from the data source.
 type Repository interface {
 	// Add creates the transaction.
-	Add(c context.Context, transaction entity.Transaction) (entity.Transaction, error)
+	Add(c *gin.Context, transaction entity.Transaction) (entity.Transaction, error)
 	// Get returns the transaction with the specified transaction ID.
-	Get(c context.Context, ID int) (entity.Transaction, error)
+	Get(c *gin.Context, ID int) (entity.Transaction, error)
 	// List returns the transaction associated to target user.
-	List(c context.Context, ID int) ([]entity.Transaction, error)
+	List(c *gin.Context, ID int) ([]entity.Transaction, error)
 	// Update returns the transaction with the specified transaction ID.
-	Update(c context.Context, transaction entity.Transaction) error
-	// Delete deletes the transaction with the specified ID.
-	Delete(c context.Context, ID int) (entity.Transaction, error)
+	Update(c *gin.Context, transaction entity.Transaction) error
+	// Delete deletes the transaction.
+	Delete(c *gin.Context, transaction entity.Transaction) error
 }
 
 // repository persists transactions in database
@@ -35,7 +34,7 @@ func NewRepository(db *db.DB, logger log.Logger) Repository {
 
 // Add creates the transaction.
 func (r repository) Add(
-	c context.Context,
+	c *gin.Context,
 	transaction entity.Transaction,
 ) (entity.Transaction, error) {
 	if result := r.db.With(c).Create(&transaction); result.Error != nil {
@@ -45,21 +44,25 @@ func (r repository) Add(
 }
 
 // Get reads the transaction with the specified ID from the database.
-func (r repository) Get(c context.Context, ID int) (entity.Transaction, error) {
+func (r repository) Get(c *gin.Context, ID int) (entity.Transaction, error) {
 	var transaction entity.Transaction
 	result := r.db.With(c).First(&transaction, ID)
 	return transaction, result.Error
 }
 
 // Lists lists all transactions.
-func (r repository) List(c context.Context, ID int) ([]entity.Transaction, error) {
+func (r repository) List(c *gin.Context, ID int) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
-	result := r.db.With(c).Find(&transactions, ID)
+	result := r.db.With(c).
+			Where("sender_id = ?", ID).
+			Or("receiver_id = ?", ID).
+			Order("updated_at desc").
+			Find(&transactions)
 	return transactions, result.Error
 }
 
 // Update updates the transaction with the specified transaction ID.
-func (r repository) Update(c context.Context, transaction entity.Transaction) error {
+func (r repository) Update(c *gin.Context, transaction entity.Transaction) error {
 	if result := r.db.With(c).First(&transaction, transaction.ID); result.Error != nil {
 		return result.Error
 	}
@@ -67,10 +70,6 @@ func (r repository) Update(c context.Context, transaction entity.Transaction) er
 }
 
 // Delete deletes the transaction with the specified ID.
-func (r repository) Delete(c context.Context, ID int) (entity.Transaction, error) {
-	transaction, err := r.Get(c, ID)
-	if err != nil {
-		return entity.Transaction{}, err
-	}
-	return transaction, r.db.With(c).Delete(&transaction).Error
+func (r repository) Delete(c *gin.Context, transaction entity.Transaction) error {
+	return r.db.With(c).Delete(&transaction).Error
 }

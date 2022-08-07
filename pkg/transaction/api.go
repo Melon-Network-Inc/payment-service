@@ -14,6 +14,7 @@ func RegisterHandlers(r *gin.RouterGroup, service Service, logger log.Logger) {
 	routes := r.Group("/transactions")
 	routes.POST("/", res.AddTransaction)
 	routes.GET("/", res.GetAllTransactions)
+	routes.GET("/user/:id", res.GetAllTransactionsByUser)
 	routes.GET("/:id", res.GetTransaction)
 	routes.PUT("/:id", res.UpdateTransaction)
 	routes.DELETE("/:id", res.DeleteTransaction)
@@ -73,8 +74,8 @@ func (r resource) GetTransaction(c *gin.Context) {
 }
 
 // GetAllTransactions    godoc
-// @Summary      List all transactiones of an account
-// @Description  List all transactiones of an account
+// @Summary      List all transactiones of requester
+// @Description  List all transactiones of requester
 // @ID           list-transactions
 // @Tags         transactions
 // @Param id path int true "Transaction ID"
@@ -85,6 +86,27 @@ func (r resource) GetTransaction(c *gin.Context) {
 // @Router       /transaction [get]
 func (r resource) GetAllTransactions(c *gin.Context) {
 	transactions, err := r.service.List(c)
+	if err != nil {
+		c.AbortWithError(http.StatusNotFound, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, &transactions)
+}
+
+// GetAllTransactionsByUser    godoc
+// @Summary      List all transactiones by an account
+// @Description  List all transactiones by an account
+// @ID           list-transactions-by-user
+// @Tags         transactions
+// @Param id path int true "Transaction ID"
+// @Accept       json
+// @Produce      json
+// @Success      200 {array} Transaction
+// @Failure      404
+// @Router       /transaction [get]
+func (r resource) GetAllTransactionsByUser(c *gin.Context) {
+	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)
 		return

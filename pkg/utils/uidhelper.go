@@ -13,3 +13,11 @@ func Int64(id string) (int64, error) {
 func Int(id string) (int, error) {
 	return strconv.Atoi(id)
 }
+
+func Uint(id string) (uint, error) {
+	ID, err := strconv.Atoi(id)
+	if err != nil {
+		return uint(0), err
+	}
+	return uint(ID), nil
+}
