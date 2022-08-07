@@ -159,7 +159,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -185,7 +185,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+              $ref: '#/definitions/pkg_transaction.Transaction'
             type: array
         "404":
           description: ""
@@ -210,7 +210,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -236,7 +236,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -262,7 +262,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
+            $ref: '#/definitions/pkg_transaction.Transaction'
         "404":
           description: ""
       summary: Get an transaction
