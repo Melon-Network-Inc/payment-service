@@ -645,8 +645,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_entity_repo",
         importpath = "github.com/Melon-Network-Inc/entity-repo",
-        sum = "h1:gqfzDfxRyu1JOvestmCzny23Yn1udyb6j7mfQ/i8BTU=",
-        version = "v1.0.9",
+        sum = "h1:r4A1kU3EwIiRwvuN597gqzqKxJm5xySIND7EvLTWBfw=",
+        version = "v1.0.30",
     )
     go_repository(
         name = "com_github_mitchellh_go_homedir",
@@ -1047,8 +1047,8 @@ def go_dependencies():
     go_repository(
         name = "io_gorm_driver_postgres",
         importpath = "gorm.io/driver/postgres",
-        sum = "h1:FKF6sIMDHDEvvMF/XJvbnCl0nu6KSKUaPXevJ4r+VYQ=",
-        version = "v1.3.7",
+        sum = "h1:8bEphSAB69t3odsCR4NDzt581iZEWQuRM27Cg6KgfPY=",
+        version = "v1.3.8",
     )
     go_repository(
         name = "io_gorm_gorm",

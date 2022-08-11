@@ -44,7 +44,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (Transacti
 		return Transaction{}, err
 	}
 
-	ownerID, err := utils.Uint(processor.GetUserID(ctx))
+	ownerID, err := utils.Int(processor.GetUserID(ctx))
 	if err != nil {
 		return Transaction{}, err
 	}
@@ -61,7 +61,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (Transacti
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
 		ReceiverPubkey: req.ReceiverPubkey,
-		IsPublic: 		req.IsPublic,
+		IsPublic:       req.IsPublic,
 		Message:        req.Message,
 	})
 	if err != nil {
@@ -134,9 +134,15 @@ func (s service) Update(
 		return Transaction{}, errors.New(NotAllowOperation)
 	}
 
-	transaction.Name = input.Name
-	transaction.Status = input.Status
-	transaction.Message = input.Message
+	if input.Name != "" {
+		transaction.Name = input.Name
+	}
+	if input.Message != "" {
+		transaction.Status = input.Message
+	}
+	if input.Status != "" {
+		transaction.Status = input.Status
+	}
 	transaction.IsPublic = input.IsPublic
 
 	if err := s.repo.Update(ctx, transaction); err != nil {
@@ -173,5 +179,5 @@ func (s service) Delete(ctx *gin.Context, ID string) (Transaction, error) {
 }
 
 func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
-	return transaction.SenderId != uint(ownerID) && transaction.ReceiverId != uint(ownerID)
+	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
 }

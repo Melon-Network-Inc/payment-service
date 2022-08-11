@@ -13,9 +13,9 @@ func RegisterHandlers(r *gin.RouterGroup, service Service, logger log.Logger) {
 
 	routes := r.Group("/transactions")
 	routes.POST("/", res.AddTransaction)
-	routes.GET("/", res.GetAllTransactions)
 	routes.GET("/user/:id", res.GetAllTransactionsByUser)
 	routes.GET("/:id", res.GetTransaction)
+	routes.GET("/", res.GetAllTransactions)
 	routes.PUT("/:id", res.UpdateTransaction)
 	routes.DELETE("/:id", res.DeleteTransaction)
 }
@@ -54,8 +54,8 @@ func (r resource) AddTransaction(c *gin.Context) {
 }
 
 // GetTransaction    godoc
-// @Summary      Get an transaction
-// @Description  Get an transaction
+// @Summary      Get a transaction
+// @Description  Get a transaction
 // @ID           get-transaction
 // @Tags         transactions
 // @Param id path int true "Transaction ID"

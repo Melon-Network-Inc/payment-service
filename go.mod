@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/entity-repo v1.0.12
+require github.com/Melon-Network-Inc/entity-repo v1.0.30
 
 require (
 	github.com/google/uuid v1.3.0
@@ -76,6 +76,6 @@ require (
 	github.com/swaggo/gin-swagger v1.5.1
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	gorm.io/driver/postgres v1.3.7
+	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8
 )
