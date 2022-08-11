@@ -36,7 +36,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/pkg_transaction.Transaction"
+                                "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                             }
                         }
                     },
@@ -73,7 +73,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -112,7 +112,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -149,7 +149,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "400": {
@@ -163,7 +163,7 @@
         },
         "/transaction/{id}": {
             "get": {
-                "description": "Get an transaction",
+                "description": "Get a transaction",
                 "consumes": [
                     "application/json"
                 ],
@@ -173,7 +173,7 @@
                 "tags": [
                     "transactions"
                 ],
-                "summary": "Get an transaction",
+                "summary": "Get a transaction",
                 "operationId": "get-transaction",
                 "parameters": [
                     {
@@ -188,7 +188,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pkg_transaction.Transaction"
+                            "$ref": "#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction"
                         }
                     },
                     "404": {
@@ -204,23 +204,21 @@
             "required": [
                 "amount",
                 "currency",
-                "name",
-                "receiver_pk",
-                "sender_pk"
+                "name"
             ],
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "currency": {
-                    "description": "currency code",
                     "type": "string"
                 },
                 "is_public": {
                     "type": "boolean"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 200
                 },
                 "name": {
                     "type": "string"
@@ -229,15 +227,13 @@
                     "type": "integer"
                 },
                 "receiver_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "sender_id": {
                     "type": "integer"
                 },
                 "sender_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
@@ -254,7 +250,8 @@
                     "type": "boolean"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 200
                 },
                 "name": {
                     "type": "string"
@@ -275,13 +272,12 @@
             ],
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "createdAt": {
                     "type": "string"
                 },
                 "currency": {
-                    "description": "currency code",
                     "type": "string"
                 },
                 "deletedAt": {
@@ -294,8 +290,8 @@
                     "type": "boolean"
                 },
                 "message": {
-                    "description": "message should be less than 200 characters",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 200
                 },
                 "name": {
                     "type": "string"
@@ -304,15 +300,13 @@
                     "type": "integer"
                 },
                 "receiver_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "sender_id": {
                     "type": "integer"
                 },
                 "sender_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
@@ -345,13 +339,12 @@
             ],
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "createdAt": {
                     "type": "string"
                 },
                 "currency": {
-                    "description": "currency code",
                     "type": "string"
                 },
                 "deletedAt": {
@@ -364,8 +357,8 @@
                     "type": "boolean"
                 },
                 "message": {
-                    "description": "message should be less than 200 characters",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 200
                 },
                 "name": {
                     "type": "string"
@@ -374,15 +367,13 @@
                     "type": "integer"
                 },
                 "receiver_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "sender_id": {
                     "type": "integer"
                 },
                 "sender_pk": {
-                    "description": "ETH or BTC address",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"

@@ -2,40 +2,37 @@ definitions:
   api.AddTransactionRequest:
     properties:
       amount:
-        type: integer
+        type: number
       currency:
-        description: currency code
         type: string
       is_public:
         type: boolean
       message:
+        maxLength: 200
         type: string
       name:
         type: string
       receiver_id:
         type: integer
       receiver_pk:
-        description: ETH or BTC address
-        type: integer
+        type: string
       sender_id:
         type: integer
       sender_pk:
-        description: ETH or BTC address
-        type: integer
+        type: string
       status:
         type: string
     required:
     - amount
     - currency
     - name
-    - receiver_pk
-    - sender_pk
     type: object
   api.UpdateTransactionRequest:
     properties:
       is_public:
         type: boolean
       message:
+        maxLength: 200
         type: string
       name:
         type: string
@@ -47,11 +44,10 @@ definitions:
   github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction:
     properties:
       amount:
-        type: integer
+        type: number
       createdAt:
         type: string
       currency:
-        description: currency code
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
@@ -60,20 +56,18 @@ definitions:
       is_public:
         type: boolean
       message:
-        description: message should be less than 200 characters
+        maxLength: 200
         type: string
       name:
         type: string
       receiver_id:
         type: integer
       receiver_pk:
-        description: ETH or BTC address
-        type: integer
+        type: string
       sender_id:
         type: integer
       sender_pk:
-        description: ETH or BTC address
-        type: integer
+        type: string
       status:
         type: string
       updatedAt:
@@ -96,11 +90,10 @@ definitions:
   pkg_transaction.Transaction:
     properties:
       amount:
-        type: integer
+        type: number
       createdAt:
         type: string
       currency:
-        description: currency code
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
@@ -109,20 +102,18 @@ definitions:
       is_public:
         type: boolean
       message:
-        description: message should be less than 200 characters
+        maxLength: 200
         type: string
       name:
         type: string
       receiver_id:
         type: integer
       receiver_pk:
-        description: ETH or BTC address
-        type: integer
+        type: string
       sender_id:
         type: integer
       sender_pk:
-        description: ETH or BTC address
-        type: integer
+        type: string
       status:
         type: string
       updatedAt:
@@ -159,7 +150,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -185,7 +176,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/pkg_transaction.Transaction'
+              $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
             type: array
         "404":
           description: ""
@@ -210,7 +201,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -236,7 +227,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "400":
           description: ""
         "404":
@@ -248,7 +239,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get an transaction
+      description: Get a transaction
       operationId: get-transaction
       parameters:
       - description: Transaction ID
@@ -262,10 +253,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pkg_transaction.Transaction'
+            $ref: '#/definitions/github.com_Melon-Network-Inc_payment-service_pkg_transaction.Transaction'
         "404":
           description: ""
-      summary: Get an transaction
+      summary: Get a transaction
       tags:
       - transactions
 swagger: "2.0"
