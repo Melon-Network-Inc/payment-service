@@ -68,7 +68,7 @@ require (
 require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-ozzo/ozzo-routing/v2 v2.4.0
-	github.com/go-redis/redis/v9 v9.0.0-beta.1
+	github.com/go-redis/redis/v9 v9.0.0-beta.1 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.8.0
@@ -76,6 +76,6 @@ require (
 	github.com/swaggo/gin-swagger v1.5.1
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	gorm.io/driver/postgres v1.3.8
+	gorm.io/driver/postgres v1.3.8 // indirect
 	gorm.io/gorm v1.23.8
 )
