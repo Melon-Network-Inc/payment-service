@@ -50,6 +50,8 @@ github.com/Melon-Network-Inc/entity-repo v1.0.12 h1:4CFjTuExDjQGw84uCHWf1Ca7RJaP
 github.com/Melon-Network-Inc/entity-repo v1.0.12/go.mod h1:jYQOH4F/v2+S4twYcp8Za0q2pxHUBCBpf34WtgryqPE=
 github.com/Melon-Network-Inc/entity-repo v1.0.30 h1:r4A1kU3EwIiRwvuN597gqzqKxJm5xySIND7EvLTWBfw=
 github.com/Melon-Network-Inc/entity-repo v1.0.30/go.mod h1:h32lJaHG6ZQ//BoZqR1ztQGerjGYK8byFRlOB/+tov8=
+github.com/Melon-Network-Inc/entity-repo v1.1.1 h1:rj6fOhIwKR5tgsPw8JzV6uSBHAUuKMouQXY7aAoyOjs=
+github.com/Melon-Network-Inc/entity-repo v1.1.1/go.mod h1:h32lJaHG6ZQ//BoZqR1ztQGerjGYK8byFRlOB/+tov8=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=

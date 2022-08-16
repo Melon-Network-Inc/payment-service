@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/entity-repo v1.0.30
+require github.com/Melon-Network-Inc/entity-repo v1.1.1
 
 require (
 	github.com/google/uuid v1.3.0
