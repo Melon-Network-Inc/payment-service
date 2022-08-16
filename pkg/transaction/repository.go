@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
-	db "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext"
+	db "github.com/Melon-Network-Inc/entity-repo/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

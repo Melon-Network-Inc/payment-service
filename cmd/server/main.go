@@ -8,8 +8,8 @@ import (
 	"context"
 	"os"
 
+	dbcontext "github.com/Melon-Network-Inc/entity-repo/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/payment-service/docs"
-	dbcontext "github.com/Melon-Network-Inc/payment-service/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 	"github.com/gin-gonic/gin"
