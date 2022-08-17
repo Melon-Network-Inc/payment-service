@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "The MelonWallet microservice responsible for dealing with payment and crypto transaction information.",
-        "title": "Payment Service",
+        "description": "",
+        "title": "",
         "contact": {},
         "version": "1.0"
     },
