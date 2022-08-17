@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
-	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -106,7 +106,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Failure      404
 // @Router       /transaction [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
-	transactions, err := r.service.ListByUser(c, c.Param("id"), false)
+	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)
 		return

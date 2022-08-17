@@ -8,10 +8,15 @@ import (
 	"context"
 	"os"
 
+	"github.com/Melon-Network-Inc/account-service/pkg/friend"
+	"github.com/Melon-Network-Inc/account-service/pkg/user"
+
 	dbcontext "github.com/Melon-Network-Inc/entity-repo/pkg/dbcontext"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
+
 	"github.com/Melon-Network-Inc/payment-service/docs"
-	"github.com/Melon-Network-Inc/payment-service/pkg/log"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 
@@ -61,8 +66,10 @@ func main() {
 
 func buildHandlers(router *gin.RouterGroup, db *dbcontext.DB, cache *dbcontext.Cache, logger log.Logger) {
 	transactionrRepo := transaction.NewRepository(db, logger)
+	userRepo 	     := user.NewRepository(db, cache, logger)
+	friendRepo  	 := friend.NewRepository(db, logger)
 
-	transactionService := transaction.NewService(transactionrRepo, logger)
+	transactionService := transaction.NewService(transactionrRepo, userRepo, friendRepo, logger)
 
 	v1 := router.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, logger)

@@ -10,13 +10,15 @@ go_library(
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/transaction",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/log",
         "//pkg/processor",
         "//pkg/utils",
         "@com_github_gin_gonic_gin//:gin",
+        "@com_github_melon_network_inc_account_service//pkg/friend",
+        "@com_github_melon_network_inc_account_service//pkg/user",
         "@com_github_melon_network_inc_entity_repo//pkg/api",
         "@com_github_melon_network_inc_entity_repo//pkg/dbcontext",
         "@com_github_melon_network_inc_entity_repo//pkg/entity",
+        "@com_github_melon_network_inc_entity_repo//pkg/log",
         "@io_gorm_gorm//:gorm",
     ],
 )
