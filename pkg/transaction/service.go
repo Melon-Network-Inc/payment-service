@@ -15,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const NotAllowOperation = "cannot delete transaction record from the user who is not related to this transaction"
+const NotAllowOperation = "requester does not have right access to change target resource"
 
 // Service encapsulates usecase logic for transactions.
 type Service interface {
