@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/go-ozzo/ozzo-routing/v2/access"
 )

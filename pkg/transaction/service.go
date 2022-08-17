@@ -3,9 +3,13 @@ package transaction
 import (
 	"errors"
 
+	"github.com/Melon-Network-Inc/account-service/pkg/friend"
+	"github.com/Melon-Network-Inc/account-service/pkg/user"
+
 	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
 	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
-	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
+
 	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -18,7 +22,8 @@ type Service interface {
 	Add(ctx *gin.Context, input api.AddTransactionRequest) (Transaction, error)
 	Get(c *gin.Context, ID string) (Transaction, error)
 	List(ctx *gin.Context) ([]Transaction, error)
-	ListByUser(ctx *gin.Context, ID string, showPrivate bool) ([]Transaction, error)
+	ListByUser(ctx *gin.Context, ID string) ([]Transaction, error)
+	ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]Transaction, error)
 	Update(ctx *gin.Context, ID string, input api.UpdateTransactionRequest) (Transaction, error)
 	Delete(ctx *gin.Context, ID string) (Transaction, error)
 }
@@ -29,13 +34,19 @@ type Transaction struct {
 }
 
 type service struct {
-	repo   Repository
-	logger log.Logger
+	transactionRepo Repository
+    userRepo		user.Repository
+    friendRepo		friend.Repository
+	logger 			log.Logger
 }
 
 // NewService creates a new transaction service.
-func NewService(repo Repository, logger log.Logger) Service {
-	return service{repo, logger}
+func NewService(
+	transactionRepo Repository, 
+	userRepo user.Repository, 
+	friendRepo friend.Repository, 
+	logger log.Logger) Service {
+	return service{transactionRepo, userRepo, friendRepo, logger}
 }
 
 // Create creates a new transaction.
@@ -52,7 +63,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (Transacti
 		return Transaction{}, errors.New(NotAllowOperation)
 	}
 
-	transaction, err := s.repo.Add(ctx, entity.Transaction{
+	transaction, err := s.transactionRepo.Add(ctx, entity.Transaction{
 		Name:           req.Name,
 		Status:         req.Status,
 		Amount:         req.Amount,
@@ -61,7 +72,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (Transacti
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
 		ReceiverPubkey: req.ReceiverPubkey,
-		IsPublic:       req.IsPublic,
+		ShowType:       req.ShowType,
 		Message:        req.Message,
 	})
 	if err != nil {
@@ -76,26 +87,63 @@ func (s service) Get(ctx *gin.Context, ID string) (Transaction, error) {
 	if err != nil {
 		return Transaction{}, err
 	}
-	transaction, err := s.repo.Get(ctx, uid)
+	transaction, err := s.transactionRepo.Get(ctx, uid)
 	if err != nil {
 		return Transaction{}, err
 	}
 	return Transaction{transaction}, nil
 }
 
-// Get returns the a list of transactions associated to the requester.
+// List returns the a list of transactions associated to the requester.
 func (s service) List(ctx *gin.Context) ([]Transaction, error) {
-	return s.ListByUser(ctx, processor.GetUserID(ctx), true)
+	return s.ListByUserWithShowType(ctx, processor.GetUserID(ctx), "Private")
+}
+
+// ListByUser returns the a list of transactions associated to target user depending on requester's relation.
+func (s service) ListByUser(ctx *gin.Context, ID string) ([]Transaction, error) {
+	userID := processor.GetUserID(ctx)
+	if userID == "" {
+		return []Transaction{}, errors.New("missing request user information")
+	}
+	if userID == ID {
+		return s.List(ctx)
+	}
+
+	requesterID, err := utils.Uint64(userID)
+	if err != nil {
+		return []Transaction{}, err
+	}
+	requestUser, err := s.userRepo.Get(ctx, requesterID)
+
+	otherID, err := utils.Uint64(ID)
+	if err != nil {
+		return []Transaction{}, err
+	}
+	otherUser, err := s.userRepo.Get(ctx, otherID)
+	if err != nil {
+		return []Transaction{}, err
+	}
+
+	showType := "Public"
+	exists, err := s.friendRepo.HasRelationByBothUsers(ctx, requestUser, otherUser)
+	if err != nil {
+		return []Transaction{}, err
+	}
+	if exists {
+		showType = "Friend"
+	}
+
+	return s.ListByUserWithShowType(ctx, ID, showType)
 }
 
 // Get returns the a list of transactions associated to a user.
-func (s service) ListByUser(ctx *gin.Context, ID string, showPrivate bool) ([]Transaction, error) {
+func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]Transaction, error) {
 	userID, err := utils.Int(ID)
 	if err != nil {
 		return []Transaction{}, err
 	}
 
-	transaction, err := s.repo.List(ctx, userID, showPrivate)
+	transaction, err := s.transactionRepo.List(ctx, userID, showType)
 	if err != nil {
 		return []Transaction{}, err
 	}
@@ -121,7 +169,7 @@ func (s service) Update(
 		return Transaction{}, err
 	}
 
-	transaction, err := s.repo.Get(ctx, UID)
+	transaction, err := s.transactionRepo.Get(ctx, UID)
 	if err != nil {
 		return Transaction{}, err
 	}
@@ -143,9 +191,11 @@ func (s service) Update(
 	if input.Status != "" {
 		transaction.Status = input.Status
 	}
-	transaction.IsPublic = input.IsPublic
+	if input.ShowType != "" {
+		transaction.ShowType = input.ShowType
+	}
 
-	if err := s.repo.Update(ctx, transaction); err != nil {
+	if err := s.transactionRepo.Update(ctx, transaction); err != nil {
 		return Transaction{}, err
 	}
 	return Transaction{transaction}, nil
@@ -158,7 +208,7 @@ func (s service) Delete(ctx *gin.Context, ID string) (Transaction, error) {
 		return Transaction{}, err
 	}
 
-	transaction, err := s.repo.Get(ctx, uid)
+	transaction, err := s.transactionRepo.Get(ctx, uid)
 	if err != nil {
 		return Transaction{}, err
 	}
@@ -171,7 +221,7 @@ func (s service) Delete(ctx *gin.Context, ID string) (Transaction, error) {
 		return Transaction{}, errors.New(NotAllowOperation)
 	}
 
-	err = s.repo.Delete(ctx, transaction)
+	err = s.transactionRepo.Delete(ctx, transaction)
 	if err != nil {
 		return Transaction{}, err
 	}

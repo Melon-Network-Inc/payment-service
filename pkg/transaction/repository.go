@@ -1,9 +1,9 @@
 package transaction
 
 import (
-	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
 	db "github.com/Melon-Network-Inc/entity-repo/pkg/dbcontext"
-	"github.com/Melon-Network-Inc/payment-service/pkg/log"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
+	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -15,7 +15,7 @@ type Repository interface {
 	// Get returns the transaction with the specified transaction ID.
 	Get(c *gin.Context, ID int) (entity.Transaction, error)
 	// List returns the transaction associated to target user.
-	List(c *gin.Context, ID int, showPrivate bool) ([]entity.Transaction, error)
+	List(c *gin.Context, ID int, showType string) ([]entity.Transaction, error)
 	// Update returns the transaction with the specified transaction ID.
 	Update(c *gin.Context, transaction entity.Transaction) error
 	// Delete deletes the transaction.
@@ -51,25 +51,30 @@ func (r repository) Get(c *gin.Context, ID int) (entity.Transaction, error) {
 	return transaction, result.Error
 }
 
-// Lists lists all transactions.
-func (r repository) List(c *gin.Context, ID int, showPrivate bool) ([]entity.Transaction, error) {
+// Lists lists all transactions by show_type.
+func (r repository) List(c *gin.Context, ID int, showType string) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
 	var result *gorm.DB
-	if showPrivate {
-		result = r.db.With(c).
-				Where("sender_id = ?", ID).
-				Or("receiver_id = ?", ID).
-				Order("updated_at desc").
-				Find(&transactions)
-	} else {
-		result = r.db.With(c).
-				Where("sender_id = ?", ID).
-				Or("receiver_id = ?", ID).
-				Where("is_public = ?", true).
-				Order("updated_at desc").
-				Find(&transactions)
-	}
+	tx := r.db.With(c).
+			Where("sender_id = ?", ID).
+			Or("receiver_id = ?", ID).
+			Order("updated_at desc")
+
+	tx = updateTransactionByShowType(showType, tx, transactions)
+	result = tx.Find(&transactions)
 	return transactions, result.Error
+}
+
+func updateTransactionByShowType(showType string, tx *gorm.DB, transactions []entity.Transaction) *gorm.DB {
+	if showType == "Prviate" {
+		tx = tx.Find(&transactions)
+	} else if showType == "Friend" {
+		tx = tx.Where("show_type = ?", "Friend").
+			Or("show_type = ?", "Public")
+	} else {
+		tx = tx.Where("show_type = ?", "Public")
+	}
+	return tx
 }
 
 // Update updates the transaction with the specified transaction ID.
