@@ -2,12 +2,12 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/entity-repo v1.1.6
+require github.com/Melon-Network-Inc/entity-repo v1.1.7
 
 require (
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/swaggo/swag v1.8.3
-	go.uber.org/zap v1.22.0
+	go.uber.org/zap v1.22.0 // indirect
 )
 
 require (

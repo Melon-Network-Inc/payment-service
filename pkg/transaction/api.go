@@ -33,7 +33,7 @@ type resource struct {
 // @Param transaction body api.AddTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
-// @Success      201 {object} Transaction
+// @Success      201 {object} api.TransactionResponse
 // @Failure      400
 // @Failure      404
 // @Router       /transaction [post]
@@ -61,7 +61,7 @@ func (r resource) AddTransaction(c *gin.Context) {
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json
-// @Success      200 {object} Transaction
+// @Success      200 {object} api.TransactionResponse
 // @Failure      404
 // @Router       /transaction/{id} [get]
 func (r resource) GetTransaction(c *gin.Context) {
@@ -81,7 +81,7 @@ func (r resource) GetTransaction(c *gin.Context) {
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json
-// @Success      200 {array} Transaction
+// @Success      200 {array} api.TransactionResponse
 // @Failure      404
 // @Router       /transaction [get]
 func (r resource) GetAllTransactions(c *gin.Context) {
@@ -102,7 +102,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json
-// @Success      200 {array} Transaction
+// @Success      200 {array} api.TransactionResponse
 // @Failure      404
 // @Router       /transaction [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
@@ -123,7 +123,7 @@ func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 // @Param transaction body api.UpdateTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
-// @Success      200 {object} Transaction
+// @Success      200 {object} api.TransactionResponse
 // @Failure      400
 // @Failure      404
 // @Router       /transaction [put]
@@ -152,7 +152,7 @@ func (r resource) UpdateTransaction(c *gin.Context) {
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json
-// @Success      200 {object} Transaction
+// @Success      200 {object} api.TransactionResponse
 // @Failure      400
 // @Failure      404
 // @Router       /transaction [delete]
