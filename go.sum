@@ -46,6 +46,8 @@ github.com/Melon-Network-Inc/account-service v0.0.0-20220819063005-5e0b6e754239 
 github.com/Melon-Network-Inc/account-service v0.0.0-20220819063005-5e0b6e754239/go.mod h1:zr8pg+I6bgExfns8jo3uYYB7xGCS5yAfN37BE1RMDh0=
 github.com/Melon-Network-Inc/common v1.0.0 h1:YOGVpBDHjDg/mnK0069CUtrEo9It1povZzjPAm+w9uY=
 github.com/Melon-Network-Inc/common v1.0.0/go.mod h1:tXj4oVHwgq/j3go9jO1DBYMXDsZWReWzJ171Z2gO3TA=
+github.com/Melon-Network-Inc/common v1.0.1 h1:8Xc8YRCEiSZcUgAwdDAyXEF2nswbR9ciiccsT1csyX0=
+github.com/Melon-Network-Inc/common v1.0.1/go.mod h1:tXj4oVHwgq/j3go9jO1DBYMXDsZWReWzJ171Z2gO3TA=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
