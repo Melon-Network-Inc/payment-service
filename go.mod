@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/entity-repo v1.1.8
+require github.com/Melon-Network-Inc/common v1.0.0
 
 require (
 	github.com/google/uuid v1.3.0 // indirect
@@ -12,7 +12,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Melon-Network-Inc/account-service v0.0.0-20220817070453-b32a42f39aa7
+	github.com/Melon-Network-Inc/account-service v0.0.0-20220819063005-5e0b6e754239
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect

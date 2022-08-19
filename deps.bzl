@@ -652,16 +652,16 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_account_service",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:JeBrwEmHaiihhvGOPEXm7/GyIUiCHZbb6d9TNoeyDvg=",
-        version = "v0.0.0-20220817070453-b32a42f39aa7",
+        sum = "h1:/UM2bOKYOC8IpLMEY8N6uvRaKF5RruniBHr/Hg7n2vs=",
+        version = "v0.0.0-20220819063005-5e0b6e754239",
+    )
+    go_repository(
+        name = "com_github_melon_network_inc_common",
+        importpath = "github.com/Melon-Network-Inc/common",
+        sum = "h1:YOGVpBDHjDg/mnK0069CUtrEo9It1povZzjPAm+w9uY=",
+        version = "v1.0.0",
     )
 
-    go_repository(
-        name = "com_github_melon_network_inc_entity_repo",
-        importpath = "github.com/Melon-Network-Inc/entity-repo",
-        sum = "h1:SZEE3nQGbbvOpL9W3TEf9V5gQA57IDL74dYTCh4LsfY=",
-        version = "v1.1.8",
-    )
     go_repository(
         name = "com_github_mitchellh_go_homedir",
         importpath = "github.com/mitchellh/go-homedir",

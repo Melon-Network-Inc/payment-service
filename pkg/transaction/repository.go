@@ -1,9 +1,9 @@
 package transaction
 
 import (
-	db "github.com/Melon-Network-Inc/entity-repo/pkg/dbcontext"
-	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
-	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
+	db "github.com/Melon-Network-Inc/common/pkg/dbcontext"
+	"github.com/Melon-Network-Inc/common/pkg/entity"
+	"github.com/Melon-Network-Inc/common/pkg/log"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
