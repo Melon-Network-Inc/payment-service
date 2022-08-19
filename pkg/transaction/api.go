@@ -3,8 +3,8 @@ package transaction
 import (
 	"net/http"
 
-	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
-	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
+	"github.com/Melon-Network-Inc/common/pkg/api"
+	"github.com/Melon-Network-Inc/common/pkg/log"
 	"github.com/gin-gonic/gin"
 )
 

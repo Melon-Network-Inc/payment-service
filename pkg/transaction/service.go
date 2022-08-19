@@ -6,9 +6,9 @@ import (
 	"github.com/Melon-Network-Inc/account-service/pkg/friend"
 	"github.com/Melon-Network-Inc/account-service/pkg/user"
 
-	"github.com/Melon-Network-Inc/entity-repo/pkg/api"
-	"github.com/Melon-Network-Inc/entity-repo/pkg/entity"
-	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
+	"github.com/Melon-Network-Inc/common/pkg/api"
+	"github.com/Melon-Network-Inc/common/pkg/entity"
+	"github.com/Melon-Network-Inc/common/pkg/log"
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"

@@ -11,8 +11,8 @@ import (
 	"github.com/Melon-Network-Inc/account-service/pkg/friend"
 	"github.com/Melon-Network-Inc/account-service/pkg/user"
 
-	dbcontext "github.com/Melon-Network-Inc/entity-repo/pkg/dbcontext"
-	"github.com/Melon-Network-Inc/entity-repo/pkg/log"
+	dbcontext "github.com/Melon-Network-Inc/common/pkg/dbcontext"
+	"github.com/Melon-Network-Inc/common/pkg/log"
 
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
