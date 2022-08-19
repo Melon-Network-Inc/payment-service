@@ -658,8 +658,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_common",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:8Xc8YRCEiSZcUgAwdDAyXEF2nswbR9ciiccsT1csyX0=",
-        version = "v1.0.1",
+        sum = "h1:zBYA/ykgraAtC7owD0TBRIHMGGLqYH+4Vu6cITeUftY=",
+        version = "v1.0.3",
     )
 
     go_repository(
@@ -686,6 +686,13 @@ def go_dependencies():
         sum = "h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=",
         version = "v1.0.2",
     )
+    go_repository(
+        name = "com_github_natefinch_lumberjack",
+        importpath = "github.com/natefinch/lumberjack",
+        sum = "h1:4QJd3OLAMgj7ph+yZTuX13Ld4UpgHp07nNdFX7mqFfM=",
+        version = "v2.0.0+incompatible",
+    )
+
     go_repository(
         name = "com_github_niemeyer_pretty",
         importpath = "github.com/niemeyer/pretty",
@@ -1035,6 +1042,13 @@ def go_dependencies():
         sum = "h1:SsAcf+mM7mRZo2nJNGt8mZCjG8ZRaNGMURJw7BsIST4=",
         version = "v1.66.4",
     )
+    go_repository(
+        name = "in_gopkg_natefinch_lumberjack_v2",
+        importpath = "gopkg.in/natefinch/lumberjack.v2",
+        sum = "h1:1Lc07Kr7qY4U2YPouBjpCLxpiyxIVoxqXgkXLknAOE8=",
+        version = "v2.0.0",
+    )
+
     go_repository(
         name = "in_gopkg_tomb_v1",
         importpath = "gopkg.in/tomb.v1",

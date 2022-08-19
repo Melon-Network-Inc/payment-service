@@ -25,6 +25,7 @@ import (
 )
 
 // Version indicates the current version of the application.
+var ServiceName = "payment-service"
 var Version = "1.0.0"
 var swagHandler gin.HandlerFunc
 
@@ -34,8 +35,7 @@ func init() {
 
 func main() {
 	// create root logger tagged with server version
-	logger := log.New().With(context.Background(), "version", Version)
-	logger.Info("Payment Service Started")
+	logger := log.New(ServiceName).With(context.Background(), "version", Version)
 
 	viper.SetConfigFile("./pkg/envs/.env")
 
