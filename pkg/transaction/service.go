@@ -73,7 +73,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 	if err != nil {
 		return api.TransactionResponse{}, err
 	}
-	return api.TransactionResponse{transaction}, nil
+	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
@@ -86,7 +86,7 @@ func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, erro
 	if err != nil {
 		return api.TransactionResponse{}, err
 	}
-	return api.TransactionResponse{transaction}, nil
+	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
 // List returns the a list of transactions associated to the requester.
@@ -109,6 +109,9 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 		return []api.TransactionResponse{}, err
 	}
 	requestUser, err := s.userRepo.Get(ctx, requesterID)
+	if err != nil {
+		return []api.TransactionResponse{}, err
+	}
 
 	otherID, err := utils.Uint64(ID)
 	if err != nil {
@@ -144,7 +147,7 @@ func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType st
 	}
 	listTransaction := []api.TransactionResponse{}
 	for _, transaction := range transaction {
-		listTransaction = append(listTransaction, api.TransactionResponse{transaction})
+		listTransaction = append(listTransaction, api.TransactionResponse{Transaction : transaction})
 	}
 	return listTransaction, nil
 }
@@ -193,7 +196,7 @@ func (s service) Update(
 	if err := s.transactionRepo.Update(ctx, transaction); err != nil {
 		return api.TransactionResponse{}, err
 	}
-	return api.TransactionResponse{transaction}, nil
+	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
 // Delete deletes the transaction with the specified ID.
@@ -220,7 +223,7 @@ func (s service) Delete(ctx *gin.Context, ID string) (api.TransactionResponse, e
 	if err != nil {
 		return api.TransactionResponse{}, err
 	}
-	return api.TransactionResponse{transaction}, nil
+	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
 func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
