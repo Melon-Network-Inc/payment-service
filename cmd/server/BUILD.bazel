@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/Melon-Network-Inc/payment-service/cmd/server",
     visibility = ["//visibility:private"],
     deps = [
+        "//config",
         "//docs",
         "//pkg/transaction",
         "@com_github_gin_gonic_gin//:gin",
@@ -13,7 +14,6 @@ go_library(
         "@com_github_melon_network_inc_account_service//pkg/user",
         "@com_github_melon_network_inc_common//pkg/dbcontext",
         "@com_github_melon_network_inc_common//pkg/log",
-        "@com_github_spf13_viper//:viper",
         "@com_github_swaggo_files//:files",
         "@com_github_swaggo_gin_swagger//:gin-swagger",
     ],

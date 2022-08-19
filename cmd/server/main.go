@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/Melon-Network-Inc/account-service/pkg/friend"
@@ -14,11 +15,11 @@ import (
 	dbcontext "github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
 
+	"github.com/Melon-Network-Inc/payment-service/config"
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -33,54 +34,53 @@ func init() {
 	swagHandler = ginSwagger.WrapHandler(swaggerfiles.Handler)
 }
 
+type Server struct {
+	App  			*gin.Engine
+	Cache  			*dbcontext.Cache
+	Database 		*dbcontext.DB
+	Logger          log.Logger
+}
+
 func main() {
+	config := config.BuildServerConfig(ServiceName, Version)
+
 	// create root logger tagged with server version
-	logger := log.New(ServiceName).With(context.Background(), "version", Version)
-
-	viper.SetConfigFile("./pkg/envs/.env")
-
-	var port, dbUrl, redisUrl string
-	if err := viper.ReadInConfig(); err == nil {
-		port = viper.Get("DB_PORT").(string)
-		dbUrl = viper.Get("DB_URL").(string)
-		redisUrl = viper.Get("CACHE_URL").(string)
-	} else {
-		port = ":7000"
-		dbUrl = "postgres://postgres:postgres@localhost:5432/melon_service"
-		redisUrl = "localhost:6379"
-	}
+	logger := log.New(config.ServiceName).With(context.Background(), "version", config.Version)
 	
-	router := gin.Default()
-	db, err := dbcontext.ConnectToDatabase(dbUrl)
+	db, err := dbcontext.ConnectToDatabase(config.DatabaseUrl)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(-1)
 	}
 	
-	cache := dbcontext.ConnectToCache(redisUrl)
+	s := Server{
+		App : gin.Default(), 
+		Cache: dbcontext.NewCache(dbcontext.ConnectToCache(config.CacheUrl)), 
+		Database: dbcontext.NewDatabase(db), 
+		Logger: logger,
+	}
 
-	buildHandlers(router.Group(""), dbcontext.NewDatabase(db), dbcontext.NewCache(cache), logger)
-
-	router.Run(port)
+	s.buildHandlers()
+	s.App.Run(fmt.Sprintf(":%d", config.ServerPort))
 }
 
-func buildHandlers(router *gin.RouterGroup, db *dbcontext.DB, cache *dbcontext.Cache, logger log.Logger) {
-	transactionrRepo := transaction.NewRepository(db, logger)
-	userRepo 	     := user.NewRepository(db, cache, logger)
-	friendRepo  	 := friend.NewRepository(db, logger)
+func (s *Server) buildHandlers() {
+	transactionRepo := transaction.NewRepository(s.Database, s.Logger)
+	userRepo := user.NewRepository(s.Database, s.Cache, s.Logger)
+	friendRepo := friend.NewRepository(s.Database, s.Logger)
 
-	transactionService := transaction.NewService(transactionrRepo, userRepo, friendRepo, logger)
+	transactionService := transaction.NewService(transactionRepo, userRepo, friendRepo, s.Logger)
 
-	v1 := router.Group("api/v1")
-	transaction.RegisterHandlers(v1, transactionService, logger)
+	v1 := s.App.Group("api/v1")
+	transaction.RegisterHandlers(v1, transactionService, s.Logger)
 
 	if swagHandler != nil {
-		buildSwagger()
-		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+		s.buildSwagger()
+		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 }
 
-func buildSwagger() {
+func (s Server) buildSwagger() {
 	docs.SwaggerInfo.Title = "Payment Service API"
 	docs.SwaggerInfo.Description = "This is payment server for Melon Wallet."
 	docs.SwaggerInfo.Version = "1.0"
