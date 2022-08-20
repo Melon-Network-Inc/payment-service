@@ -21,3 +21,7 @@ func Uint(id string) (uint, error) {
 	}
 	return uint(ID), nil
 }
+
+func String(id uint) string {
+	return strconv.FormatUint(uint64(id), 10)
+}
