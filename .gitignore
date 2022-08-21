@@ -1,6 +1,10 @@
 .idea
 .vscode
+.ijwb
+dist
 bazel-bin
 bazel-payment-service
 bazel-out
 bazel-testlogs
+coverage**
+*.out
