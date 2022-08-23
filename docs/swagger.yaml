@@ -105,6 +105,14 @@ definitions:
     - name
     - show_type
     type: object
+  api.UpdateUserPasswordRequest:
+    properties:
+      password:
+        minLength: 8
+        type: string
+    required:
+    - password
+    type: object
   api.UpdateUserRequest:
     properties:
       avatar:
@@ -237,7 +245,7 @@ paths:
       description: Update a user resource
       operationId: update-user
       parameters:
-      - description: User Data
+      - description: User Update Data
         in: body
         name: user
         required: true
@@ -311,7 +319,7 @@ paths:
       description: Activate a user resource
       operationId: activate-user
       parameters:
-      - description: User Data
+      - description: User Update Status Data
         in: body
         name: user
         required: true
@@ -338,7 +346,7 @@ paths:
       description: Deactivate a user resource
       operationId: deactivate-user
       parameters:
-      - description: User Data
+      - description: User Update Status Data
         in: body
         name: user
         required: true
@@ -370,6 +378,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: User Password Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateUserPasswordRequest'
       produces:
       - application/json
       responses:

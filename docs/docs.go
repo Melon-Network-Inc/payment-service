@@ -36,7 +36,7 @@ const docTemplate = `{
                 "operationId": "update-user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "User Update Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -116,7 +116,7 @@ const docTemplate = `{
                 "operationId": "activate-user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "User Update Status Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -157,7 +157,7 @@ const docTemplate = `{
                 "operationId": "deactivate-user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "User Update Status Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -203,6 +203,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "User Password Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateUserPasswordRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -899,6 +908,18 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "api.UpdateUserPasswordRequest": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "minLength": 8
                 }
             }
         },

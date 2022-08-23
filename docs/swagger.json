@@ -29,7 +29,7 @@
                 "operationId": "update-user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "User Update Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -109,7 +109,7 @@
                 "operationId": "activate-user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "User Update Status Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -150,7 +150,7 @@
                 "operationId": "deactivate-user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "User Update Status Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -196,6 +196,15 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "User Password Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateUserPasswordRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -892,6 +901,18 @@
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "api.UpdateUserPasswordRequest": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "minLength": 8
                 }
             }
         },
