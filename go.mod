@@ -1,8 +1,8 @@
 module github.com/Melon-Network-Inc/payment-service
 
-go 1.18
+go 1.19
 
-require github.com/Melon-Network-Inc/common v1.0.5
+require github.com/Melon-Network-Inc/common v1.0.4
 
 require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
