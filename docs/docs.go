@@ -10,7 +10,11 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "API Support",
+            "url": "https://melonnetwork.io",
+            "email": "support@melonnetwork.io"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -1037,11 +1041,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "",
-	BasePath:         "",
+	Host:             "localhost:8080",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "Payment Service",
-	Description:      "The MelonWallet microservice responsible for dealing with payment and crypto transaction information.",
+	Title:            "Melon Wallet Service API",
+	Description:      "This is backend server for Melon Wallet..",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

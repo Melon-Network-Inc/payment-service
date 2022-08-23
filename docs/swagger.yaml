@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   api.AddFriendRequest:
     properties:
@@ -193,11 +194,14 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+host: localhost:8080
 info:
-  contact: {}
-  description: The MelonWallet microservice responsible for dealing with payment and
-    crypto transaction information.
-  title: Payment Service
+  contact:
+    email: support@melonnetwork.io
+    name: API Support
+    url: https://melonnetwork.io
+  description: This is backend server for Melon Wallet..
+  title: Melon Wallet Service API
   version: "1.0"
 paths:
   /account:

@@ -36,10 +36,6 @@ const Version = "1.0.0"
 
 var swagHandler gin.HandlerFunc
 
-func init() {
-	swagHandler = ginSwagger.WrapHandler(swaggerfiles.Handler)
-}
-
 type Server struct {
 	App      *gin.Engine
 	Cache    *dbcontext.Cache
@@ -47,6 +43,21 @@ type Server struct {
 	Logger   log.Logger
 }
 
+func init() {
+	swagHandler = ginSwagger.WrapHandler(swaggerfiles.Handler)
+}
+
+// @title Melon Wallet Service API
+// @host localhost:8080
+// @description This is backend server for Melon Wallet..
+// @version 1.0
+// @BasePath /api/v1
+
+// @contact.name API Support
+// @contact.url https://melonnetwork.io
+// @contact.email support@melonnetwork.io
+
+// @query.collection.format  multi
 func main() {
 	serverConfig := config.BuildServerConfig(ServiceName, Version)
 
@@ -120,10 +131,10 @@ func (s *Server) buildHandlers() {
 }
 
 func (s *Server) buildSwagger() {
-	docs.SwaggerInfo.Title = "Payment Service API"
-	docs.SwaggerInfo.Description = "This is payment server for Melon Wallet."
+	docs.SwaggerInfo.Title = "Melon Wallet Service API"
+	docs.SwaggerInfo.Description = "This is backend server for Melon Wallet."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:7001"
+	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 }

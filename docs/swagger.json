@@ -1,11 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "The MelonWallet microservice responsible for dealing with payment and crypto transaction information.",
-        "title": "Payment Service",
-        "contact": {},
+        "description": "This is backend server for Melon Wallet..",
+        "title": "Melon Wallet Service API",
+        "contact": {
+            "name": "API Support",
+            "url": "https://melonnetwork.io",
+            "email": "support@melonnetwork.io"
+        },
         "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
     "paths": {
         "/account": {
             "put": {
