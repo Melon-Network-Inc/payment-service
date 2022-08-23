@@ -19,6 +19,13 @@ def go_dependencies():
         version = "v2.3.1",
     )
     go_repository(
+        name = "com_github_algolia_algoliasearch_client_go_v3",
+        importpath = "github.com/algolia/algoliasearch-client-go/v3",
+        sum = "h1:shlL6HS5p2Nx/+rj5mzbXRj6bUzUSy1jv+CEfyOtlH4=",
+        version = "v3.26.0",
+    )
+
+    go_repository(
         name = "com_github_armon_go_metrics",
         importpath = "github.com/armon/go-metrics",
         sum = "h1:FR+drcQStOe+32sYyJYyZ7FIdgoGGBnwLl+flodp8Uo=",
@@ -652,8 +659,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_account_service",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:/UM2bOKYOC8IpLMEY8N6uvRaKF5RruniBHr/Hg7n2vs=",
-        version = "v0.0.0-20220819063005-5e0b6e754239",
+        sum = "h1:7FLMwR7OricNwh4Iu4jznZYRX9boTO7L3sSTk+uab28=",
+        version = "v0.0.0-20220823045218-da203e54026c",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",

@@ -5,6 +5,7 @@ go 1.18
 require github.com/Melon-Network-Inc/common v1.0.5
 
 require (
+	github.com/algolia/algoliasearch-client-go/v3 v3.26.0 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
 )
 
@@ -16,7 +17,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Melon-Network-Inc/account-service v0.0.0-20220819063005-5e0b6e754239
+	github.com/Melon-Network-Inc/account-service v0.0.0-20220823045218-da203e54026c
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
