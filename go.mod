@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.7
+require github.com/Melon-Network-Inc/common v1.0.11
 
 require (
 	github.com/algolia/algoliasearch-client-go/v3 v3.26.0 // indirect
@@ -80,7 +80,7 @@ require (
 	github.com/go-ozzo/ozzo-routing/v2 v2.4.0
 	github.com/go-redis/redis/v9 v9.0.0-beta.2 // indirect
 	github.com/lib/pq v1.10.6 // indirect
-	github.com/spf13/viper v1.12.0
+	github.com/spf13/viper v1.12.0 // indirect
 	github.com/stretchr/testify v1.8.0
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
 	github.com/swaggo/gin-swagger v1.5.1

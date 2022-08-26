@@ -16,10 +16,10 @@ import (
 	"github.com/Melon-Network-Inc/account-service/pkg/friend"
 	"github.com/Melon-Network-Inc/account-service/pkg/user"
 
+	"github.com/Melon-Network-Inc/common/pkg/config"
 	dbcontext "github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
 
-	"github.com/Melon-Network-Inc/payment-service/config"
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 
@@ -31,8 +31,11 @@ import (
 
 // ServiceName indicates the name of current service.
 // Version indicates the current version of the application.
-const ServiceName = "payment-service"
-const Version = "1.0.0"
+const (
+	ServiceName       = "payment-service"
+	Version           = "1.0.0"
+	ServiceConfigPath = "../config/prod.yml"
+)
 
 var swagHandler gin.HandlerFunc
 
@@ -59,7 +62,7 @@ func init() {
 
 // @query.collection.format  multi
 func main() {
-	serverConfig := config.BuildServerConfig(ServiceName, Version)
+	serverConfig := config.BuildServerConfig(ServiceName, Version, ServiceConfigPath)
 
 	// create root logger tagged with server version
 	logger := log.New(serverConfig.ServiceName).With(context.Background(), "version", serverConfig.Version)
