@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.11
+require github.com/Melon-Network-Inc/common v1.0.12
 
 require (
 	github.com/algolia/algoliasearch-client-go/v3 v3.26.0 // indirect
