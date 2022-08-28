@@ -5,3 +5,5 @@ dist
 bazel-**
 coverage**
 *.out
+main
+log
