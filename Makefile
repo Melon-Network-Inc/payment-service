@@ -34,27 +34,3 @@ dependency: ## update all bazel file with necessary dependency
 .PHONE: doc
 doc: ## update swagger document
 	swag init --parseDependency --parseInternal  -g cmd/server/main.go
-
-.PHONY: docker-run
-docker-run:  ## run payment-service docker
-	bazel run //:payment-service --@io_bazel_rules_docker//transitions:enable=no --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 -- --name=wallet-payment
-
-.PHONY: docker-build
-docker-build:  ## build payment-service docker
-	bazel build //:payment-service --@io_bazel_rules_docker//transitions:enable=no --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
-
-.PHONY: docker-push
-docker-push:  ## push payment-service image to dockerhub
-	bazel run //:payment-service-push --@io_bazel_rules_docker//transitions:enable=no --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
-
-.PHONY: docker-run-x64
-docker-run-x64:  ## run payment-service docker
-	bazel run //:payment-service --@io_bazel_rules_docker//transitions:enable=no
-
-.PHONY: docker-build-x64
-docker-build-x64:  ## build payment-service docker
-	bazel build //:payment-service --@io_bazel_rules_docker//transitions:enable=no
-
-.PHONY: docker-push-x64
-docker-push-x64:  ## push payment-service image to dockerhub
-	bazel run //:payment-service-push --@io_bazel_rules_docker//transitions:enable=no
