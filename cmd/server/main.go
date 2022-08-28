@@ -112,8 +112,8 @@ func main() {
 	}
 	// catching ctx.Done(). timeout of 5 seconds.
 	select {
-	case <-ctx.Done():
-		logger.Info("timeout of 5 seconds.")
+		case <-ctx.Done():
+			logger.Info("timeout of 5 seconds.")
 	}
 	logger.Info("Server exiting")
 }
