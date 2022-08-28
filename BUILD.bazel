@@ -21,17 +21,10 @@ go_image(
     binary = "//cmd/server:server",
 )
 
-container_image(
-    name = "payment-service-image",
-    base = ":payment-service",
-    ports = ["7001:7001"],
-    repository = "melonnetwork"
-)
-
 container_push(
-    name = "payment-service-image-push",
+    name = "payment-service-push",
     format = "Docker",
-    image = ":payment-service-image",
+    image = ":payment-service",
     registry = "index.docker.io",
     repository = "melonnetwork/payment-service",
 )
