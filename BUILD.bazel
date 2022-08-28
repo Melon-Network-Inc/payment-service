@@ -1,4 +1,6 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push", "container_image")
 
 # gazelle:prefix github.com/Melon-Network-Inc/payment-service
 gazelle(name = "gazelle")
@@ -12,4 +14,24 @@ gazelle(
         "-build_file_proto_mode=disable_global",
     ],
     command = "update-repos",
+)
+
+go_image(
+    name = "payment-service",
+    binary = "//cmd/server:server",
+)
+
+container_image(
+    name = "payment-service-image",
+    base = ":payment-service",
+    ports = ["7001:7001"],
+    repository = "melonnetwork"
+)
+
+container_push(
+    name = "payment-service-image-push",
+    format = "Docker",
+    image = ":payment-service-image",
+    registry = "index.docker.io",
+    repository = "melonnetwork/payment-service",
 )
