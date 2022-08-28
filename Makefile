@@ -37,7 +37,7 @@ doc: ## update swagger document
 
 .PHONY: docker-run
 docker-run:  ## run payment-service docker
-	bazel run //:payment-service --@io_bazel_rules_docker//transitions:enable=no --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 -- --name=melon-wallet
+	bazel run //:payment-service --@io_bazel_rules_docker//transitions:enable=no --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 -- --name=wallet-payment
 
 .PHONY: docker-build
 docker-build:  ## build payment-service docker
