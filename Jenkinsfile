@@ -21,7 +21,7 @@ pipeline {
             steps {
                 echo 'New release is approved. Clean up previous release.'
                 def output = sh returnStdout: true, script: 'screen -XS payment-host quit'
-                if output == null {
+                if (output == null) {
                     echo "Cleaned up finished."
                 } else {
                     echo "No need to clean up."
