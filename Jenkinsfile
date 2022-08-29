@@ -20,8 +20,7 @@ pipeline {
             agent any
             steps {
                 echo 'Deploying the payment service application to Production.'
-                sh 'export JENKINS_NODE_COOKIE=dontKillMe'
-                sh 'screen -S payment-host  -d -m -c /dev/null -- sh -c "cd ~/payment-service; export GOPRIVATE=github.com/Melon-Network-Inc/common; make run; exec sh"'
+                sh 'screen -S payment-host  -d -m -c /dev/null -- sh -c "export JENKINS_NODE_COOKIE=dontKillMe; export GOPRIVATE=github.com/Melon-Network-Inc/common; make run; exec sh"'
             }
         }
     }
