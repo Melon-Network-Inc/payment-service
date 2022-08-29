@@ -20,7 +20,7 @@ pipeline {
             agent any
             steps {
                 input(message: 'Please approve the current release.', ok: 'Submit')
-                echo '$approver approved the new release. Killing the previous process.'
+                echo 'New release is approved. Clean up previous release.'
                 sh 'screen -XS payment-host quit'
 
                 echo 'Deploying the payment service application to Production.'
