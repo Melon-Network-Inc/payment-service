@@ -16,17 +16,19 @@ pipeline {
                 sh 'export GOPRIVATE=github.com/Melon-Network-Inc/common && bazel test //...'
             }
         }
+        stage('Cleanup') {
+            agent any
+            steps {
+                echo 'New release is approved. Clean up previous release.'
+                sh 'screen -XS payment-host quit'
+            }
+        }
         stage('Release') {
             agent any
             steps {
-                input(message: 'Please approve the current release.', ok: 'Submit')
-                echo 'New release is approved. Clean up previous release.'
-                sh 'screen -XS payment-host quit'
-
                 echo 'Deploying the payment service application to Production.'
                 sh 'screen -S payment-host  -d -m -c /dev/null -- sh -c "cd ~/payment-service; export GOPRIVATE=github.com/Melon-Network-Inc/common; make run; exec sh"'
                 sh 'JENKINS_NODE_COOKIE=dontKillMe ./start.sh'
             }
         }
     }
-}
