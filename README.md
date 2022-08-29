@@ -1,6 +1,8 @@
 # MelonWallet Payment Service
 
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=michzhou-melonnetwork&repo=payment-service&show_icons=true&theme=radical)](https://https://github.com/Melon-Network-Inc/payment-service)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/569/badge)](https://bestpractices.coreinfrastructure.org/projects/569)
+
+<img src="https://avatars.githubusercontent.com/u/104064333?s=400&u=fe08053ed0a72719e2ea4bb0229766ef9b4fdfee&v=4" width="100">
 
 The MelonWallet microservice responsible for dealing with payment and crypto transaction information.
 
