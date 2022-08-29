@@ -21,7 +21,6 @@ pipeline {
             steps {
                 echo 'Deploying the payment service application to Production.'
                 sh 'screen -S payment-host  -d -m -c /dev/null -- sh -c "cd ~/payment-service; export GOPRIVATE=github.com/Melon-Network-Inc/common; make run; exec sh"'
-                sh 'JENKINS_NODE_COOKIE=dontKillMe ./start.sh'
             }
         }
     }
