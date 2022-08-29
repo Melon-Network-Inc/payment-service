@@ -20,7 +20,12 @@ pipeline {
             agent any
             steps {
                 echo 'New release is approved. Clean up previous release.'
-                sh 'screen -XS payment-host quit'
+                def output = sh returnStdout: true, script: 'screen -XS payment-host quit'
+                if output == null {
+                    echo "Cleaned up finished."
+                } else {
+                    echo "No need to clean up."
+                }
             }
         }
         stage('Release') {
