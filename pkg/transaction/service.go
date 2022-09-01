@@ -2,9 +2,8 @@ package transaction
 
 import (
 	"errors"
-
-	"github.com/Melon-Network-Inc/account-service/pkg/friend"
-	"github.com/Melon-Network-Inc/account-service/pkg/user"
+	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
+	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 
 	"github.com/Melon-Network-Inc/common/pkg/api"
 	"github.com/Melon-Network-Inc/common/pkg/entity"
@@ -17,7 +16,7 @@ import (
 
 const NotAllowOperation = "requester does not have right access to change target resource"
 
-// Service encapsulates usecase logic for transactions.
+// Service encapsulates use case logic for transactions.
 type Service interface {
 	Add(ctx *gin.Context, input api.AddTransactionRequest) (api.TransactionResponse, error)
 	Get(c *gin.Context, ID string) (api.TransactionResponse, error)
@@ -29,22 +28,22 @@ type Service interface {
 }
 
 type service struct {
-	transactionRepo Repository
-    userRepo		user.Repository
-    friendRepo		friend.Repository
-	logger 			log.Logger
+	transactionRepo repository.TransactionRepository
+	userRepo        accountRepo.UserRepository
+	friendRepo      accountRepo.FriendRepository
+	logger          log.Logger
 }
 
 // NewService creates a new transaction service.
 func NewService(
-	transactionRepo Repository, 
-	userRepo user.Repository, 
-	friendRepo friend.Repository, 
+	transactionRepo repository.TransactionRepository,
+	userRepo accountRepo.UserRepository,
+	friendRepo accountRepo.FriendRepository,
 	logger log.Logger) Service {
 	return service{transactionRepo, userRepo, friendRepo, logger}
 }
 
-// Create creates a new transaction.
+// Add creates a new transaction.
 func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.TransactionResponse, error) {
 	if err := req.Validate(); err != nil {
 		return api.TransactionResponse{}, err
@@ -134,7 +133,7 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 	return s.ListByUserWithShowType(ctx, ID, showType)
 }
 
-// Get returns the a list of transactions associated to a user.
+// ListByUserWithShowType returns the a list of transactions associated to a user.
 func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]api.TransactionResponse, error) {
 	userID, err := utils.Int(ID)
 	if err != nil {
@@ -145,9 +144,9 @@ func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType st
 	if err != nil {
 		return []api.TransactionResponse{}, err
 	}
-	listTransaction := []api.TransactionResponse{}
+	var listTransaction []api.TransactionResponse
 	for _, transaction := range transaction {
-		listTransaction = append(listTransaction, api.TransactionResponse{Transaction : transaction})
+		listTransaction = append(listTransaction, api.TransactionResponse{Transaction: transaction})
 	}
 	return listTransaction, nil
 }

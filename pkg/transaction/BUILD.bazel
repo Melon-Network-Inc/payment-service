@@ -4,21 +4,18 @@ go_library(
     name = "transaction",
     srcs = [
         "api.go",
-        "repository.go",
         "service.go",
     ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/transaction",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/processor",
+        "//pkg/repository",
         "//pkg/utils",
         "@com_github_gin_gonic_gin//:gin",
-        "@com_github_melon_network_inc_account_service//pkg/friend",
-        "@com_github_melon_network_inc_account_service//pkg/user",
+        "@com_github_melon_network_inc_account_service//pkg/repository",
         "@com_github_melon_network_inc_common//pkg/api",
-        "@com_github_melon_network_inc_common//pkg/dbcontext",
         "@com_github_melon_network_inc_common//pkg/entity",
         "@com_github_melon_network_inc_common//pkg/log",
-        "@io_gorm_gorm//:gorm",
     ],
 )

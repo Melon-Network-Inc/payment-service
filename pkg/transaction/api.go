@@ -74,8 +74,8 @@ func (r resource) GetTransaction(c *gin.Context) {
 }
 
 // GetAllTransactions    godoc
-// @Summary      List all transactiones of requester
-// @Description  List all transactiones of requester
+// @Summary      List all transactions of requester
+// @Description  List all transactions of requester
 // @ID           list-transactions
 // @Tags         transactions
 // @Param id path int true "Transaction ID"
@@ -95,8 +95,8 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 }
 
 // GetAllTransactionsByUser    godoc
-// @Summary      List all transactiones by an account
-// @Description  List all transactiones by an account
+// @Summary      List all transactions by an account
+// @Description  List all transactions by an account
 // @ID           list-transactions-by-user
 // @Tags         transactions
 // @Param id path int true "Transaction ID"
