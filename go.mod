@@ -2,12 +2,9 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.13
+require github.com/Melon-Network-Inc/common v1.0.19
 
-require (
-	github.com/algolia/algoliasearch-client-go/v3 v3.26.0 // indirect
-	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
-)
+require github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
 
 require (
 	github.com/google/uuid v1.3.0 // indirect
@@ -17,7 +14,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Melon-Network-Inc/account-service v0.0.0-20220829090015-0e836b28ccb3
+	github.com/Melon-Network-Inc/account-service v0.0.0-20220901102548-1d2ad9c521c0
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -31,7 +28,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/goccy/go-json v0.9.10 // indirect
-	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
@@ -55,9 +51,6 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sendgrid/rest v2.6.9+incompatible // indirect
-	github.com/sendgrid/sendgrid-go v3.11.1+incompatible // indirect
-	github.com/sethvargo/go-password v0.2.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

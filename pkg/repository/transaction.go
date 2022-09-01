@@ -1,4 +1,4 @@
-package transaction
+package repository
 
 import (
 	db "github.com/Melon-Network-Inc/common/pkg/dbcontext"
@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// Repository encapsulates the logic to access transactions from the data source.
-type Repository interface {
+// TransactionRepository encapsulates the logic to access transactions from the data source.
+type TransactionRepository interface {
 	// Add creates the transaction.
 	Add(c *gin.Context, transaction entity.Transaction) (entity.Transaction, error)
 	// Get returns the transaction with the specified transaction ID.
@@ -22,19 +22,19 @@ type Repository interface {
 	Delete(c *gin.Context, transaction entity.Transaction) error
 }
 
-// repository persists transactions in database
-type repository struct {
+// transactionRepository persists transactions in database
+type transactionRepository struct {
 	db     *db.DB
 	logger log.Logger
 }
 
-// NewRepository creates a new transaction repository
-func NewRepository(db *db.DB, logger log.Logger) Repository {
-	return repository{db, logger}
+// NewTransactionRepository creates a new transaction transactionRepository
+func NewTransactionRepository(db *db.DB, logger log.Logger) TransactionRepository {
+	return transactionRepository{db, logger}
 }
 
 // Add creates the transaction.
-func (r repository) Add(
+func (r transactionRepository) Add(
 	c *gin.Context,
 	transaction entity.Transaction,
 ) (entity.Transaction, error) {
@@ -45,20 +45,20 @@ func (r repository) Add(
 }
 
 // Get reads the transaction with the specified ID from the database.
-func (r repository) Get(c *gin.Context, ID int) (entity.Transaction, error) {
+func (r transactionRepository) Get(c *gin.Context, ID int) (entity.Transaction, error) {
 	var transaction entity.Transaction
 	result := r.db.With(c).First(&transaction, ID)
 	return transaction, result.Error
 }
 
-// Lists lists all transactions by show_type.
-func (r repository) List(c *gin.Context, ID int, showType string) ([]entity.Transaction, error) {
+// List lists all transactions by show_type.
+func (r transactionRepository) List(c *gin.Context, ID int, showType string) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
 	var result *gorm.DB
 	tx := r.db.With(c).
-			Where("sender_id = ?", ID).
-			Or("receiver_id = ?", ID).
-			Order("updated_at desc")
+		Where("sender_id = ?", ID).
+		Or("receiver_id = ?", ID).
+		Order("updated_at desc")
 
 	tx = updateTransactionByShowType(showType, tx, transactions)
 	result = tx.Find(&transactions)
@@ -66,7 +66,7 @@ func (r repository) List(c *gin.Context, ID int, showType string) ([]entity.Tran
 }
 
 func updateTransactionByShowType(showType string, tx *gorm.DB, transactions []entity.Transaction) *gorm.DB {
-	if showType == "Prviate" {
+	if showType == "Private" {
 		tx = tx.Find(&transactions)
 	} else if showType == "Friend" {
 		tx = tx.Where("show_type = ?", "Friend").
@@ -78,7 +78,7 @@ func updateTransactionByShowType(showType string, tx *gorm.DB, transactions []en
 }
 
 // Update updates the transaction with the specified transaction ID.
-func (r repository) Update(c *gin.Context, transaction entity.Transaction) error {
+func (r transactionRepository) Update(c *gin.Context, transaction entity.Transaction) error {
 	if result := r.db.With(c).First(&transaction, transaction.ID); result.Error != nil {
 		return result.Error
 	}
@@ -86,6 +86,6 @@ func (r repository) Update(c *gin.Context, transaction entity.Transaction) error
 }
 
 // Delete deletes the transaction with the specified ID.
-func (r repository) Delete(c *gin.Context, transaction entity.Transaction) error {
+func (r transactionRepository) Delete(c *gin.Context, transaction entity.Transaction) error {
 	return r.db.With(c).Delete(&transaction).Error
 }

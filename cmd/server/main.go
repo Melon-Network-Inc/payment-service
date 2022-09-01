@@ -7,17 +7,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/Melon-Network-Inc/account-service/pkg/friend"
-	"github.com/Melon-Network-Inc/account-service/pkg/user"
+	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 
 	"github.com/Melon-Network-Inc/common/pkg/config"
-	dbcontext "github.com/Melon-Network-Inc/common/pkg/dbcontext"
+	"github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
 
 	"github.com/Melon-Network-Inc/payment-service/docs"
@@ -32,10 +32,10 @@ import (
 // ServiceName indicates the name of current service.
 // Version indicates the current version of the application.
 const (
-	ServiceName       	= "payment-service"
-	Version           	= "1.0.0"
-	ServiceConfigPath 	= "../config/prod.yml"
-	DefaultServicePort 	= 7001
+	ServiceName        = "payment-service"
+	Version            = "1.0.0"
+	ServiceConfigPath  = "../config/prod.yml"
+	DefaultServicePort = 7001
 )
 
 var swagHandler gin.HandlerFunc
@@ -112,16 +112,16 @@ func main() {
 	}
 	// catching ctx.Done(). timeout of 5 seconds.
 	select {
-		case <-ctx.Done():
-			logger.Info("timeout of 5 seconds.")
+	case <-ctx.Done():
+		logger.Info("timeout of 5 seconds.")
 	}
 	logger.Info("Server exiting")
 }
 
 func (s *Server) buildHandlers() {
-	transactionRepo := transaction.NewRepository(s.Database, s.Logger)
-	userRepo := user.NewRepository(s.Database, s.Cache, s.Logger)
-	friendRepo := friend.NewRepository(s.Database, s.Logger)
+	transactionRepo := repository.NewTransactionRepository(s.Database, s.Logger)
+	userRepo := accountRepo.NewUserRepository(s.Database, s.Cache, s.Logger)
+	friendRepo := accountRepo.NewFriendRepository(s.Database, s.Logger)
 
 	transactionService := transaction.NewService(transactionRepo, userRepo, friendRepo, s.Logger)
 
