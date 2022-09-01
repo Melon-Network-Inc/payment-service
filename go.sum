@@ -45,6 +45,8 @@ github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030I
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Melon-Network-Inc/account-service v0.0.0-20220901102548-1d2ad9c521c0 h1:7oHBJivPWOVr3a+PKBKIou7jqIPG4w28RLyAPMQdDLc=
 github.com/Melon-Network-Inc/account-service v0.0.0-20220901102548-1d2ad9c521c0/go.mod h1:GZtswRq1Kh2Mh13EaUBIJWnvbjtL65PQ9ukCf9E/wlQ=
+github.com/Melon-Network-Inc/account-service v0.0.0-20220901105631-1b04ec8f8728 h1:5gZ2h86KTM6AJk36iB3xKeqvE21be0b1k+G1pfseR7k=
+github.com/Melon-Network-Inc/account-service v0.0.0-20220901105631-1b04ec8f8728/go.mod h1:GZtswRq1Kh2Mh13EaUBIJWnvbjtL65PQ9ukCf9E/wlQ=
 github.com/Melon-Network-Inc/common v1.0.19 h1:R3Od73UCnUd1pvBf8YG2ENOu+Tg2FzOIJflvJWL4mFA=
 github.com/Melon-Network-Inc/common v1.0.19/go.mod h1:yPEqTUSBJhJbbT4kncHF3kz84algx1D6rywL11sTUXE=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
