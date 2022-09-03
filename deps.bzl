@@ -665,8 +665,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_common",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:in0aQdw37S+vbtZreIOf5BcDdk+KFrxwKf0w56j/SZY=",
-        version = "v1.0.27",
+        sum = "h1:l8EBjvOY9ym4cgTJQtmClq5FKZtHyeV4KaUW/12nZO8=",
+        version = "v1.0.29",
     )
 
     go_repository(
@@ -1062,6 +1062,13 @@ def go_dependencies():
         sum = "h1:uRGJdciOHaEIrze2W8Q3AKkepLTh2hOroT7a+7czfdQ=",
         version = "v1.0.0-20141024135613-dd632973f1e7",
     )
+    go_repository(
+        name = "in_gopkg_vmihailenco_msgpack_v2",
+        importpath = "gopkg.in/vmihailenco/msgpack.v2",
+        sum = "h1:gjPqo9orRVlSAH/065qw3MsFCDpH7fa1KpiizXyllY4=",
+        version = "v2.9.2",
+    )
+
     go_repository(
         name = "in_gopkg_yaml_v2",
         importpath = "gopkg.in/yaml.v2",
