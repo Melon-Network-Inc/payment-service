@@ -76,7 +76,7 @@ func main() {
 
 	s := Server{
 		App:      gin.Default(),
-		Cache:    dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl)),
+		Cache:    dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
 		Database: dbcontext.NewDatabase(db),
 		Logger:   logger,
 	}

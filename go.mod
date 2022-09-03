@@ -2,9 +2,14 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.27
+require github.com/Melon-Network-Inc/common v1.0.29
 
-require github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
+require (
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	gopkg.in/vmihailenco/msgpack.v2 v2.9.2 // indirect
+)
 
 require (
 	github.com/google/uuid v1.3.0 // indirect
