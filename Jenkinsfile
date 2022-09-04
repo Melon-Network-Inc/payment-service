@@ -21,7 +21,7 @@ pipeline {
             when { branch "main" }
             steps {
                 echo 'New release is approved. Clean up previous release.'
-                sh 'screen -XS account-host quit'
+                sh 'screen -XS payment-host quit'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE')
                 {
                     echo 'No need to clean up and proceed to the Release stage.'
