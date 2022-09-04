@@ -4,7 +4,6 @@ pipeline {
     stages {
         stage('Build') {
             agent any
-            when { branch "main" }
             steps {
                 echo 'Run bazel build on payment service target'
                 sh 'export GOPRIVATE=github.com/Melon-Network-Inc/common && bazel build //...'
@@ -12,10 +11,9 @@ pipeline {
         }
         stage('Test') {
             agent any
-            when { branch "main" }
             steps {
                 echo 'Run bazel test on payment service target'
-                sh 'export GOPRIVATE=github.com/Melon-Network-Inc/common && bazel test //...'
+                sh 'export GOPRIVATE=github.com/Melon-Network-Inc/common && make test'
             }
         }
         stage('Cleanup') {
@@ -23,7 +21,11 @@ pipeline {
             when { branch "main" }
             steps {
                 echo 'New release is approved. Clean up previous release.'
-                sh 'screen -XS payment-host quit'
+                sh 'screen -XS account-host quit'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE')
+                {
+                    echo 'No need to clean up and proceed to the Release stage.'
+                }
             }
         }
         stage('Release') {
@@ -31,7 +33,7 @@ pipeline {
             when { branch "main" }
             steps {
                 echo 'Deploying the payment service application to Production.'
-                sh 'export JENKINS_NODE_COOKIE=dontKillMe; screen -S payment-host  -d -m -c /dev/null -- sh -c "export GOPRIVATE=github.com/Melon-Network-Inc/common; make run; exec sh"'
+                sh 'export JENKINS_NODE_COOKIE=dontKillMe; screen -S payment-host  -d -m -c /dev/null -- sh -c "export GOPRIVATE=github.com/Melon-Network-Inc/common; make staging; exec sh"'
             }
         }
     }
