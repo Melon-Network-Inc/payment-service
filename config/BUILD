@@ -1,4 +1,4 @@
 exports_files(
     srcs = glob(["*.yml"]),
-    visibility = ["//visibility:public"],
+    visibility = ["//visibility:private"],
 )
