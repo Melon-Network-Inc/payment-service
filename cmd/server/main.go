@@ -7,12 +7,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 
@@ -27,15 +28,6 @@ import (
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-)
-
-// ServiceName indicates the name of current service.
-// Version indicates the current version of the application.
-const (
-	ServiceName        = "payment-service"
-	Version            = "1.0.0"
-	ServiceConfigPath  = "../config/prod.yml"
-	DefaultServicePort = 7001
 )
 
 var swagHandler gin.HandlerFunc
@@ -63,7 +55,7 @@ func init() {
 
 // @query.collection.format  multi
 func main() {
-	serverConfig := config.BuildServerConfig(ServiceName, Version, DefaultServicePort, ServiceConfigPath)
+	serverConfig := config.BuildServerConfig("config/payment.yml")
 
 	// create root logger tagged with server version
 	logger := log.New(serverConfig.ServiceName).With(context.Background(), "version", serverConfig.Version)
