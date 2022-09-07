@@ -2,10 +2,11 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.32
+require github.com/Melon-Network-Inc/common v1.0.33
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/vmihailenco/msgpack.v2 v2.9.2 // indirect
@@ -19,7 +20,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Melon-Network-Inc/account-service v0.0.0-20220902060557-3f83188df9c2
+	github.com/Melon-Network-Inc/account-service v0.0.0-20220907080338-02de0d71310e
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect

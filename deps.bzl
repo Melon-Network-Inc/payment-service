@@ -537,6 +537,13 @@ def go_dependencies():
         version = "v1.2.1",
     )
     go_repository(
+        name = "com_github_jinzhu_copier",
+        importpath = "github.com/jinzhu/copier",
+        sum = "h1:GlvfUwHk62RokgqVNvYsku0TATCF7bAHVwEXoBh3iJg=",
+        version = "v0.3.5",
+    )
+
+    go_repository(
         name = "com_github_jinzhu_inflection",
         importpath = "github.com/jinzhu/inflection",
         sum = "h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=",
@@ -659,14 +666,14 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_account_service",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:26WC/0xfPvgyO/FsBEyGAH6zPeHXR2VPH3E7IcE+gtc=",
-        version = "v0.0.0-20220902060557-3f83188df9c2",
+        sum = "h1:TncbGSgSYLRVVnK5miWWcGOs0XCZAyO3mwHA83f5YtU=",
+        version = "v0.0.0-20220907080338-02de0d71310e",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:YjHcn1W9Hf7Bz3zHLYuc1M9J6CNc7HfsVulOAR8ExRY=",
-        version = "v1.0.32",
+        sum = "h1:gdu8YbzVs1nWvYLePfOqos83cQQOyzYLya/e7Aqjjbo=",
+        version = "v1.0.33",
     )
 
     go_repository(

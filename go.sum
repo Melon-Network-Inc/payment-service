@@ -43,10 +43,10 @@ github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030IGemrRc=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
-github.com/Melon-Network-Inc/account-service v0.0.0-20220902060557-3f83188df9c2 h1:26WC/0xfPvgyO/FsBEyGAH6zPeHXR2VPH3E7IcE+gtc=
-github.com/Melon-Network-Inc/account-service v0.0.0-20220902060557-3f83188df9c2/go.mod h1:VtsboFB+V6Y3wsqQMdFWY0EjDKb5VNsot9267iPh2hU=
-github.com/Melon-Network-Inc/common v1.0.32 h1:YjHcn1W9Hf7Bz3zHLYuc1M9J6CNc7HfsVulOAR8ExRY=
-github.com/Melon-Network-Inc/common v1.0.32/go.mod h1:3L8SGY4KjY+j9Ehm0ZAq9iihrtPjDcc3iMTkPHHn4bQ=
+github.com/Melon-Network-Inc/account-service v0.0.0-20220907080338-02de0d71310e h1:TncbGSgSYLRVVnK5miWWcGOs0XCZAyO3mwHA83f5YtU=
+github.com/Melon-Network-Inc/account-service v0.0.0-20220907080338-02de0d71310e/go.mod h1:um4LArZ/trXimFbMLC8N94KSHeofjuzAWaguJCiSCUQ=
+github.com/Melon-Network-Inc/common v1.0.33 h1:gdu8YbzVs1nWvYLePfOqos83cQQOyzYLya/e7Aqjjbo=
+github.com/Melon-Network-Inc/common v1.0.33/go.mod h1:PwPSR2lvhq2gehhUUszsksl45j4wPBLFD1eDw/ZFSBI=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
@@ -249,6 +249,8 @@ github.com/jackc/puddle v0.0.0-20190413234325-e4ced69a3a2b/go.mod h1:m4B5Dj62Y0f
 github.com/jackc/puddle v0.0.0-20190608224051-11cab39313c9/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
 github.com/jackc/puddle v1.1.3/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
 github.com/jackc/puddle v1.2.1/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
+github.com/jinzhu/copier v0.3.5 h1:GlvfUwHk62RokgqVNvYsku0TATCF7bAHVwEXoBh3iJg=
+github.com/jinzhu/copier v0.3.5/go.mod h1:DfbEm0FYsaqBcKcFuvmOZb218JkPGtvSHsKg8S8hyyg=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/jinzhu/now v1.1.4/go.mod h1:d3SSVoowX0Lcu0IBviAWJpolVfI5UJVZZ7cO71lE/z8=
