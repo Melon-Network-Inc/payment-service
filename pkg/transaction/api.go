@@ -30,6 +30,8 @@ type resource struct {
 // @Description  Add a transaction to account
 // @ID           add-transaction
 // @Tags         transactions
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
 // @Param transaction body api.AddTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
@@ -58,6 +60,8 @@ func (r resource) AddTransaction(c *gin.Context) {
 // @Description  Get a transaction
 // @ID           get-transaction
 // @Tags         transactions
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json
@@ -78,7 +82,8 @@ func (r resource) GetTransaction(c *gin.Context) {
 // @Description  List all transactions of requester
 // @ID           list-transactions
 // @Tags         transactions
-// @Param id path int true "Transaction ID"
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
 // @Accept       json
 // @Produce      json
 // @Success      200 {array} api.TransactionResponse
@@ -120,6 +125,8 @@ func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 // @Description  Update a transaction
 // @ID           update-transaction
 // @Tags         transactions
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
 // @Param transaction body api.UpdateTransactionRequest true "Transaction Data"
 // @Accept       json
 // @Produce      json
@@ -149,6 +156,8 @@ func (r resource) UpdateTransaction(c *gin.Context) {
 // @Description  Delete a transaction
 // @ID           delete-transaction
 // @Tags         transactions
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json

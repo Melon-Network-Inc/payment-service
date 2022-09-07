@@ -120,6 +120,11 @@ paths:
       description: Delete a transaction
       operationId: delete-transaction
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Transaction ID
         in: path
         name: id
@@ -136,6 +141,8 @@ paths:
           description: ""
         "404":
           description: ""
+      security:
+      - ApiKeyAuth: []
       summary: Delete a transaction
       tags:
       - transactions
@@ -170,6 +177,11 @@ paths:
       description: Add a transaction to account
       operationId: add-transaction
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Transaction Data
         in: body
         name: transaction
@@ -187,6 +199,8 @@ paths:
           description: ""
         "404":
           description: ""
+      security:
+      - ApiKeyAuth: []
       summary: Add a transaction to account
       tags:
       - transactions
@@ -196,6 +210,11 @@ paths:
       description: Update a transaction
       operationId: update-transaction
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Transaction Data
         in: body
         name: transaction
@@ -213,6 +232,8 @@ paths:
           description: ""
         "404":
           description: ""
+      security:
+      - ApiKeyAuth: []
       summary: Update a transaction
       tags:
       - transactions
@@ -223,6 +244,11 @@ paths:
       description: Get a transaction
       operationId: get-transaction
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Transaction ID
         in: path
         name: id
@@ -237,6 +263,8 @@ paths:
             $ref: '#/definitions/api.TransactionResponse'
         "404":
           description: ""
+      security:
+      - ApiKeyAuth: []
       summary: Get a transaction
       tags:
       - transactions

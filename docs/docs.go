@@ -59,6 +59,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a transaction",
                 "consumes": [
                     "application/json"
@@ -72,6 +77,13 @@ const docTemplate = `{
                 "summary": "Update a transaction",
                 "operationId": "update-transaction",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Transaction Data",
                         "name": "transaction",
@@ -98,6 +110,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Add a transaction to account",
                 "consumes": [
                     "application/json"
@@ -111,6 +128,13 @@ const docTemplate = `{
                 "summary": "Add a transaction to account",
                 "operationId": "add-transaction",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Transaction Data",
                         "name": "transaction",
@@ -137,6 +161,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete a transaction",
                 "consumes": [
                     "application/json"
@@ -150,6 +179,13 @@ const docTemplate = `{
                 "summary": "Delete a transaction",
                 "operationId": "delete-transaction",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Transaction ID",
@@ -176,6 +212,11 @@ const docTemplate = `{
         },
         "/transaction/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get a transaction",
                 "consumes": [
                     "application/json"
@@ -189,6 +230,13 @@ const docTemplate = `{
                 "summary": "Get a transaction",
                 "operationId": "get-transaction",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Transaction ID",
