@@ -104,6 +104,8 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Description  List all transactions by an account
 // @ID           list-transactions-by-user
 // @Tags         transactions
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
 // @Param id path int true "Transaction ID"
 // @Accept       json
 // @Produce      json

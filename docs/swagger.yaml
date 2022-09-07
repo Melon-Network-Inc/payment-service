@@ -152,6 +152,11 @@ paths:
       description: List all transactions by an account
       operationId: list-transactions-by-user
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Transaction ID
         in: path
         name: id
@@ -168,6 +173,8 @@ paths:
             type: array
         "404":
           description: ""
+      security:
+      - ApiKeyAuth: []
       summary: List all transactions by an account
       tags:
       - transactions

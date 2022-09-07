@@ -22,6 +22,11 @@ const docTemplate = `{
     "paths": {
         "/transaction": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "List all transactions by an account",
                 "consumes": [
                     "application/json"
@@ -35,6 +40,13 @@ const docTemplate = `{
                 "summary": "List all transactions by an account",
                 "operationId": "list-transactions-by-user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Transaction ID",
