@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.36
+require github.com/Melon-Network-Inc/common v1.0.37
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
