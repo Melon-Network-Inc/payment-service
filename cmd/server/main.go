@@ -58,7 +58,7 @@ func main() {
 	serverConfig := config.BuildServerConfig("config/payment.yml")
 
 	// create root logger tagged with server version
-	logger := log.New(serverConfig.ServiceName).With(context.Background(), "version", serverConfig.Version)
+	logger := log.New(serverConfig.ServiceName).Default(context.Background(), serverConfig, "version", serverConfig.Version)
 
 	db, err := dbcontext.ConnectToDatabase(serverConfig.DatabaseUrl)
 	if err != nil {
@@ -66,8 +66,11 @@ func main() {
 		os.Exit(-1)
 	}
 
+	router := gin.Default()
+	router.Use(log.GinLogger(logger), log.GinRecovery(logger, true))
+
 	s := Server{
-		App:      gin.Default(),
+		App:      router,
 		Cache:    dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
 		Database: dbcontext.NewDatabase(db),
 		Logger:   logger,
