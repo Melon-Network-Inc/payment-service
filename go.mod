@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.37
+require github.com/Melon-Network-Inc/common v1.0.41
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -64,7 +64,7 @@ require (
 	github.com/subosito/gotenv v1.3.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
 	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.11 // indirect
@@ -76,7 +76,6 @@ require (
 
 require (
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-ozzo/ozzo-routing/v2 v2.4.0
 	github.com/go-redis/redis/v9 v9.0.0-beta.2 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
