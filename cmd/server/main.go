@@ -20,13 +20,14 @@ import (
 	"github.com/Melon-Network-Inc/common/pkg/config"
 	"github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
+	"github.com/Melon-Network-Inc/common/pkg/utils"
 
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 
 	"github.com/gin-gonic/gin"
 
-	swaggerfiles "github.com/swaggo/files"
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
@@ -40,7 +41,7 @@ type Server struct {
 }
 
 func init() {
-	swagHandler = ginSwagger.WrapHandler(swaggerfiles.Handler)
+	swagHandler = ginSwagger.WrapHandler(swaggerFiles.Handler)
 }
 
 // @title Melon Wallet Service API
@@ -78,39 +79,44 @@ func main() {
 
 	s.buildHandlers()
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", serverConfig.ServerPort),
-		Handler: s.App,
-	}
 
-	go func() {
-		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Errorf("listen: %s\n", err)
+	if !utils.IsProdEnvironment() {
+		logger.Debug(router.Run(fmt.Sprintf(":%d", serverConfig.ServerPort)))
+	} else {
+		srv := &http.Server{
+			Addr:    fmt.Sprintf(":%d", serverConfig.ServerPort),
+			Handler: s.App,
 		}
-	}()
-
-	// Wait for interrupt signal to gracefully shut down the server with
-	// a timeout of 5 seconds.
-	quit := make(chan os.Signal)
-	// kill (no param) default send syscall.SIGTERM
-	// kill -2 is syscall.SIGINT
-	// kill -9 is syscall. SIGKILL but can"t be caught, so don't need to add it
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	logger.Info("Shutdown Server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		logger.Errorf("Server Shutdown:", err)
+	
+		go func() {
+			// service connections
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				logger.Errorf("listen: %s\n", err)
+			}
+		}()
+	
+		// Wait for interrupt signal to gracefully shut down the server with
+		// a timeout of 5 seconds.
+		quit := make(chan os.Signal)
+		// kill (no param) default send syscall.SIGTERM
+		// kill -2 is syscall.SIGINT
+		// kill -9 is syscall. SIGKILL but can"t be caught, so don't need to add it
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
+		logger.Info("Shutdown Server ...")
+	
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := srv.Shutdown(ctx); err != nil {
+			logger.Errorf("Server Shutdown:", err)
+		}
+		// catching ctx.Done(). timeout of 5 seconds.
+		select {
+		case <-ctx.Done():
+			logger.Info("timeout of 5 seconds.")
+		}
+		logger.Info("Server exiting")
 	}
-	// catching ctx.Done(). timeout of 5 seconds.
-	select {
-	case <-ctx.Done():
-		logger.Info("timeout of 5 seconds.")
-	}
-	logger.Info("Server exiting")
 }
 
 func (s *Server) buildHandlers() {
@@ -123,9 +129,9 @@ func (s *Server) buildHandlers() {
 	v1 := s.App.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, s.Logger)
 
-	if swagHandler != nil {
+	if !utils.IsProdEnvironment() && swagHandler != nil {
 		s.buildSwagger()
-		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 }
 
