@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"errors"
+
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 
@@ -103,7 +104,7 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 		return s.List(ctx)
 	}
 
-	requesterID, err := utils.Uint64(userID)
+	requesterID, err := utils.Uint(userID)
 	if err != nil {
 		return []api.TransactionResponse{}, err
 	}
@@ -112,7 +113,7 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 		return []api.TransactionResponse{}, err
 	}
 
-	otherID, err := utils.Uint64(ID)
+	otherID, err := utils.Uint(ID)
 	if err != nil {
 		return []api.TransactionResponse{}, err
 	}
