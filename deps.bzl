@@ -673,14 +673,14 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_account_service",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:79rSy5hgD8H4AHir81cA8/6qwc1TnrmXFNE54HK/878=",
-        version = "v0.0.0-20220923090332-f317321ed473",
+        sum = "h1:mebEsS7hlnPze7wdND0FxR53oy9HnMPRhlA5crVL6KY=",
+        version = "v0.0.0-20220923115431-0562dcd74878",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:PB3SPr8ySU7gd6ALkUSf96Vw+ImpywIlHgLYMWxvU9U=",
-        version = "v1.0.50",
+        sum = "h1:rxC5d59QzhXz5rGb/XyKwA2av6c2OokdV9Bj5uMwe9I=",
+        version = "v1.0.55",
     )
 
     go_repository(
