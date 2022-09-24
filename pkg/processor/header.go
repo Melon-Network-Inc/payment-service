@@ -15,3 +15,7 @@ func GetUserID(c *gin.Context) string {
 func GetUsername(c *gin.Context) string {
 	return c.Request.Header.Get(ContextUsernameKey)
 }
+
+func GetRole(c *gin.Context) string {
+	return c.Request.Header.Get(ContextRoleKey)
+}
