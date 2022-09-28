@@ -101,18 +101,18 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 }
 
 // GetAllTransactionsByUser    godoc
-// @Summary      List all transactions by an account
-// @Description  List all transactions by an account
+// @Summary      List all transactions of an account
+// @Description  List all transactions of an account
 // @ID           list-transactions-by-user
 // @Tags         transactions
 // @Security ApiKeyAuth
 // @Param Authorization header string true "Authorization"
-// @Param id path int true "Transaction ID"
+// @Param id path int true "User ID"
 // @Accept       json
 // @Produce      json
 // @Success      200 {array} api.TransactionResponse
 // @Failure      404
-// @Router       /transaction [get]
+// @Router       /transaction/user/{id} [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
