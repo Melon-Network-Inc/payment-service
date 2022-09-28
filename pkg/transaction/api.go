@@ -12,7 +12,7 @@ import (
 func RegisterHandlers(r *gin.RouterGroup, service Service, logger log.Logger) {
 	res := resource{service, logger}
 
-	routes := r.Group("/transactions")
+	routes := r.Group("/transaction")
 	routes.POST("/", res.AddTransaction)
 	routes.GET("/user/:id", res.GetAllTransactionsByUser)
 	routes.GET("/:id", res.GetTransaction)
