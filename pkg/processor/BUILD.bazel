@@ -1,9 +1,16 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "processor",
     srcs = ["header.go"],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/processor",
     visibility = ["//visibility:public"],
+    deps = ["@com_github_gin_gonic_gin//:gin"],
+)
+
+go_test(
+    name = "processor_test",
+    srcs = ["header_test.go"],
+    embed = [":processor"],
     deps = ["@com_github_gin_gonic_gin//:gin"],
 )

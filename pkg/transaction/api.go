@@ -68,7 +68,7 @@ func (r resource) AddTransaction(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} api.TransactionResponse
 // @Failure      404
-// @Router       /transaction/{id} [get]
+// @Router       /transaction/:id [get]
 func (r resource) GetTransaction(c *gin.Context) {
 	transaction, err := r.service.Get(c, c.Param("id"))
 	if err != nil {
@@ -112,7 +112,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Produce      json
 // @Success      200 {array} api.TransactionResponse
 // @Failure      404
-// @Router       /transaction/user/{id} [get]
+// @Router       /transaction/user/:id [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
