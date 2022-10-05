@@ -1,8 +1,7 @@
 package transaction
 
 import (
-	"errors"
-
+	"github.com/Melon-Network-Inc/account-service/pkg/mwerrors"
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 
@@ -14,8 +13,6 @@ import (
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
-
-const NotAllowOperation = "requester does not have right access to change target resource"
 
 // Service encapsulates use case logic for transactions.
 type Service interface {
@@ -47,15 +44,21 @@ func NewService(
 // Add creates a new transaction.
 func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.TransactionResponse, error) {
 	if err := req.Validate(); err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
 	}
 
-	ownerID, err := utils.Int(processor.GetUserID(ctx))
-	if err != nil {
-		return api.TransactionResponse{}, err
+	userID := processor.GetUserID(ctx)
+	if userID == "" {
+		return api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
 	}
+
+	ownerID, err := utils.Int(userID)
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
+	}
+
 	if req.SenderId != ownerID && req.ReceiverId != ownerID {
-		return api.TransactionResponse{}, errors.New(NotAllowOperation)
+		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowed(processor.GetUsername(ctx))
 	}
 
 	transaction, err := s.transactionRepo.Add(ctx, entity.Transaction{
@@ -71,20 +74,26 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		Message:        req.Message,
 	})
 	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
 func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, error) {
-	uid, err := utils.Int(ID)
-	if err != nil {
-		return api.TransactionResponse{}, err
+	userID := processor.GetUserID(ctx)
+	if userID == "" {
+		return api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
 	}
-	transaction, err := s.transactionRepo.Get(ctx, uid)
+
+	UID, err := utils.Uint(ID)
 	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewIllegalInputError(err.Error())
+	}
+
+	transaction, err := s.transactionRepo.Get(ctx, UID)
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewResourceNotFound(UID)
 	}
 	return api.TransactionResponse{Transaction: transaction}, nil
 }
@@ -98,34 +107,35 @@ func (s service) List(ctx *gin.Context) ([]api.TransactionResponse, error) {
 func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionResponse, error) {
 	userID := processor.GetUserID(ctx)
 	if userID == "" {
-		return []api.TransactionResponse{}, errors.New("missing request user information")
+		return []api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
 	}
+
 	if userID == ID {
 		return s.List(ctx)
 	}
 
 	requesterID, err := utils.Uint(userID)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewInvalidAuthToken(err)
 	}
 	requestUser, err := s.userRepo.Get(ctx, requesterID)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
 	}
 
 	otherID, err := utils.Uint(ID)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
 	}
 	otherUser, err := s.userRepo.Get(ctx, otherID)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
 	}
 
 	showType := "Public"
 	exists, err := s.friendRepo.HasRelationByBothUsers(ctx, requestUser, otherUser)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 	if exists {
 		showType = "Friend"
@@ -136,14 +146,14 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 
 // ListByUserWithShowType returns the a list of transactions associated to a user.
 func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]api.TransactionResponse, error) {
-	userID, err := utils.Int(ID)
+	userID, err := utils.Uint(ID)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
 	}
 
 	transaction, err := s.transactionRepo.List(ctx, userID, showType)
 	if err != nil {
-		return []api.TransactionResponse{}, err
+		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
 	}
 	var listTransaction []api.TransactionResponse
 	for _, transaction := range transaction {
@@ -159,25 +169,23 @@ func (s service) Update(
 	input api.UpdateTransactionRequest,
 ) (api.TransactionResponse, error) {
 	if err := input.Validate(); err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
 	}
-
-	UID, err := utils.Int(ID)
+	UID, err := utils.Uint(ID)
 	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewIllegalInputError(err.Error())
+	}
+	ownerID, err := utils.Uint(processor.GetUserID(ctx))
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewInvalidAuthToken(err)
 	}
 
 	transaction, err := s.transactionRepo.Get(ctx, UID)
 	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
 	}
-	ownerID, err := utils.Uint(processor.GetUserID(ctx))
-	if err != nil {
-		return api.TransactionResponse{}, err
-	}
-
 	if checkAllowsOperation(transaction, ownerID) {
-		return api.TransactionResponse{}, errors.New(NotAllowOperation)
+		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowed(processor.GetUsername(ctx))
 	}
 
 	if input.Name != "" {
@@ -194,34 +202,34 @@ func (s service) Update(
 	}
 
 	if err := s.transactionRepo.Update(ctx, transaction); err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
 // Delete deletes the transaction with the specified ID.
 func (s service) Delete(ctx *gin.Context, ID string) (api.TransactionResponse, error) {
-	uid, err := utils.Int(ID)
+	UID, err := utils.Uint(ID)
 	if err != nil {
-		return api.TransactionResponse{}, err
-	}
-
-	transaction, err := s.transactionRepo.Get(ctx, uid)
-	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
 	}
 	ownerID, err := utils.Uint(processor.GetUserID(ctx))
 	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
+	}
+
+	transaction, err := s.transactionRepo.Get(ctx, UID)
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 
 	if checkAllowsOperation(transaction, ownerID) {
-		return api.TransactionResponse{}, errors.New(NotAllowOperation)
+		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowed(processor.GetUsername(ctx))
 	}
 
 	err = s.transactionRepo.Delete(ctx, transaction)
 	if err != nil {
-		return api.TransactionResponse{}, err
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 	return api.TransactionResponse{Transaction: transaction}, nil
 }

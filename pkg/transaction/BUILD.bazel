@@ -13,6 +13,7 @@ go_library(
         "//pkg/repository",
         "//pkg/utils",
         "@com_github_gin_gonic_gin//:gin",
+        "@com_github_melon_network_inc_account_service//pkg/mwerrors",
         "@com_github_melon_network_inc_account_service//pkg/repository",
         "@com_github_melon_network_inc_common//pkg/api",
         "@com_github_melon_network_inc_common//pkg/entity",

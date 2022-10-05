@@ -58,7 +58,16 @@ const docTemplate = `{
                             }
                         }
                     },
+                    "400": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": ""
+                    },
                     "404": {
+                        "description": ""
+                    },
+                    "500": {
                         "description": ""
                     }
                 }
@@ -109,7 +118,13 @@ const docTemplate = `{
                     "400": {
                         "description": ""
                     },
+                    "401": {
+                        "description": ""
+                    },
                     "404": {
+                        "description": ""
+                    },
+                    "500": {
                         "description": ""
                     }
                 }
@@ -158,6 +173,9 @@ const docTemplate = `{
                         }
                     },
                     "400": {
+                        "description": ""
+                    },
+                    "401": {
                         "description": ""
                     },
                     "404": {
@@ -209,7 +227,13 @@ const docTemplate = `{
                     "400": {
                         "description": ""
                     },
+                    "401": {
+                        "description": ""
+                    },
                     "404": {
+                        "description": ""
+                    },
+                    "500": {
                         "description": ""
                     }
                 }
@@ -256,6 +280,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.TransactionResponse"
                         }
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": ""
                     },
                     "404": {
                         "description": ""
@@ -308,7 +338,16 @@ const docTemplate = `{
                             }
                         }
                     },
+                    "400": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": ""
+                    },
                     "404": {
+                        "description": ""
+                    },
+                    "500": {
                         "description": ""
                     }
                 }

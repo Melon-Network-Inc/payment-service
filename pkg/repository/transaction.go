@@ -13,9 +13,9 @@ type TransactionRepository interface {
 	// Add creates the transaction.
 	Add(c *gin.Context, transaction entity.Transaction) (entity.Transaction, error)
 	// Get returns the transaction with the specified transaction ID.
-	Get(c *gin.Context, ID int) (entity.Transaction, error)
+	Get(c *gin.Context, ID uint) (entity.Transaction, error)
 	// List returns the transaction associated to target user.
-	List(c *gin.Context, ID int, showType string) ([]entity.Transaction, error)
+	List(c *gin.Context, ID uint, showType string) ([]entity.Transaction, error)
 	// Update returns the transaction with the specified transaction ID.
 	Update(c *gin.Context, transaction entity.Transaction) error
 	// Delete deletes the transaction.
@@ -41,18 +41,18 @@ func (r transactionRepository) Add(
 	if result := r.db.With(c).Create(&transaction); result.Error != nil {
 		return entity.Transaction{}, result.Error
 	}
-	return r.Get(c, int(transaction.ID))
+	return r.Get(c, transaction.ID)
 }
 
 // Get reads the transaction with the specified ID from the database.
-func (r transactionRepository) Get(c *gin.Context, ID int) (entity.Transaction, error) {
+func (r transactionRepository) Get(c *gin.Context, ID uint) (entity.Transaction, error) {
 	var transaction entity.Transaction
 	result := r.db.With(c).First(&transaction, ID)
 	return transaction, result.Error
 }
 
 // List lists all transactions by show_type.
-func (r transactionRepository) List(c *gin.Context, ID int, showType string) ([]entity.Transaction, error) {
+func (r transactionRepository) List(c *gin.Context, ID uint, showType string) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
 	var result *gorm.DB
 	tx := r.db.With(c).
