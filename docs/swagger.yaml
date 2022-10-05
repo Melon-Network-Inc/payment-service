@@ -290,6 +290,46 @@ paths:
       summary: Get a transaction
       tags:
       - transactions
+  /transaction/query/:id:
+    get:
+      consumes:
+      - application/json
+      description: Query requester's transactions by page
+      operationId: query-transactions
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: page number
+        in: query
+        name: page
+        type: string
+      - description: page size
+        in: query
+        name: per_page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.TransactionResponse'
+            type: array
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Query requester's transactions by page
+      tags:
+      - transactions
   /transaction/user/:id:
     get:
       consumes:
