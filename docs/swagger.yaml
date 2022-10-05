@@ -139,7 +139,11 @@ paths:
             $ref: '#/definitions/api.TransactionResponse'
         "400":
           description: ""
+        "401":
+          description: ""
         "404":
+          description: ""
+        "500":
           description: ""
       security:
       - ApiKeyAuth: []
@@ -166,7 +170,13 @@ paths:
             items:
               $ref: '#/definitions/api.TransactionResponse'
             type: array
+        "400":
+          description: ""
+        "401":
+          description: ""
         "404":
+          description: ""
+        "500":
           description: ""
       security:
       - ApiKeyAuth: []
@@ -198,6 +208,8 @@ paths:
           schema:
             $ref: '#/definitions/api.TransactionResponse'
         "400":
+          description: ""
+        "401":
           description: ""
         "404":
           description: ""
@@ -232,7 +244,11 @@ paths:
             $ref: '#/definitions/api.TransactionResponse'
         "400":
           description: ""
+        "401":
+          description: ""
         "404":
+          description: ""
+        "500":
           description: ""
       security:
       - ApiKeyAuth: []
@@ -263,6 +279,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/api.TransactionResponse'
+        "400":
+          description: ""
+        "401":
+          description: ""
         "404":
           description: ""
       security:
@@ -296,7 +316,13 @@ paths:
             items:
               $ref: '#/definitions/api.TransactionResponse'
             type: array
+        "400":
+          description: ""
+        "401":
+          description: ""
         "404":
+          description: ""
+        "500":
           description: ""
       security:
       - ApiKeyAuth: []

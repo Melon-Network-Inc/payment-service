@@ -1,9 +1,9 @@
 package transaction
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/Melon-Network-Inc/account-service/pkg/mwerrors"
 	"github.com/Melon-Network-Inc/common/pkg/api"
 	"github.com/Melon-Network-Inc/common/pkg/log"
 	"github.com/gin-gonic/gin"
@@ -38,19 +38,20 @@ type resource struct {
 // @Produce      json
 // @Success      201 {object} api.TransactionResponse
 // @Failure      400
+// @Failure      401
 // @Failure      404
 // @Router       /transaction [post]
 func (r resource) AddTransaction(c *gin.Context) {
 	var input api.AddTransactionRequest
 	// getting request's body
 	if err := c.BindJSON(&input); err != nil {
-		c.String(http.StatusBadRequest, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 
 	transaction, err := r.service.Add(c, input)
 	if err != nil {
-		c.String(http.StatusNotFound, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 	c.JSON(http.StatusCreated, &transaction)
@@ -67,12 +68,14 @@ func (r resource) AddTransaction(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Success      200 {object} api.TransactionResponse
+// @Failure      400
+// @Failure      401
 // @Failure      404
 // @Router       /transaction/:id [get]
 func (r resource) GetTransaction(c *gin.Context) {
 	transaction, err := r.service.Get(c, c.Param("id"))
 	if err != nil {
-		c.String(http.StatusNotFound, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, &transaction)
@@ -88,12 +91,15 @@ func (r resource) GetTransaction(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Success      200 {array} api.TransactionResponse
+// @Failure      400
+// @Failure      401
 // @Failure      404
+// @Failure      500
 // @Router       /transaction [get]
 func (r resource) GetAllTransactions(c *gin.Context) {
 	transactions, err := r.service.List(c)
 	if err != nil {
-		c.String(http.StatusNotFound, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 
@@ -111,12 +117,15 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Success      200 {array} api.TransactionResponse
+// @Failure      400
+// @Failure      401
 // @Failure      404
+// @Failure      500
 // @Router       /transaction/user/:id [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
-		c.String(http.StatusNotFound, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 
@@ -135,19 +144,21 @@ func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} api.TransactionResponse
 // @Failure      400
+// @Failure      401
 // @Failure      404
+// @Failure      500
 // @Router       /transaction [put]
 func (r resource) UpdateTransaction(c *gin.Context) {
 	var input api.UpdateTransactionRequest
 	// getting request's body
 	if err := c.BindJSON(&input); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 
 	transaction, err := r.service.Update(c, c.Param("id"), input)
 	if err != nil {
-		c.String(http.StatusNotFound, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 
@@ -166,12 +177,14 @@ func (r resource) UpdateTransaction(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} api.TransactionResponse
 // @Failure      400
+// @Failure      401
 // @Failure      404
+// @Failure      500
 // @Router       /transaction [delete]
 func (r resource) DeleteTransaction(c *gin.Context) {
 	transaction, err := r.service.Delete(c, c.Param("id"))
 	if err != nil {
-		c.String(http.StatusNotFound, fmt.Sprintf("error: %s", err))
+		mwerrors.HandleErrorResponse(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, &transaction)
