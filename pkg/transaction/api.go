@@ -6,6 +6,7 @@ import (
 	"github.com/Melon-Network-Inc/account-service/pkg/mwerrors"
 	"github.com/Melon-Network-Inc/common/pkg/api"
 	"github.com/Melon-Network-Inc/common/pkg/log"
+	"github.com/Melon-Network-Inc/common/pkg/pagination"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,7 @@ func RegisterHandlers(r *gin.RouterGroup, service Service, logger log.Logger) {
 	routes.GET("/user/:id", res.GetAllTransactionsByUser)
 	routes.GET("/:id", res.GetTransaction)
 	routes.GET("/", res.GetAllTransactions)
+	routes.GET("/query/", res.QueryTransactions)
 	routes.PUT("/:id", res.UpdateTransaction)
 	routes.DELETE("/:id", res.DeleteTransaction)
 }
@@ -104,6 +106,38 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, &transactions)
+}
+
+// QueryTransactions    godoc
+// @Summary      Query requester's transactions by page
+// @Description  Query requester's transactions by page
+// @ID           query-transactions
+// @Tags         transactions
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Authorization"
+// @Param page query string false "page number"
+// @Param per_page query string false "page size"
+// @Accept       json
+// @Produce      json
+// @Success      200 {array} api.TransactionResponse
+// @Failure      400
+// @Failure      401
+// @Failure      500
+// @Router       /transaction/query/:id [get]
+func (r resource) QueryTransactions(c *gin.Context) {
+	showType, count, err := r.service.CountByUser(c, c.Param("id"))
+	if err != nil {
+		mwerrors.HandleErrorResponse(c, err)
+		return
+	}
+	pages := pagination.NewFromRequest(c.Request, count)
+	addresses, err := r.service.Query(c, c.Param("id"), showType, pages.Offset(), pages.Limit())
+	if err != nil {
+		mwerrors.HandleErrorResponse(c, err)
+		return
+	}
+	pages.Items = addresses
+	c.JSON(http.StatusOK, &pages)
 }
 
 // GetAllTransactionsByUser    godoc

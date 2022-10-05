@@ -23,6 +23,10 @@ type Service interface {
 	ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]api.TransactionResponse, error)
 	Update(ctx *gin.Context, ID string, input api.UpdateTransactionRequest) (api.TransactionResponse, error)
 	Delete(ctx *gin.Context, ID string) (api.TransactionResponse, error)
+	Count(c *gin.Context) (string, int, error)
+	CountByUser(c *gin.Context, ID string) (string, int, error)
+	CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error)
+	Query(c *gin.Context, ID, showType string, offset, limit int) ([]api.TransactionResponse, error)
 }
 
 type service struct {
@@ -236,4 +240,86 @@ func (s service) Delete(ctx *gin.Context, ID string) (api.TransactionResponse, e
 
 func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
 	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
+}
+
+// Count returns the number of requester's transactions.
+func (s service) Count(c *gin.Context) (string, int, error) {
+	userID := processor.GetUserID(c)
+	if userID == "" {
+		return "Invalid", 0, mwerrors.NewMissingAuthToken()
+	}
+	return s.CountByUser(c, userID)
+}
+
+// Count returns the number of user's transactions by user ID.
+func (s service) CountByUser(ctx *gin.Context, ID string) (string, int, error) {
+	userID := processor.GetUserID(ctx)
+	if userID == "" {
+		return "Invalid", 0, mwerrors.NewMissingAuthToken()
+	}
+
+	if userID == ID {
+		return s.CountByUserWithShowType(ctx, ID, "Private")
+	}
+
+	requesterID, err := utils.Uint(userID)
+	if err != nil {
+		return "Invalid", 0, mwerrors.NewInvalidAuthToken(err)
+	}
+	requestUser, err := s.userRepo.Get(ctx, requesterID)
+	if err != nil {
+		return "Invalid", 0, mwerrors.NewResourcesNotFound()
+	}
+
+	otherID, err := utils.Uint(ID)
+	if err != nil {
+		return "Invalid", 0, mwerrors.NewIllegalArgumentError(err)
+	}
+	otherUser, err := s.userRepo.Get(ctx, otherID)
+	if err != nil {
+		return "Invalid", 0, mwerrors.NewResourcesNotFound()
+	}
+
+	showType := "Public"
+	exists, err := s.friendRepo.HasRelationByBothUsers(ctx, requestUser, otherUser)
+	if err != nil {
+		return "Invalid", 0, mwerrors.NewServerError(err)
+	}
+	if exists {
+		showType = "Friend"
+	}
+	return s.CountByUserWithShowType(ctx, ID, showType)
+}
+
+// Count returns the number of user's transactions by user ID and show type.
+func (s service) CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error) {
+	ownerID, err := utils.Uint(ID)
+	if err != nil {
+		return "Invalid", 0, mwerrors.NewIllegalArgumentError(err)
+	}
+	cnt, err := s.transactionRepo.Count(c, ownerID, showType)
+	return showType, cnt, err
+}
+
+// Query returns the transactions with the specified offset and limit.
+func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) ([]api.TransactionResponse, error) {
+	userID := processor.GetUserID(c)
+	if userID == "" {
+		return []api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
+	}
+	owerID, err := utils.Uint(userID)
+	if err != nil {
+		return []api.TransactionResponse{}, mwerrors.NewIllegalInputError(err.Error())
+	}
+	txns, err := s.transactionRepo.Query(c, offset, limit, owerID, showType)
+	if err != nil {
+		return []api.TransactionResponse{}, mwerrors.NewServerError(err)
+	}
+	var transactions []api.TransactionResponse
+	for _, txn := range txns {
+		transactions = append(transactions, api.TransactionResponse{
+			Transaction: txn,
+		})
+	}
+	return transactions, nil
 }
