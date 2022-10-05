@@ -115,6 +115,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Tags         transactions
 // @Security ApiKeyAuth
 // @Param Authorization header string true "Authorization"
+// @Param id path int true "User ID"
 // @Param page query string false "page number"
 // @Param per_page query string false "page size"
 // @Accept       json
