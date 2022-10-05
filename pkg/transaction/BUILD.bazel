@@ -18,5 +18,6 @@ go_library(
         "@com_github_melon_network_inc_common//pkg/api",
         "@com_github_melon_network_inc_common//pkg/entity",
         "@com_github_melon_network_inc_common//pkg/log",
+        "@com_github_melon_network_inc_common//pkg/pagination",
     ],
 )
