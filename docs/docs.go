@@ -428,13 +428,17 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "amount",
-                "currency",
+                "blockchain",
                 "name",
-                "show_type"
+                "show_type",
+                "symbol"
             ],
             "properties": {
                 "amount": {
                     "type": "number"
+                },
+                "blockchain": {
+                    "type": "string"
                 },
                 "currency": {
                     "type": "string"
@@ -467,6 +471,9 @@ const docTemplate = `{
                     ]
                 },
                 "status": {
+                    "type": "string"
+                },
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -510,14 +517,18 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "amount",
-                "currency",
+                "blockchain",
                 "name",
                 "receiver_pk",
-                "sender_pk"
+                "sender_pk",
+                "symbol"
             ],
             "properties": {
                 "amount": {
                     "type": "number"
+                },
+                "blockchain": {
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
@@ -554,6 +565,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "symbol": {
                     "type": "string"
                 },
                 "updatedAt": {
