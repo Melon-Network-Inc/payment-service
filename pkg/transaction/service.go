@@ -1,13 +1,13 @@
 package transaction
 
 import (
-	"github.com/Melon-Network-Inc/account-service/pkg/mwerrors"
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 
 	"github.com/Melon-Network-Inc/common/pkg/api"
 	"github.com/Melon-Network-Inc/common/pkg/entity"
 	"github.com/Melon-Network-Inc/common/pkg/log"
+	"github.com/Melon-Network-Inc/common/pkg/mwerrors"
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
@@ -92,7 +92,7 @@ func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, erro
 
 	UID, err := utils.Uint(ID)
 	if err != nil {
-		return api.TransactionResponse{}, mwerrors.NewIllegalInputError(err.Error())
+		return api.TransactionResponse{}, mwerrors.NewIllegalInputErrorWithMessage(err.Error())
 	}
 
 	transaction, err := s.transactionRepo.Get(ctx, UID)
@@ -177,7 +177,7 @@ func (s service) Update(
 	}
 	UID, err := utils.Uint(ID)
 	if err != nil {
-		return api.TransactionResponse{}, mwerrors.NewIllegalInputError(err.Error())
+		return api.TransactionResponse{}, mwerrors.NewIllegalInputErrorWithMessage(err.Error())
 	}
 	ownerID, err := utils.Uint(processor.GetUserID(ctx))
 	if err != nil {
@@ -309,7 +309,7 @@ func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) (
 	}
 	owerID, err := utils.Uint(userID)
 	if err != nil {
-		return []api.TransactionResponse{}, mwerrors.NewIllegalInputError(err.Error())
+		return []api.TransactionResponse{}, mwerrors.NewIllegalInputErrorWithMessage(err.Error())
 	}
 	txns, err := s.transactionRepo.Query(c, offset, limit, owerID, showType)
 	if err != nil {
