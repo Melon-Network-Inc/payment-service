@@ -4,6 +4,8 @@ definitions:
     properties:
       amount:
         type: number
+      blockchain:
+        type: string
       currency:
         type: string
       message:
@@ -27,11 +29,14 @@ definitions:
         type: string
       status:
         type: string
+      symbol:
+        type: string
     required:
     - amount
-    - currency
+    - blockchain
     - name
     - show_type
+    - symbol
     type: object
   api.TransactionResponse:
     properties:
@@ -61,6 +66,8 @@ definitions:
     properties:
       amount:
         type: number
+      blockchain:
+        type: string
       createdAt:
         type: string
       currency:
@@ -86,14 +93,17 @@ definitions:
         type: string
       status:
         type: string
+      symbol:
+        type: string
       updatedAt:
         type: string
     required:
     - amount
-    - currency
+    - blockchain
     - name
     - receiver_pk
     - sender_pk
+    - symbol
     type: object
   gorm.DeletedAt:
     properties:

@@ -69,7 +69,8 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		Name:           req.Name,
 		Status:         req.Status,
 		Amount:         req.Amount,
-		Currency:       req.Currency,
+		Symbol: 		req.Symbol,
+		Blockchain:     req.Blockchain,
 		SenderId:       req.SenderId,
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
@@ -77,6 +78,9 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		ShowType:       req.ShowType,
 		Message:        req.Message,
 	})
+	if req.Currency != "" {
+		transaction.Currency = req.Currency
+	}
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
