@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.64
+require github.com/Melon-Network-Inc/common v1.0.65
 
 require github.com/Melon-Network-Inc/account-service v0.0.0-20221007103903-0a9cc6713b89
 

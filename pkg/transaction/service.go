@@ -81,6 +81,11 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 	if req.Currency != "" {
 		transaction.Currency = req.Currency
 	}
+	if req.TransactionType != "" {
+		transaction.TransactionType = req.TransactionType
+	} else {
+		transaction.TransactionType = "Regular"
+	}
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
