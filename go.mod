@@ -4,7 +4,7 @@ go 1.18
 
 require github.com/Melon-Network-Inc/common v1.0.65
 
-require github.com/Melon-Network-Inc/account-service v0.0.0-20221007103903-0a9cc6713b89
+require github.com/Melon-Network-Inc/account-service v0.0.0-20221011071835-b4e5e25674c8
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

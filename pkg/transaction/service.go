@@ -69,7 +69,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		Name:           req.Name,
 		Status:         req.Status,
 		Amount:         req.Amount,
-		Symbol: 		req.Symbol,
+		Symbol:         req.Symbol,
 		Blockchain:     req.Blockchain,
 		SenderId:       req.SenderId,
 		SenderPubkey:   req.SenderPubkey,
@@ -111,12 +111,12 @@ func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, erro
 	return api.TransactionResponse{Transaction: transaction}, nil
 }
 
-// List returns the a list of transactions associated to the requester.
+// List returns the list of transactions associated to the requester.
 func (s service) List(ctx *gin.Context) ([]api.TransactionResponse, error) {
 	return s.ListByUserWithShowType(ctx, processor.GetUserID(ctx), "Private")
 }
 
-// ListByUser returns the a list of transactions associated to target user depending on requester's relation.
+// ListByUser returns the list of transactions associated to target user depending on requester's relation.
 func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionResponse, error) {
 	userID := processor.GetUserID(ctx)
 	if userID == "" {
