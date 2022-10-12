@@ -16,9 +16,9 @@ func RegisterHandlers(r *gin.RouterGroup, service Service, logger log.Logger) {
 	routes := r.Group("/transaction")
 	routes.POST("/", res.AddTransaction)
 	routes.GET("/user/:id", res.GetAllTransactionsByUser)
+	routes.GET("/query/:id", res.QueryTransactions)
 	routes.GET("/:id", res.GetTransaction)
 	routes.GET("/", res.GetAllTransactions)
-	routes.GET("/query/:id", res.QueryTransactions)
 	routes.PUT("/:id", res.UpdateTransaction)
 	routes.DELETE("/:id", res.DeleteTransaction)
 }
