@@ -71,11 +71,13 @@ func (r transactionRepository) List(c *gin.Context, userID uint, showType string
 
 // Count returns the number of user's transactions in the database.
 func (r transactionRepository) Count(ctx *gin.Context, userID uint, showType string) (int, error) {
+	var rows int64
 	result := r.db.With(ctx).Model(&entity.Transaction{}).
 		Where("sender_id = ?", userID).
 		Or("receiver_id = ?", userID).
-		Order("updated_at desc")
-	return int(result.RowsAffected), result.Error
+		Order("updated_at desc").
+		Count(&rows)
+	return int(rows), result.Error
 }
 
 // Query returns the list of user's transactions with the given offset and limit.
