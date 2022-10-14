@@ -114,6 +114,9 @@
                     "401": {
                         "description": ""
                     },
+                    "403": {
+                        "description": ""
+                    },
                     "404": {
                         "description": ""
                     },
@@ -172,6 +175,9 @@
                         "description": ""
                     },
                     "404": {
+                        "description": ""
+                    },
+                    "500": {
                         "description": ""
                     }
                 }
@@ -349,7 +355,7 @@
                     "401": {
                         "description": ""
                     },
-                    "500": {
+                    "404": {
                         "description": ""
                     }
                 }

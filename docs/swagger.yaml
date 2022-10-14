@@ -227,6 +227,8 @@ paths:
           description: ""
         "404":
           description: ""
+        "500":
+          description: ""
       security:
       - ApiKeyAuth: []
       summary: Add a transaction to account
@@ -259,6 +261,8 @@ paths:
         "400":
           description: ""
         "401":
+          description: ""
+        "403":
           description: ""
         "404":
           description: ""
@@ -342,7 +346,7 @@ paths:
           description: ""
         "401":
           description: ""
-        "500":
+        "404":
           description: ""
       security:
       - ApiKeyAuth: []

@@ -62,7 +62,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 	}
 
 	if req.SenderId != ownerID && req.ReceiverId != ownerID {
-		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowed(processor.GetUsername(ctx))
+		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowedWithOnlyUsername(processor.GetUsername(ctx))
 	}
 
 	transaction, err := s.transactionRepo.Add(ctx, entity.Transaction{
@@ -106,7 +106,7 @@ func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, erro
 
 	transaction, err := s.transactionRepo.Get(ctx, UID)
 	if err != nil {
-		return api.TransactionResponse{}, mwerrors.NewResourceNotFound(UID)
+		return api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 	return api.TransactionResponse{Transaction: transaction}, nil
 }
@@ -133,7 +133,7 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 	}
 	requestUser, err := s.userRepo.Get(ctx, requesterID)
 	if err != nil {
-		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
+		return []api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 
 	otherID, err := utils.Uint(ID)
@@ -142,13 +142,13 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 	}
 	otherUser, err := s.userRepo.Get(ctx, otherID)
 	if err != nil {
-		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
+		return []api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 
 	showType := "Public"
 	exists, err := s.friendRepo.HasRelationByBothUsers(ctx, requestUser, otherUser)
 	if err != nil {
-		return []api.TransactionResponse{}, mwerrors.NewServerError(err)
+		return []api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 	if exists {
 		showType = "Friend"
@@ -166,7 +166,7 @@ func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType st
 
 	transaction, err := s.transactionRepo.List(ctx, userID, showType)
 	if err != nil {
-		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
+		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
 	var listTransaction []api.TransactionResponse
 	for _, transaction := range transaction {
@@ -195,10 +195,10 @@ func (s service) Update(
 
 	transaction, err := s.transactionRepo.Get(ctx, UID)
 	if err != nil {
-		return api.TransactionResponse{}, mwerrors.NewResourcesNotFound()
+		return api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
 	if checkAllowsOperation(transaction, ownerID) {
-		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowed(processor.GetUsername(ctx))
+		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowedWithOnlyUsername(processor.GetUsername(ctx))
 	}
 
 	if input.Name != "" {
@@ -237,7 +237,7 @@ func (s service) Delete(ctx *gin.Context, ID string) (api.TransactionResponse, e
 	}
 
 	if checkAllowsOperation(transaction, ownerID) {
-		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowed(processor.GetUsername(ctx))
+		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowedWithOnlyResourceID(processor.GetUsername(ctx), ownerID)
 	}
 
 	err = s.transactionRepo.Delete(ctx, transaction)
@@ -277,7 +277,7 @@ func (s service) CountByUser(ctx *gin.Context, ID string) (string, int, error) {
 	}
 	requestUser, err := s.userRepo.Get(ctx, requesterID)
 	if err != nil {
-		return "Invalid", 0, mwerrors.NewResourcesNotFound()
+		return "Invalid", 0, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 
 	otherID, err := utils.Uint(ID)
@@ -286,13 +286,13 @@ func (s service) CountByUser(ctx *gin.Context, ID string) (string, int, error) {
 	}
 	otherUser, err := s.userRepo.Get(ctx, otherID)
 	if err != nil {
-		return "Invalid", 0, mwerrors.NewResourcesNotFound()
+		return "Invalid", 0, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 
 	showType := "Public"
 	exists, err := s.friendRepo.HasRelationByBothUsers(ctx, requestUser, otherUser)
 	if err != nil {
-		return "Invalid", 0, mwerrors.NewServerError(err)
+		return "Invalid", 0, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 	if exists {
 		showType = "Friend"
@@ -322,7 +322,7 @@ func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) (
 	}
 	txns, err := s.transactionRepo.Query(c, offset, limit, owerID, showType)
 	if err != nil {
-		return []api.TransactionResponse{}, mwerrors.NewServerError(err)
+		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
 	var transactions []api.TransactionResponse
 	for _, txn := range txns {

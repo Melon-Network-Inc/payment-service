@@ -121,6 +121,9 @@ const docTemplate = `{
                     "401": {
                         "description": ""
                     },
+                    "403": {
+                        "description": ""
+                    },
                     "404": {
                         "description": ""
                     },
@@ -179,6 +182,9 @@ const docTemplate = `{
                         "description": ""
                     },
                     "404": {
+                        "description": ""
+                    },
+                    "500": {
                         "description": ""
                     }
                 }
@@ -356,7 +362,7 @@ const docTemplate = `{
                     "401": {
                         "description": ""
                     },
-                    "500": {
+                    "404": {
                         "description": ""
                     }
                 }

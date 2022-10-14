@@ -42,6 +42,7 @@ type resource struct {
 // @Failure      400
 // @Failure      401
 // @Failure      404
+// @Failure      500
 // @Router       /transaction [post]
 func (r resource) AddTransaction(c *gin.Context) {
 	var input api.AddTransactionRequest
@@ -123,7 +124,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Success      200 {array} api.TransactionResponse
 // @Failure      400
 // @Failure      401
-// @Failure      500
+// @Failure      404
 // @Router       /transaction/query/:id [get]
 func (r resource) QueryTransactions(c *gin.Context) {
 	showType, count, err := r.service.CountByUser(c, c.Param("id"))
@@ -180,6 +181,7 @@ func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 // @Success      200 {object} api.TransactionResponse
 // @Failure      400
 // @Failure      401
+// @Failure      403
 // @Failure      404
 // @Failure      500
 // @Router       /transaction [put]
