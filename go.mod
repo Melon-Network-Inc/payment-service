@@ -2,9 +2,9 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.70
+require github.com/Melon-Network-Inc/common v1.0.71
 
-require github.com/Melon-Network-Inc/account-service v0.0.0-20221012090041-7b1b58ace684
+require github.com/Melon-Network-Inc/account-service v0.0.0-20221014052101-9a8a99b63227
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
