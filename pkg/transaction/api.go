@@ -48,13 +48,13 @@ func (r resource) AddTransaction(c *gin.Context) {
 	var input api.AddTransactionRequest
 	// getting request's body
 	if err := c.BindJSON(&input); err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 
 	transaction, err := r.service.Add(c, input)
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 	c.JSON(http.StatusCreated, &transaction)
@@ -78,7 +78,7 @@ func (r resource) AddTransaction(c *gin.Context) {
 func (r resource) GetTransaction(c *gin.Context) {
 	transaction, err := r.service.Get(c, c.Param("id"))
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 	c.JSON(http.StatusOK, &transaction)
@@ -102,7 +102,7 @@ func (r resource) GetTransaction(c *gin.Context) {
 func (r resource) GetAllTransactions(c *gin.Context) {
 	transactions, err := r.service.List(c)
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 
@@ -129,13 +129,13 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 func (r resource) QueryTransactions(c *gin.Context) {
 	showType, count, err := r.service.CountByUser(c, c.Param("id"))
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 	pages := pagination.NewFromRequest(c.Request, count)
 	addresses, err := r.service.Query(c, c.Param("id"), showType, pages.Offset(), pages.Limit())
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 	pages.Items = addresses
@@ -161,7 +161,7 @@ func (r resource) QueryTransactions(c *gin.Context) {
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 
@@ -189,13 +189,13 @@ func (r resource) UpdateTransaction(c *gin.Context) {
 	var input api.UpdateTransactionRequest
 	// getting request's body
 	if err := c.BindJSON(&input); err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 
 	transaction, err := r.service.Update(c, c.Param("id"), input)
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 
@@ -221,7 +221,7 @@ func (r resource) UpdateTransaction(c *gin.Context) {
 func (r resource) DeleteTransaction(c *gin.Context) {
 	transaction, err := r.service.Delete(c, c.Param("id"))
 	if err != nil {
-		mwerrors.HandleErrorResponse(c, err)
+		mwerrors.HandleErrorResponse(c, r.logger, err)
 		return
 	}
 	c.JSON(http.StatusOK, &transaction)
