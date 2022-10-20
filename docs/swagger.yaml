@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  api.ActivityResponse:
+    properties:
+      posts:
+        items:
+          $ref: '#/definitions/api.Post'
+        type: array
+    type: object
   api.AddTransactionRequest:
     properties:
       amount:
@@ -40,6 +47,15 @@ definitions:
     - show_type
     - symbol
     type: object
+  api.Post:
+    properties:
+      moment:
+        $ref: '#/definitions/entity.Moment'
+      transaction:
+        $ref: '#/definitions/entity.Transaction'
+      type:
+        type: string
+    type: object
   api.TransactionResponse:
     properties:
       transaction:
@@ -63,6 +79,26 @@ definitions:
     required:
     - name
     - show_type
+    type: object
+  entity.Moment:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      message:
+        maxLength: 200
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+      user_ref:
+        type: integer
+    required:
+    - message
     type: object
   entity.Transaction:
     properties:
@@ -127,6 +163,78 @@ info:
   title: Melon Wallet Service API
   version: "1.0"
 paths:
+  /activity:
+    get:
+      consumes:
+      - application/json
+      description: List activities of an account
+      operationId: list-activities
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.ActivityResponse'
+            type: array
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "404":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: List activities of an account
+      tags:
+      - activities
+  /activity/query:
+    get:
+      consumes:
+      - application/json
+      description: Query activities of an account
+      operationId: query-activities
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: page number
+        in: query
+        name: page
+        type: string
+      - description: page size
+        in: query
+        name: per_page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Post'
+            type: array
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "404":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Query activities of an account
+      tags:
+      - activities
   /transaction:
     delete:
       consumes:
