@@ -100,6 +100,29 @@ definitions:
     required:
     - message
     type: object
+  entity.News:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      preview_url:
+        type: string
+      source:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    required:
+    - source
+    - title
+    - url
+    type: object
   entity.Transaction:
     properties:
       amount:
@@ -235,6 +258,46 @@ paths:
       summary: Query activities of an account
       tags:
       - activities
+  /news/query:
+    get:
+      consumes:
+      - application/json
+      description: Query news by page
+      operationId: query-news
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: page number
+        in: query
+        name: page
+        type: string
+      - description: page size
+        in: query
+        name: per_page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.News'
+            type: array
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "404":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Query news by page
+      tags:
+      - news
   /transaction:
     delete:
       consumes:

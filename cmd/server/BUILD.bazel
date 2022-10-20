@@ -8,6 +8,7 @@ go_library(
     deps = [
         "//docs",
         "//pkg/activity",
+        "//pkg/news",
         "//pkg/repository",
         "//pkg/transaction",
         "@com_github_gin_gonic_gin//:gin",

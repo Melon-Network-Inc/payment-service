@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "repository",
-    srcs = ["transaction.go"],
+    srcs = [
+        "news.go",
+        "transaction.go",
+    ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/repository",
     visibility = ["//visibility:public"],
     deps = [
