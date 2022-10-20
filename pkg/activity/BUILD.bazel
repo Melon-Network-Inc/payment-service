@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "activity",
+    srcs = [
+        "api.go",
+        "service.go",
+    ],
+    importpath = "github.com/Melon-Network-Inc/payment-service/pkg/activity",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/repository",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_melon_network_inc_account_service//pkg/processor",
+        "@com_github_melon_network_inc_account_service//pkg/repository",
+        "@com_github_melon_network_inc_common//pkg/api",
+        "@com_github_melon_network_inc_common//pkg/entity",
+        "@com_github_melon_network_inc_common//pkg/log",
+        "@com_github_melon_network_inc_common//pkg/mwerrors",
+        "@com_github_melon_network_inc_common//pkg/pagination",
+    ],
+)

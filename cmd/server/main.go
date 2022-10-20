@@ -23,6 +23,7 @@ import (
 	"github.com/Melon-Network-Inc/common/pkg/utils"
 
 	"github.com/Melon-Network-Inc/payment-service/docs"
+	"github.com/Melon-Network-Inc/payment-service/pkg/activity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 
 	"github.com/gin-gonic/gin"
@@ -79,7 +80,6 @@ func main() {
 
 	s.buildHandlers()
 
-
 	if !utils.IsProdEnvironment() {
 		logger.Debug(router.Run(fmt.Sprintf(":%d", serverConfig.ServerPort)))
 	} else {
@@ -125,9 +125,11 @@ func (s *Server) buildHandlers() {
 	friendRepo := accountRepo.NewFriendRepository(s.Database, s.Logger)
 
 	transactionService := transaction.NewService(transactionRepo, userRepo, friendRepo, s.Logger)
+	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
 
 	v1 := s.App.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, s.Logger)
+	activity.RegisterHandler(v1, activityService, s.Logger)
 
 	if !utils.IsProdEnvironment() && swagHandler != nil {
 		s.buildSwagger()
