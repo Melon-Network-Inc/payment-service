@@ -24,6 +24,7 @@ import (
 
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/activity"
+	"github.com/Melon-Network-Inc/payment-service/pkg/news"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
 
 	"github.com/gin-gonic/gin"
@@ -121,15 +122,19 @@ func main() {
 
 func (s *Server) buildHandlers() {
 	transactionRepo := repository.NewTransactionRepository(s.Database, s.Logger)
+	newsRepo := repository.NewNewsRepository(s.Database, s.Logger)
+
 	userRepo := accountRepo.NewUserRepository(s.Database, s.Cache, s.Logger)
 	friendRepo := accountRepo.NewFriendRepository(s.Database, s.Logger)
 
 	transactionService := transaction.NewService(transactionRepo, userRepo, friendRepo, s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
+	newsService := news.NewService(newsRepo, s.Logger)
 
 	v1 := s.App.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, s.Logger)
 	activity.RegisterHandler(v1, activityService, s.Logger)
+	news.RegisterHandler(v1, newsService, s.Logger)
 
 	if !utils.IsProdEnvironment() && swagHandler != nil {
 		s.buildSwagger()
