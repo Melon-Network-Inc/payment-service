@@ -7,6 +7,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//docs",
+        "//pkg/activity",
         "//pkg/repository",
         "//pkg/transaction",
         "@com_github_gin_gonic_gin//:gin",
