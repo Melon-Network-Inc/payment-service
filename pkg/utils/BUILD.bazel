@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "utils",
-    srcs = ["uidhelper.go"],
+    srcs = [
+        "time.go",
+        "uidhelper.go",
+    ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/utils",
     visibility = ["//visibility:public"],
 )

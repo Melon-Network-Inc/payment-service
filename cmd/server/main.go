@@ -13,22 +13,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
-
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
-
 	"github.com/Melon-Network-Inc/common/pkg/config"
 	"github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
 	"github.com/Melon-Network-Inc/common/pkg/utils"
-
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/activity"
 	"github.com/Melon-Network-Inc/payment-service/pkg/news"
+	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/transaction"
-
+	paymentUtils "github.com/Melon-Network-Inc/payment-service/pkg/utils"
 	"github.com/gin-gonic/gin"
-
+	"github.com/go-co-op/gocron"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -39,6 +36,7 @@ type Server struct {
 	App      *gin.Engine
 	Cache    *dbcontext.Cache
 	Database *dbcontext.DB
+	Cronjob  *gocron.Scheduler
 	Logger   log.Logger
 }
 
@@ -72,13 +70,21 @@ func main() {
 	router := gin.Default()
 	router.Use(log.GinLogger(logger), log.GinRecovery(logger, true))
 
+	serverLocation, err := paymentUtils.GetPSTLocation()
+	if err != nil {
+		logger.Error(err)
+		os.Exit(-1)
+	}
+
 	s := Server{
 		App:      router,
 		Cache:    dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
 		Database: dbcontext.NewDatabase(db),
+		Cronjob:  gocron.NewScheduler(serverLocation),
 		Logger:   logger,
 	}
 
+	// Bind all handlers to wallet server
 	s.buildHandlers()
 
 	if !utils.IsProdEnvironment() {
@@ -88,14 +94,14 @@ func main() {
 			Addr:    fmt.Sprintf(":%d", serverConfig.ServerPort),
 			Handler: s.App,
 		}
-	
+
 		go func() {
 			// service connections
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				logger.Errorf("listen: %s\n", err)
 			}
 		}()
-	
+
 		// Wait for interrupt signal to gracefully shut down the server with
 		// a timeout of 5 seconds.
 		quit := make(chan os.Signal)
@@ -105,7 +111,7 @@ func main() {
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
 		logger.Info("Shutdown Server ...")
-	
+
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := srv.Shutdown(ctx); err != nil {
@@ -127,9 +133,11 @@ func (s *Server) buildHandlers() {
 	userRepo := accountRepo.NewUserRepository(s.Database, s.Cache, s.Logger)
 	friendRepo := accountRepo.NewFriendRepository(s.Database, s.Logger)
 
+	newsClient := news.NewClient(s.Logger)
+
 	transactionService := transaction.NewService(transactionRepo, userRepo, friendRepo, s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
-	newsService := news.NewService(newsRepo, s.Logger)
+	newsService := news.NewService(newsRepo, newsClient, s.Logger)
 
 	v1 := s.App.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, s.Logger)
@@ -140,6 +148,17 @@ func (s *Server) buildHandlers() {
 		s.buildSwagger()
 		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
+
+	s.startCronJob(newsService)
+}
+
+func (s *Server) startCronJob(newsService news.Service) {
+	_, err := s.Cronjob.Every(1).Day().At("8:00").Do(newsService.Collect)
+	if err != nil {
+		s.Logger.Error("cannot schedule new cron job due to", err)
+	}
+
+	s.Cronjob.StartAsync()
 }
 
 func (s *Server) buildSwagger() {

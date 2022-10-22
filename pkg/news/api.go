@@ -14,7 +14,7 @@ func RegisterHandler(r *gin.RouterGroup, service Service, logger log.Logger) {
 	res := resource{service, logger}
 
 	routes := r.Group("/news")
-	routes.GET("/query", res.QueryActivities)
+	routes.GET("/query", res.QueryNews)
 }
 
 type resource struct {
@@ -38,7 +38,7 @@ type resource struct {
 // @Failure      401
 // @Failure      404
 // @Router       /news/query [get]
-func (r resource) QueryActivities(c *gin.Context) {
+func (r resource) QueryNews(c *gin.Context) {
 	count, err := r.service.Count(c)
 	if err != nil {
 		mwerrors.HandleErrorResponse(c, r.logger, err)
