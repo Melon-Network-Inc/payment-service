@@ -12,13 +12,15 @@ import (
 // NewsRepository encapsulates the logic to access news from the data source.
 type NewsRepository interface {
 	// BatchAdd creates an array of news.
-	BatchAdd(c *gin.Context, news []entity.News) (int, error)
+	BatchAdd(news []entity.News) (int, error)
 	// Delete deletes the news.
 	Delete(c *gin.Context, news entity.News) error
 	// DeleteBefore deletes the news by timestamp.
-	DeleteBefore(c *gin.Context, deadline time.Time) error
+	DeleteBefore(deadline time.Time) (int, error)
 	// Count returns the number of user's news in the database.
 	Count(ctx *gin.Context) (int, error)
+	// CountWithoutContext returns the number of user's news in the database.
+	CountWithoutContext() (int, error)
 	// Query returns the list of news with the given offset and limit.
 	Query(ctx *gin.Context, offset, limit int) ([]entity.News, error)
 }
@@ -29,17 +31,17 @@ type newsRepository struct {
 	logger log.Logger
 }
 
-// NewTransactionRepository creates a new transaction transactionRepository
+// NewNewsRepository creates a new newsRepository
 func NewNewsRepository(db *db.DB, logger log.Logger) NewsRepository {
 	return newsRepository{db, logger}
 }
 
-// Add creates an array of news.
-func (r newsRepository) BatchAdd(c *gin.Context, news []entity.News) (int, error) {
-	if result := r.db.With(c).CreateInBatches(&news, len(news)); result.Error != nil {
+// BatchAdd creates an array of news.
+func (r newsRepository) BatchAdd(news []entity.News) (int, error) {
+	if result := r.db.DB().CreateInBatches(&news, len(news)); result.Error != nil {
 		return 0, result.Error
 	}
-	return r.Count(c)
+	return r.CountWithoutContext()
 }
 
 // Delete deletes the news by the news entity.
@@ -48,15 +50,25 @@ func (r newsRepository) Delete(c *gin.Context, news entity.News) error {
 }
 
 // DeleteBefore deletes the news before certain timestamp.
-func (r newsRepository) DeleteBefore(c *gin.Context, timestamp time.Time) error{
-	return r.db.With(c).Model(&entity.News{}).Where("created_at < ?", timestamp).Delete(&entity.News{}).Error
+func (r newsRepository) DeleteBefore(timestamp time.Time) (int, error) {
+	result := r.db.DB().Model(&entity.News{}).Unscoped().Delete(&entity.News{}, "created_at < ?", timestamp)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return r.CountWithoutContext()
 }
 
 // Count returns the number of news in the database by the friend IDs.
 func (r newsRepository) Count(ctx *gin.Context) (int, error) {
 	var rows int64
-	result := r.db.With(ctx).Model(&entity.News{}).
-		Count(&rows)
+	result := r.db.With(ctx).Model(&entity.News{}).Count(&rows)
+	return int(rows), result.Error
+}
+
+// CountWithoutContext returns the number of news in the database by the friend IDs.
+func (r newsRepository) CountWithoutContext() (int, error) {
+	var rows int64
+	result := r.db.DB().Model(&entity.News{}).Count(&rows)
 	return int(rows), result.Error
 }
 

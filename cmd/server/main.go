@@ -149,13 +149,21 @@ func (s *Server) buildHandlers() {
 		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	s.startCronJob(newsService)
+	s.pullDataIfEmpty(newsService)
+	s.setupCronJob(newsService)
 }
 
-func (s *Server) startCronJob(newsService news.Service) {
+func (s *Server) pullDataIfEmpty(newsService news.Service) {
+	go func() {
+		newsService.InitializeNewsTable()
+		s.Logger.Info("data table setup completed")
+	}()
+}
+
+func (s *Server) setupCronJob(newsService news.Service) {
 	_, err := s.Cronjob.Every(1).Day().At("8:00").Do(newsService.Collect)
 	if err != nil {
-		s.Logger.Error("cannot schedule new cron job due to", err)
+		s.Logger.Error("cannot schedule new cron job due to ", err)
 	}
 
 	s.Cronjob.StartAsync()

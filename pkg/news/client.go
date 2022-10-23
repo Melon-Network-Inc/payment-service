@@ -11,7 +11,7 @@ import (
 
 type Client interface {
 	FetchData() Result
-	rapidAPIFetch(source Source) (Result, error)
+	rapidAPIFetch(source Source) ([]Item, error)
 	parseRegularFetch(source Source) (Result, error)
 	parseCustomLinkFetch(source Source) (Result, error)
 }
@@ -86,7 +86,7 @@ type Result struct {
 }
 
 func NewResult() Result {
-	return Result{NewsItems: []Item{}}
+	return Result{}
 }
 
 func (nc newsClient) FetchData() Result {
@@ -97,7 +97,7 @@ func (nc newsClient) FetchData() Result {
 		case RapidAPI:
 			rapidAPIResults, err := nc.rapidAPIFetch(source)
 			if err == nil {
-				result.NewsItems = append(result.NewsItems, rapidAPIResults.NewsItems...)
+				result.NewsItems = append(result.NewsItems, rapidAPIResults...)
 			}
 		case RegularNewLinks:
 		case CustomLinks:
@@ -107,31 +107,31 @@ func (nc newsClient) FetchData() Result {
 	return result
 }
 
-func (nc newsClient) rapidAPIFetch(source Source) (Result, error) {
+func (nc newsClient) rapidAPIFetch(source Source) ([]Item, error) {
 	req, _ := http.NewRequest("GET", source.Url, nil)
 
 	req.Header.Add("X-RapidAPI-Key", source.Key)
 	req.Header.Add("X-RapidAPI-Host", source.Host)
 
-	result := NewResult()
+	var result []Item
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		nc.logger.Error("fail to fetch from rapid API ", err)
-		return Result{}, err
+		return []Item{}, err
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		nc.logger.Error("fail to read from rapid API result body ", err)
-		return Result{}, err
+		return []Item{}, err
 	}
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
 		nc.logger.Error("fail to unmarshal rapid API body ", err)
-		return Result{}, err
+		return []Item{}, err
 	}
 	return result, nil
 }
