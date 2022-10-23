@@ -712,8 +712,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_melon_network_inc_common",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:IG6eJYvRKkgN8RJ89eoLw31UxknrQptVvRL7uUzyQtA=",
-        version = "v1.0.78",
+        sum = "h1:qrNB5uHbXHHdyZP0s7UlcmcxELaHP/M6PBiCdCKhO9A=",
+        version = "v1.0.79",
     )
 
     go_repository(
