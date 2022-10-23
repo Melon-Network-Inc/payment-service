@@ -768,6 +768,15 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "preview_description": {
+                    "type": "string"
+                },
+                "preview_image": {
+                    "type": "string"
+                },
+                "preview_name": {
+                    "type": "string"
+                },
                 "preview_url": {
                     "type": "string"
                 },

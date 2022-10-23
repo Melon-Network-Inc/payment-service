@@ -45,8 +45,8 @@ github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030I
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Melon-Network-Inc/account-service v0.0.0-20221020092047-1eb5552c986f h1:1B2SKSpl+lvgNR31a0Re7WYf1NQhEH1jKxzUO8vutOI=
 github.com/Melon-Network-Inc/account-service v0.0.0-20221020092047-1eb5552c986f/go.mod h1:Nu2NMeMfjaQz4hqwOQglz2/cdoLsUFIzv2lcivbpoto=
-github.com/Melon-Network-Inc/common v1.0.78 h1:IG6eJYvRKkgN8RJ89eoLw31UxknrQptVvRL7uUzyQtA=
-github.com/Melon-Network-Inc/common v1.0.78/go.mod h1:QATtDQU4piRJFdkX/hQ9pPDky/QaPo0zfptCuIbUfn8=
+github.com/Melon-Network-Inc/common v1.0.79 h1:qrNB5uHbXHHdyZP0s7UlcmcxELaHP/M6PBiCdCKhO9A=
+github.com/Melon-Network-Inc/common v1.0.79/go.mod h1:QATtDQU4piRJFdkX/hQ9pPDky/QaPo0zfptCuIbUfn8=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
