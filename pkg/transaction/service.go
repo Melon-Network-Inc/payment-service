@@ -260,7 +260,7 @@ func (s service) Count(c *gin.Context) (string, int, error) {
 	return s.CountByUser(c, userID)
 }
 
-// Count returns the number of user's transactions by user ID.
+// CountByUser returns the number of user's transactions by user ID.
 func (s service) CountByUser(ctx *gin.Context, ID string) (string, int, error) {
 	userID := processor.GetUserID(ctx)
 	if userID == "" {
@@ -300,7 +300,7 @@ func (s service) CountByUser(ctx *gin.Context, ID string) (string, int, error) {
 	return s.CountByUserWithShowType(ctx, ID, showType)
 }
 
-// Count returns the number of user's transactions by user ID and show type.
+// CountByUserWithShowType returns the number of user's transactions by user ID and show type.
 func (s service) CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error) {
 	ownerID, err := utils.Uint(ID)
 	if err != nil {

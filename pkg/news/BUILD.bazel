@@ -4,12 +4,14 @@ go_library(
     name = "news",
     srcs = [
         "api.go",
+        "client.go",
         "service.go",
     ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/news",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/repository",
+        "@com_github_badoux_goscraper//:goscraper",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_melon_network_inc_account_service//pkg/processor",
         "@com_github_melon_network_inc_common//pkg/entity",
