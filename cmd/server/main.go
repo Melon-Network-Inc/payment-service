@@ -13,10 +13,12 @@ import (
 	"syscall"
 	"time"
 
+	gcs "cloud.google.com/go/storage"
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/common/pkg/config"
 	"github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
+	"github.com/Melon-Network-Inc/common/pkg/storage"
 	"github.com/Melon-Network-Inc/common/pkg/utils"
 	"github.com/Melon-Network-Inc/payment-service/docs"
 	"github.com/Melon-Network-Inc/payment-service/pkg/activity"
@@ -33,11 +35,12 @@ import (
 var swagHandler gin.HandlerFunc
 
 type Server struct {
-	App      *gin.Engine
-	Cache    *dbcontext.Cache
-	Database *dbcontext.DB
-	Cronjob  *gocron.Scheduler
-	Logger   log.Logger
+	App      		*gin.Engine
+	Cache    		*dbcontext.Cache
+	Database 		*dbcontext.DB
+	Cronjob  		*gocron.Scheduler
+	StorageClient	*storage.StorageClient
+	Logger   		log.Logger
 }
 
 func init() {
@@ -76,12 +79,20 @@ func main() {
 		os.Exit(-1)
 	}
 
+	gcsClient, err := gcs.NewClient(context.Background())
+	if err != nil {
+		logger.Errorf("error initializing Google Cloud Storage: %v\n", err)
+		os.Exit(-1)
+	}
+	storageClient := storage.NewStorageClient(gcsClient)
+
 	s := Server{
-		App:      router,
-		Cache:    dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
-		Database: dbcontext.NewDatabase(db),
-		Cronjob:  gocron.NewScheduler(serverLocation),
-		Logger:   logger,
+		App:      		router,
+		Cache:    		dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
+		Database: 		dbcontext.NewDatabase(db),
+		Cronjob:  		gocron.NewScheduler(serverLocation),
+		StorageClient:  &storageClient,
+		Logger:   		logger,
 	}
 
 	// Bind all handlers to wallet server
@@ -130,7 +141,7 @@ func (s *Server) buildHandlers() {
 	transactionRepo := repository.NewTransactionRepository(s.Database, s.Logger)
 	newsRepo := repository.NewNewsRepository(s.Database, s.Logger)
 
-	userRepo := accountRepo.NewUserRepository(s.Database, s.Cache, s.Logger)
+	userRepo := accountRepo.NewUserRepository(s.Database, s.Cache, s.StorageClient, s.Logger)
 	friendRepo := accountRepo.NewFriendRepository(s.Database, s.Logger)
 
 	newsClient := news.NewClient(s.Logger)

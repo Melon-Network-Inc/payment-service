@@ -16,7 +16,7 @@ prod: ## run the prod server with bazel
 
 .PHONY: build
 build: ## update dependency and build using bazel
-	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
+	bazel run //:gazelle -- update-repos -from_file=go.mod -prune=true -build_file_proto_mode=disable_global -to_macro=deps.bzl%go_dependencies
 	bazel build //...
 
 .PHONY: test
@@ -34,8 +34,9 @@ gazelle: ## run gazelle to add bazel to each directory
 .PHONY: dependency
 dependency: ## update all bazel file with necessary dependency
 	go get -u github.com/Melon-Network-Inc/common
+	go get -u github.com/Melon-Network-Inc/account-service
 	go mod tidy
-	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
+	bazel run //:gazelle -- update-repos -from_file=go.mod -prune=true -build_file_proto_mode=disable_global -to_macro=deps.bzl%go_dependencies
 
 .PHONE: doc
 doc: ## update swagger document
