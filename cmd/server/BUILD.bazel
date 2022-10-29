@@ -18,9 +18,11 @@ go_library(
         "@com_github_melon_network_inc_common//pkg/config",
         "@com_github_melon_network_inc_common//pkg/dbcontext",
         "@com_github_melon_network_inc_common//pkg/log",
+        "@com_github_melon_network_inc_common//pkg/storage",
         "@com_github_melon_network_inc_common//pkg/utils",
         "@com_github_swaggo_files//:files",
         "@com_github_swaggo_gin_swagger//:gin-swagger",
+        "@com_google_cloud_go_storage//:storage",
     ],
 )
 
