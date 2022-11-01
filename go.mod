@@ -2,11 +2,11 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.87
+require github.com/Melon-Network-Inc/common v1.0.93
 
 require (
 	cloud.google.com/go/storage v1.26.0
-	github.com/Melon-Network-Inc/account-service v0.0.0-20221029005741-b85d8742fd33
+	github.com/Melon-Network-Inc/account-service v0.0.0-20221101014343-a047e73dc59a
 	github.com/badoux/goscraper v0.0.0-20190827161153-36995ce6b19f
 )
 
