@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"fmt"
+	"strconv"
+
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 
@@ -8,6 +11,7 @@ import (
 	"github.com/Melon-Network-Inc/common/pkg/entity"
 	"github.com/Melon-Network-Inc/common/pkg/log"
 	"github.com/Melon-Network-Inc/common/pkg/mwerrors"
+	"github.com/Melon-Network-Inc/common/pkg/notification"
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
@@ -30,19 +34,25 @@ type Service interface {
 }
 
 type service struct {
-	transactionRepo repository.TransactionRepository
-	userRepo        accountRepo.UserRepository
-	friendRepo      accountRepo.FriendRepository
-	logger          log.Logger
+	transactionRepo 	repository.TransactionRepository
+	userRepo        	accountRepo.UserRepository
+	friendRepo      	accountRepo.FriendRepository
+	deviceRepo       	accountRepo.DeviceRepository
+	notificationRepo	accountRepo.NotificationRepository
+	fcmClient           *notification.FCMClient
+	logger          	log.Logger
 }
 
 // NewService creates a new transaction service.
 func NewService(
-	transactionRepo repository.TransactionRepository,
-	userRepo accountRepo.UserRepository,
-	friendRepo accountRepo.FriendRepository,
+	transactionRepo 	repository.TransactionRepository,
+	userRepo 			accountRepo.UserRepository,
+	friendRepo 			accountRepo.FriendRepository,
+	deviceRepo       	accountRepo.DeviceRepository,
+	notificationRepo 	accountRepo.NotificationRepository,
+	fcmClient           *notification.FCMClient,
 	logger log.Logger) Service {
-	return service{transactionRepo, userRepo, friendRepo, logger}
+	return service{transactionRepo, userRepo, friendRepo, deviceRepo, notificationRepo, fcmClient, logger}
 }
 
 // Add creates a new transaction.
@@ -65,7 +75,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowedWithOnlyUsername(processor.GetUsername(ctx))
 	}
 
-	transaction, err := s.transactionRepo.Add(ctx, entity.Transaction{
+	txn := entity.Transaction{
 		Name:           req.Name,
 		Status:         req.Status,
 		Amount:         req.Amount,
@@ -77,19 +87,62 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		ReceiverPubkey: req.ReceiverPubkey,
 		ShowType:       req.ShowType,
 		Message:        req.Message,
-	})
+	}
 	if req.Currency != "" {
-		transaction.Currency = req.Currency
+		txn.Currency = req.Currency
 	}
 	if req.TransactionType != "" {
-		transaction.TransactionType = req.TransactionType
+		txn.TransactionType = req.TransactionType
 	} else {
-		transaction.TransactionType = "Regular"
+		txn.TransactionType = "Regular"
 	}
+	createdTxn, err := s.transactionRepo.Add(ctx, txn)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
-	return api.TransactionResponse{Transaction: transaction}, nil
+
+	user, err := s.userRepo.Get(ctx, uint(req.SenderId))
+	if err != nil {
+		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewResourcesNotFound(err)
+	}
+	otherUser, err := s.userRepo.Get(ctx, uint(req.ReceiverId))
+	if err != nil {
+		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewResourcesNotFound(err)
+	}
+	devices, err := s.deviceRepo.GetDevices(ctx, otherUser)
+	if err != nil {
+		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewResourceNotFoundWithPublicError(err)
+	}
+
+	var aggregatedDevices string
+	var tokenList []string
+	if len(devices) != 0 {
+		aggregatedDevices, tokenList = extractDeviceNameAndToken(devices)
+	}
+
+	newNotification := entity.Notification{
+		UserRef:    uint(req.ReceiverId),
+		ActorRef:   uint(req.SenderId),
+		Device:     aggregatedDevices,
+		Type:       entity.FriendRequestType,
+		Actor:      entity.ActorUserType,
+		Title:      "Transaction Notification",
+		Message:    CreateTransactionMessage(user, otherUser, createdTxn),
+		TemplateID: 1,
+	}
+	createNotification, err := s.notificationRepo.CreateNotification(ctx, newNotification)
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
+	}
+
+	if len(devices) == 0 {
+		return api.TransactionResponse{Transaction: createdTxn}, nil
+	}
+	if err = s.fcmClient.NotifyDevices(ctx, tokenList, createNotification); err != nil {
+		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewServerError(err)
+	}
+
+	return api.TransactionResponse{Transaction: createdTxn}, nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
@@ -331,4 +384,22 @@ func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) (
 		})
 	}
 	return transactions, nil
+}
+
+func extractDeviceNameAndToken(devices []entity.Device) (string, []string) {
+	var aggregatedIDs string
+	var tokenList []string
+	for idx, device := range devices {
+		if idx == 0 {
+			aggregatedIDs += strconv.Itoa(int(device.ID))
+		} else {
+			aggregatedIDs += "," + strconv.Itoa(int(device.ID))
+		}
+		tokenList = append(tokenList, device.DeviceToken)
+	}
+	return aggregatedIDs, tokenList
+}
+
+func CreateTransactionMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
+	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
 }

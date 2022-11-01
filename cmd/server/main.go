@@ -18,6 +18,7 @@ import (
 	"github.com/Melon-Network-Inc/common/pkg/config"
 	"github.com/Melon-Network-Inc/common/pkg/dbcontext"
 	"github.com/Melon-Network-Inc/common/pkg/log"
+	message "github.com/Melon-Network-Inc/common/pkg/notification"
 	"github.com/Melon-Network-Inc/common/pkg/storage"
 	"github.com/Melon-Network-Inc/common/pkg/utils"
 	"github.com/Melon-Network-Inc/payment-service/docs"
@@ -40,6 +41,7 @@ type Server struct {
 	Database 		*dbcontext.DB
 	Cronjob  		*gocron.Scheduler
 	StorageClient	*storage.StorageClient
+	FcmClient       *message.FCMClient
 	Logger   		log.Logger
 }
 
@@ -143,10 +145,18 @@ func (s *Server) buildHandlers() {
 
 	userRepo := accountRepo.NewUserRepository(s.Database, s.Cache, s.StorageClient, s.Logger)
 	friendRepo := accountRepo.NewFriendRepository(s.Database, s.Logger)
+	notificationRepo := accountRepo.NewNotificationRepository(s.Database, s.Logger)
+	deviceRepo := accountRepo.NewDeviceRepository(s.Database, s.Logger)
 
 	newsClient := news.NewClient(s.Logger)
 
-	transactionService := transaction.NewService(transactionRepo, userRepo, friendRepo, s.Logger)
+	transactionService := transaction.NewService(transactionRepo, 
+		userRepo, 
+		friendRepo, 
+		deviceRepo, 
+		notificationRepo, 
+		s.FcmClient, 
+		s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
 	newsService := news.NewService(newsRepo, newsClient, s.Logger)
 
