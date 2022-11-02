@@ -12,7 +12,7 @@ require (
 	cloud.google.com/go/storage v1.26.0
 	firebase.google.com/go v3.13.0+incompatible // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Melon-Network-Inc/account-service v0.0.0-20221101014343-a047e73dc59a
+	github.com/Melon-Network-Inc/account-service v0.0.0-20221102031212-1668b72da1a6
 	github.com/badoux/goscraper v0.0.0-20190827161153-36995ce6b19f
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
