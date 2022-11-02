@@ -2,7 +2,7 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.93
+require github.com/Melon-Network-Inc/common v1.0.94
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
