@@ -76,8 +76,8 @@ github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030I
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Melon-Network-Inc/account-service v0.0.0-20221101014343-a047e73dc59a h1:5rpz5xDmtWdQzf6piaNcmo+/A8O46UOFNTFuoPYJNQQ=
 github.com/Melon-Network-Inc/account-service v0.0.0-20221101014343-a047e73dc59a/go.mod h1:HlimvVAXOSbshL2gJ8oad28ym/sbNSjQsQ9O1vXzofw=
-github.com/Melon-Network-Inc/common v1.0.93 h1:Ai9EcYYbMZ4Df7TYKLcrG7PMcG9hSTbgHT+pbMK7LoA=
-github.com/Melon-Network-Inc/common v1.0.93/go.mod h1:6InhZJXlJt6GWYKs9alCvQFHKEZqUFAnQ5qm0xXq63Y=
+github.com/Melon-Network-Inc/common v1.0.94 h1:lvARRneULLKLn4hIkOfLMeMd0iOMpHIUD6+ddlBgPXk=
+github.com/Melon-Network-Inc/common v1.0.94/go.mod h1:6InhZJXlJt6GWYKs9alCvQFHKEZqUFAnQ5qm0xXq63Y=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
