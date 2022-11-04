@@ -194,6 +194,14 @@ def go_dependencies():
         version = "v0.0.0-20200823014737-9f7001d12a5f",
     )
     go_repository(
+        name = "com_github_emirpasic_gods",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/emirpasic/gods",
+        sum = "h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=",
+        version = "v1.18.1",
+    )
+
+    go_repository(
         name = "com_github_envoyproxy_go_control_plane",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/envoyproxy/go-control-plane",
@@ -830,15 +838,15 @@ def go_dependencies():
         name = "com_github_melon_network_inc_account_service",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:RZ/bhxNPzThzgsHrKneQC/iM4HA1iqo4a4se/QnpsdU=",
-        version = "v0.0.0-20221103080802-16d965d03be2",
+        sum = "h1:T9aha/Jk46oiwkLj4l1OBd0t/uvbTmynkWtwNX7MgEU=",
+        version = "v0.0.0-20221103101909-8225cfff8f5c",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:cnFdH12TDtdcFR8s8rD6+JG05BNyn1ly9XT1NqFPyj4=",
-        version = "v1.0.99",
+        sum = "h1:TuKbfM+uIAXyYu79D4nqMuXVHFdxZnjK7gyG1wyWAb4=",
+        version = "v1.0.104",
     )
 
     go_repository(

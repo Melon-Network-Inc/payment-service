@@ -25,3 +25,11 @@ func Uint(id string) (uint, error) {
 func String(id uint) string {
 	return strconv.FormatUint(uint64(id), 10)
 }
+
+func GetUints(vals []interface{}) []uint {
+	var res []uint
+	for _, val := range vals {
+		res = append(res, uint(val.(int)))
+	}
+	return res
+}
