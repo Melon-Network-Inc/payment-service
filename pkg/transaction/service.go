@@ -6,6 +6,7 @@ import (
 
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
+	"github.com/emirpasic/gods/sets/hashset"
 
 	"github.com/Melon-Network-Inc/common/pkg/api"
 	"github.com/Melon-Network-Inc/common/pkg/entity"
@@ -103,15 +104,15 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 
 	user, err := s.userRepo.Get(ctx, uint(req.SenderId))
 	if err != nil {
-		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewResourcesNotFound(err)
+		return convert(createdTxn, "", "", false), mwerrors.NewResourcesNotFound(err)
 	}
 	otherUser, err := s.userRepo.Get(ctx, uint(req.ReceiverId))
 	if err != nil {
-		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewResourcesNotFound(err)
+		return convert(createdTxn, user.Avatar, "", false), mwerrors.NewResourcesNotFound(err)
 	}
 	devices, err := s.deviceRepo.GetDevices(ctx, otherUser)
 	if err != nil {
-		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewResourceNotFoundWithPublicError(err)
+		return convert(createdTxn, user.Avatar, otherUser.Avatar, false), mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 
 	var aggregatedDevices string
@@ -136,13 +137,13 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 	}
 
 	if len(devices) == 0 {
-		return api.TransactionResponse{Transaction: createdTxn}, nil
+		return convert(createdTxn, user.Avatar, otherUser.Avatar, false), nil
 	}
 	if err = s.fcmClient.NotifyDevices(ctx, tokenList, createNotification); err != nil {
-		return api.TransactionResponse{Transaction: createdTxn}, mwerrors.NewServerError(err)
+		return convert(createdTxn, user.Avatar, otherUser.Avatar, false), mwerrors.NewServerError(err)
 	}
 
-	return api.TransactionResponse{Transaction: createdTxn}, nil
+	return convert(createdTxn, user.Avatar, otherUser.Avatar, false), nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
@@ -161,7 +162,13 @@ func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, erro
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
-	return api.TransactionResponse{Transaction: transaction}, nil
+
+	txn, err := s.ConvertToApiTransaction(ctx, transaction, userID == ID)
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
+	}
+	
+	return txn, nil
 }
 
 // List returns the list of transactions associated to the requester.
@@ -217,15 +224,16 @@ func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType st
 		return []api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
 	}
 
-	transaction, err := s.transactionRepo.List(ctx, userID, showType)
+	txns, err := s.transactionRepo.List(ctx, userID, showType)
 	if err != nil {
 		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
-	var listTransaction []api.TransactionResponse
-	for _, transaction := range transaction {
-		listTransaction = append(listTransaction, api.TransactionResponse{Transaction: transaction})
+	
+	resp, err := s.ConvertToApiTransactions(ctx, txns, showType != "Private")
+	if err != nil {
+		return []api.TransactionResponse{}, err
 	}
-	return listTransaction, nil
+	return resp, nil
 }
 
 // Update updates the transaction with the specified the transaction ID.
@@ -246,31 +254,35 @@ func (s service) Update(
 		return api.TransactionResponse{}, mwerrors.NewInvalidAuthToken(err)
 	}
 
-	transaction, err := s.transactionRepo.Get(ctx, UID)
+	txn, err := s.transactionRepo.Get(ctx, UID)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
-	if checkAllowsOperation(transaction, ownerID) {
+	if checkAllowsOperation(txn, ownerID) {
 		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowedWithOnlyUsername(processor.GetUsername(ctx))
 	}
 
 	if input.Name != "" {
-		transaction.Name = input.Name
+		txn.Name = input.Name
 	}
 	if input.Message != "" {
-		transaction.Status = input.Message
+		txn.Status = input.Message
 	}
 	if input.Status != "" {
-		transaction.Status = input.Status
+		txn.Status = input.Status
 	}
 	if input.ShowType != "" {
-		transaction.ShowType = input.ShowType
+		txn.ShowType = input.ShowType
 	}
 
-	if err := s.transactionRepo.Update(ctx, transaction); err != nil {
+	if err := s.transactionRepo.Update(ctx, txn); err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
-	return api.TransactionResponse{Transaction: transaction}, nil
+	resp, err := s.ConvertToApiTransaction(ctx, txn, false) 
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
+	}
+	return resp, nil
 }
 
 // Delete deletes the transaction with the specified ID.
@@ -284,24 +296,24 @@ func (s service) Delete(ctx *gin.Context, ID string) (api.TransactionResponse, e
 		return api.TransactionResponse{}, mwerrors.NewIllegalArgumentError(err)
 	}
 
-	transaction, err := s.transactionRepo.Get(ctx, UID)
+	txn, err := s.transactionRepo.Get(ctx, UID)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 
-	if checkAllowsOperation(transaction, ownerID) {
+	if checkAllowsOperation(txn, ownerID) {
 		return api.TransactionResponse{}, mwerrors.NewResourceNotAllowedWithOnlyResourceID(processor.GetUsername(ctx), ownerID)
 	}
 
-	err = s.transactionRepo.Delete(ctx, transaction)
+	err = s.transactionRepo.Delete(ctx, txn)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
-	return api.TransactionResponse{Transaction: transaction}, nil
-}
-
-func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
-	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
+	resp, err := s.ConvertToApiTransaction(ctx, txn, false) 
+	if err != nil {
+		return api.TransactionResponse{}, mwerrors.NewServerError(err)
+	}
+	return resp, nil
 }
 
 // Count returns the number of requester's transactions.
@@ -377,13 +389,11 @@ func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) (
 	if err != nil {
 		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
-	var transactions []api.TransactionResponse
-	for _, txn := range txns {
-		transactions = append(transactions, api.TransactionResponse{
-			Transaction: txn,
-		})
+	resp, err := s.ConvertToApiTransactions(c, txns, showType != "Private")
+	if err != nil {
+		return []api.TransactionResponse{}, err
 	}
-	return transactions, nil
+	return resp, nil
 }
 
 func extractDeviceNameAndToken(devices []entity.Device) (string, []string) {
@@ -400,6 +410,74 @@ func extractDeviceNameAndToken(devices []entity.Device) (string, []string) {
 	return aggregatedIDs, tokenList
 }
 
+func (s service) ConvertToApiTransaction(c *gin.Context, txn entity.Transaction, isPrune bool) (api.TransactionResponse, error) {
+	txns := []entity.Transaction{txn}
+	res, err := s.ConvertToApiTransactions(c, txns, isPrune)
+	if err != nil {
+		return api.TransactionResponse{}, err
+	}
+	return res[0], nil
+}
+
+func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transaction, isPrune bool) ([]api.TransactionResponse, error) {
+	userMap := make(map[uint]entity.User)
+	userIDSet := hashset.New()
+
+	for _, txn := range txns {
+		userIDSet.Add(txn.SenderId)
+		userIDSet.Add(txn.ReceiverId)
+	}
+
+	users, exists, err := s.userRepo.GetByIDs(c, utils.GetUints(userIDSet.Values()))
+	if err != nil {
+		return []api.TransactionResponse{}, err
+	}
+	if !exists {
+		return []api.TransactionResponse{}, nil
+	}
+	for _, user := range users {
+		userMap[user.ID] = user
+	}
+
+	var result []api.TransactionResponse
+	for _, txn := range txns {
+		sender := userMap[uint(txn.SenderId)]
+		receiver := userMap[uint(txn.ReceiverId)]
+		result = append(result, convert(txn, sender.Avatar, receiver.Avatar, isPrune))
+	}
+	return result, nil
+}
+
+func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
+	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
+}
+
 func CreateTransactionMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
 	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
+}
+
+func convert(txn entity.Transaction, senderUrl, receiverUrl string, prune bool) api.TransactionResponse {
+	convertedTxn := api.Transaction{
+		ID: int(txn.ID),
+		Name: txn.Name,
+		Status: txn.Status,
+		Amount: "",
+		Currency: txn.Currency, 
+		Blockchain: txn.Blockchain, 
+		Symbol: txn.Symbol, 
+		SenderID: int(txn.SenderId), 
+		SenderUrl: senderUrl, 
+		SenderPubkey: "",
+		ReceiverID: int(txn.ReceiverId), 
+		ReceiverUrl: receiverUrl, 
+		ReceiverPubkey: "",
+		TransactionType: txn.TransactionType,
+		Message: txn.Message,
+	}
+	if !prune {
+		convertedTxn.Amount = utils.GetFloatPointString(txn.Amount)
+		convertedTxn.SenderPubkey = txn.SenderPubkey
+		convertedTxn.ReceiverPubkey = txn.ReceiverPubkey
+	}
+	return api.TransactionResponse{Transaction: convertedTxn}
 }

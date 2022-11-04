@@ -2,7 +2,9 @@ module github.com/Melon-Network-Inc/payment-service
 
 go 1.18
 
-require github.com/Melon-Network-Inc/common v1.0.99
+require github.com/Melon-Network-Inc/common v1.0.104
+
+require github.com/emirpasic/gods v1.18.1
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
@@ -12,7 +14,7 @@ require (
 	cloud.google.com/go/storage v1.26.0
 	firebase.google.com/go v3.13.0+incompatible // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/Melon-Network-Inc/account-service v0.0.0-20221103080802-16d965d03be2
+	github.com/Melon-Network-Inc/account-service v0.0.0-20221103101909-8225cfff8f5c
 	github.com/badoux/goscraper v0.0.0-20190827161153-36995ce6b19f
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
