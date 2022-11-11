@@ -67,12 +67,11 @@ func (r transactionRepository) Get(c *gin.Context, userID uint) (entity.Transact
 func (r transactionRepository) List(c *gin.Context, userID uint, showType string) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
 	var result *gorm.DB
-	tx := r.db.With(c).
+	tx := createTransactionByShowType(showType, r.db.With(c)).
 		Where("sender_id = ?", userID).
 		Or("receiver_id = ?", userID).
 		Order("updated_at desc")
 
-	tx = updateTransactionByShowType(showType, tx)
 	result = tx.Find(&transactions)
 	return transactions, result.Error
 }
@@ -97,13 +96,13 @@ func (r transactionRepository) Query(ctx *gin.Context, offset, limit int, userID
 		Order("updated_at desc").
 		Offset(offset).
 		Limit(limit)
-	tx = updateTransactionByShowType(showType, tx)
+	tx = createTransactionByShowType(showType, tx)
 	result := tx.Find(&transactions)
 	return transactions, result.Error
 }
 
-// updateTransactionByShowType updates the transaction with the specified show type.
-func updateTransactionByShowType(showType string, tx *gorm.DB) *gorm.DB {
+// createTransactionByShowType updates the transaction with the specified show type.
+func createTransactionByShowType(showType string, tx *gorm.DB) *gorm.DB {
 	if showType == "Public" {
 		tx = tx.Where("show_type = ?", "Public")
 	} else if showType == "Friend" {
@@ -142,7 +141,7 @@ func (r transactionRepository) CountByFriendIDs(ctx *gin.Context, requesterID ui
 	return int(rows), result.Error
 }
 
-// Query returns the list of user's transactions with the given offset and limit by the friend IDs.
+// QueryByFriendIDs returns the list of user's transactions with the given offset and limit by the friend IDs.
 func (r transactionRepository) QueryByFriendIDs(ctx *gin.Context, offset, limit int, requesterID uint, friendsIDs []uint) ([]entity.Transaction, error) {
 	var transactions []entity.Transaction
 	tx := r.db.With(ctx).Model(&entity.Transaction{}).
