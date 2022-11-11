@@ -672,14 +672,31 @@ const docTemplate = `{
                 }
             }
         },
+        "api.Moment": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "user_ref": {
+                    "type": "integer"
+                }
+            }
+        },
         "api.Post": {
             "type": "object",
             "properties": {
                 "moment": {
-                    "$ref": "#/definitions/entity.Moment"
+                    "$ref": "#/definitions/api.Moment"
                 },
                 "transaction": {
-                    "$ref": "#/definitions/entity.Transaction"
+                    "$ref": "#/definitions/api.Transaction"
                 },
                 "type": {
                     "type": "string"
@@ -716,6 +733,9 @@ const docTemplate = `{
                 "receiver_url": {
                     "type": "string"
                 },
+                "receiver_username": {
+                    "type": "string"
+                },
                 "sender_id": {
                     "type": "integer"
                 },
@@ -723,6 +743,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sender_url": {
+                    "type": "string"
+                },
+                "sender_username": {
                     "type": "string"
                 },
                 "status": {
@@ -771,36 +794,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entity.Moment": {
-            "type": "object",
-            "required": [
-                "message"
-            ],
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string",
-                    "maxLength": 200
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "user_ref": {
-                    "type": "integer"
-                }
-            }
-        },
         "entity.News": {
             "type": "object",
             "required": [
@@ -840,71 +833,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "entity.Transaction": {
-            "type": "object",
-            "required": [
-                "amount",
-                "blockchain",
-                "name",
-                "receiver_pk",
-                "sender_pk",
-                "symbol"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "blockchain": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string",
-                    "maxLength": 200
-                },
-                "name": {
-                    "type": "string"
-                },
-                "receiver_id": {
-                    "type": "integer"
-                },
-                "receiver_pk": {
-                    "type": "string"
-                },
-                "sender_id": {
-                    "type": "integer"
-                },
-                "sender_pk": {
-                    "type": "string"
-                },
-                "show_type": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "transaction_type": {
-                    "type": "string"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }

@@ -1,6 +1,8 @@
 package activity
 
 import (
+	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
+	"github.com/emirpasic/gods/sets/hashset"
 	"sort"
 
 	"github.com/Melon-Network-Inc/common/pkg/mwerrors"
@@ -73,12 +75,18 @@ func (s service) Query(c *gin.Context,
 	if err != nil {
 		return []api.Post{}, mwerrors.NewResourcesNotFound(err)
 	}
+
+	convertedTxns, err := s.ConvertToApiTransactions(c, items, true)
+	if err != nil {
+		return []api.Post{}, mwerrors.NewResourceNotFoundWithPublicError(err)
+	}
+
 	var posts []api.Post
-	for _, item := range items {
+	for _, txn := range convertedTxns {
 		posts = append(posts, api.Post{
 			Type:        api.TransactionPostType,
-			Transaction: item,
-			Moment:      entity.Moment{},
+			Transaction: txn.Transaction,
+			Moment:      api.Moment{},
 		})
 	}
 	return posts, nil
@@ -101,13 +109,13 @@ func (s service) List(c *gin.Context) (api.ActivityResponse, error) {
 	}
 
 	// Query all friends' activities
-	var transactionsHistory []entity.Transaction
+	var txnsActivities []entity.Transaction
 	for _, relation := range relations {
 		transactions, err := s.transactionRepo.ListByUserID(c, user.ID, relation.ToUserRef)
 		if err != nil {
 			return api.ActivityResponse{}, mwerrors.NewResourcesNotFound(err)
 		}
-		transactionsHistory = append(transactionsHistory, transactions...)
+		txnsActivities = append(txnsActivities, transactions...)
 	}
 
 	// Query requester activities
@@ -115,19 +123,84 @@ func (s service) List(c *gin.Context) (api.ActivityResponse, error) {
 	if err != nil {
 		return api.ActivityResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
-	transactionsHistory = append(transactionsHistory, transactions...)
+	txnsActivities = append(txnsActivities, transactions...)
 
-	sort.Slice(transactionsHistory, func(i, j int) bool {
-		return transactionsHistory[i].UpdatedAt.Before(transactionsHistory[j].UpdatedAt)
+	// Sort transaction activities by updated at.
+	sort.Slice(txnsActivities, func(i, j int) bool {
+		return txnsActivities[i].UpdatedAt.Before(txnsActivities[j].UpdatedAt)
 	})
 
+	// Convert entity transaction to api transactions.
+	convertedTxns, err := s.ConvertToApiTransactions(c, txnsActivities, true)
+	if err != nil {
+		return api.ActivityResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
+	}
+
+	// Add transaction to Post
 	var posts []api.Post
-	for _, transaction := range transactionsHistory {
+	for _, txn := range convertedTxns {
 		posts = append(posts, api.Post{
 			Type:        api.TransactionPostType,
-			Transaction: transaction,
-			Moment:      entity.Moment{},
+			Transaction: txn.Transaction,
+			Moment:      api.Moment{},
 		})
 	}
 	return api.ActivityResponse{Posts: posts}, nil
+}
+
+func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transaction, isPrune bool) ([]api.TransactionResponse, error) {
+	userMap := make(map[uint]entity.User)
+	userIDSet := hashset.New()
+
+	for _, txn := range txns {
+		userIDSet.Add(txn.SenderId)
+		userIDSet.Add(txn.ReceiverId)
+	}
+
+	users, exists, err := s.userRepo.GetByIDs(c, utils.GetUints(userIDSet.Values()))
+	if err != nil {
+		return []api.TransactionResponse{}, err
+	}
+	if !exists {
+		return []api.TransactionResponse{}, nil
+	}
+	for _, user := range users {
+		userMap[user.ID] = user
+	}
+
+	var result []api.TransactionResponse
+	for _, txn := range txns {
+		sender := userMap[uint(txn.SenderId)]
+		receiver := userMap[uint(txn.ReceiverId)]
+		result = append(result, convert(txn, sender, receiver, isPrune))
+	}
+	return result, nil
+}
+
+func convert(txn entity.Transaction, sender, receiver entity.User, prune bool) api.TransactionResponse {
+	convertedTxn := api.Transaction{
+		ID:               int(txn.ID),
+		Name:             txn.Name,
+		Status:           txn.Status,
+		Amount:           "",
+		Currency:         txn.Currency,
+		Blockchain:       txn.Blockchain,
+		Symbol:           txn.Symbol,
+		SenderID:         txn.SenderId,
+		SenderUsername:   sender.Username,
+		SenderUrl:        sender.Avatar,
+		SenderPubkey:     "",
+		ReceiverID:       txn.ReceiverId,
+		ReceiverUsername: receiver.Username,
+		ReceiverUrl:      receiver.Avatar,
+		ReceiverPubkey:   "",
+		TransactionType:  txn.TransactionType,
+		Message:          txn.Message,
+	}
+	if !prune {
+		convertedTxn.Amount = utils.GetFloatPointString(txn.Amount)
+		convertedTxn.SenderPubkey = txn.SenderPubkey
+		convertedTxn.ReceiverPubkey = txn.ReceiverPubkey
+	}
+	return api.TransactionResponse{Transaction: convertedTxn}
 }
