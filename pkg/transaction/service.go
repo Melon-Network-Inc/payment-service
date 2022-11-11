@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
@@ -35,23 +36,23 @@ type Service interface {
 }
 
 type service struct {
-	transactionRepo 	repository.TransactionRepository
-	userRepo        	accountRepo.UserRepository
-	friendRepo      	accountRepo.FriendRepository
-	deviceRepo       	accountRepo.DeviceRepository
-	notificationRepo	accountRepo.NotificationRepository
-	fcmClient           *notification.FCMClient
-	logger          	log.Logger
+	transactionRepo  repository.TransactionRepository
+	userRepo         accountRepo.UserRepository
+	friendRepo       accountRepo.FriendRepository
+	deviceRepo       accountRepo.DeviceRepository
+	notificationRepo accountRepo.NotificationRepository
+	fcmClient        *notification.FCMClient
+	logger           log.Logger
 }
 
 // NewService creates a new transaction service.
 func NewService(
-	transactionRepo 	repository.TransactionRepository,
-	userRepo 			accountRepo.UserRepository,
-	friendRepo 			accountRepo.FriendRepository,
-	deviceRepo       	accountRepo.DeviceRepository,
-	notificationRepo 	accountRepo.NotificationRepository,
-	fcmClient           *notification.FCMClient,
+	transactionRepo repository.TransactionRepository,
+	userRepo accountRepo.UserRepository,
+	friendRepo accountRepo.FriendRepository,
+	deviceRepo accountRepo.DeviceRepository,
+	notificationRepo accountRepo.NotificationRepository,
+	fcmClient *notification.FCMClient,
 	logger log.Logger) Service {
 	return service{transactionRepo, userRepo, friendRepo, deviceRepo, notificationRepo, fcmClient, logger}
 }
@@ -104,15 +105,15 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 
 	user, err := s.userRepo.Get(ctx, uint(req.SenderId))
 	if err != nil {
-		return convert(createdTxn, "", "", false), mwerrors.NewResourcesNotFound(err)
+		return convert(createdTxn, entity.User{}, entity.User{}, false), mwerrors.NewResourcesNotFound(err)
 	}
 	otherUser, err := s.userRepo.Get(ctx, uint(req.ReceiverId))
 	if err != nil {
-		return convert(createdTxn, user.Avatar, "", false), mwerrors.NewResourcesNotFound(err)
+		return convert(createdTxn, user, entity.User{}, false), mwerrors.NewResourcesNotFound(err)
 	}
 	devices, err := s.deviceRepo.GetDevices(ctx, otherUser)
 	if err != nil {
-		return convert(createdTxn, user.Avatar, otherUser.Avatar, false), mwerrors.NewResourceNotFoundWithPublicError(err)
+		return convert(createdTxn, user, otherUser, false), mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
 
 	var aggregatedDevices string
@@ -137,13 +138,13 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 	}
 
 	if len(devices) == 0 {
-		return convert(createdTxn, user.Avatar, otherUser.Avatar, false), nil
+		return convert(createdTxn, user, otherUser, false), nil
 	}
 	if err = s.fcmClient.NotifyDevices(ctx, tokenList, createNotification); err != nil {
-		return convert(createdTxn, user.Avatar, otherUser.Avatar, false), mwerrors.NewServerError(err)
+		return convert(createdTxn, user, otherUser, false), mwerrors.NewServerError(err)
 	}
 
-	return convert(createdTxn, user.Avatar, otherUser.Avatar, false), nil
+	return convert(createdTxn, user, otherUser, false), nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
@@ -167,7 +168,7 @@ func (s service) Get(ctx *gin.Context, ID string) (api.TransactionResponse, erro
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
-	
+
 	return txn, nil
 }
 
@@ -217,7 +218,7 @@ func (s service) ListByUser(ctx *gin.Context, ID string) ([]api.TransactionRespo
 	return s.ListByUserWithShowType(ctx, ID, showType)
 }
 
-// ListByUserWithShowType returns the a list of transactions associated to a user.
+// ListByUserWithShowType returns the list of transactions associated to a user.
 func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]api.TransactionResponse, error) {
 	userID, err := utils.Uint(ID)
 	if err != nil {
@@ -228,7 +229,7 @@ func (s service) ListByUserWithShowType(ctx *gin.Context, ID string, showType st
 	if err != nil {
 		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
-	
+
 	resp, err := s.ConvertToApiTransactions(ctx, txns, showType != "Private")
 	if err != nil {
 		return []api.TransactionResponse{}, err
@@ -278,7 +279,7 @@ func (s service) Update(
 	if err := s.transactionRepo.Update(ctx, txn); err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
-	resp, err := s.ConvertToApiTransaction(ctx, txn, false) 
+	resp, err := s.ConvertToApiTransaction(ctx, txn, false)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
@@ -309,7 +310,7 @@ func (s service) Delete(ctx *gin.Context, ID string) (api.TransactionResponse, e
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
-	resp, err := s.ConvertToApiTransaction(ctx, txn, false) 
+	resp, err := s.ConvertToApiTransaction(ctx, txn, false)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
@@ -381,11 +382,11 @@ func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) (
 	if userID == "" {
 		return []api.TransactionResponse{}, mwerrors.NewMissingAuthToken()
 	}
-	owerID, err := utils.Uint(userID)
+	ownerID, err := utils.Uint(ID)
 	if err != nil {
 		return []api.TransactionResponse{}, mwerrors.NewIllegalInputErrorWithMessage(err.Error())
 	}
-	txns, err := s.transactionRepo.Query(c, offset, limit, owerID, showType)
+	txns, err := s.transactionRepo.Query(c, offset, limit, ownerID, showType)
 	if err != nil {
 		return []api.TransactionResponse{}, mwerrors.NewResourcesNotFound(err)
 	}
@@ -443,7 +444,7 @@ func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transact
 	for _, txn := range txns {
 		sender := userMap[uint(txn.SenderId)]
 		receiver := userMap[uint(txn.ReceiverId)]
-		result = append(result, convert(txn, sender.Avatar, receiver.Avatar, isPrune))
+		result = append(result, convert(txn, sender, receiver, isPrune))
 	}
 	return result, nil
 }
@@ -456,23 +457,33 @@ func CreateTransactionMessage(requester entity.User, receiver entity.User, txn e
 	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
 }
 
-func convert(txn entity.Transaction, senderUrl, receiverUrl string, prune bool) api.TransactionResponse {
+func convert(txn entity.Transaction, sender, receiver entity.User, prune bool) api.TransactionResponse {
+	if reflect.DeepEqual(sender, entity.User{}) {
+		sender.Avatar = ""
+		sender.Username = ""
+	}
+	if reflect.DeepEqual(receiver, entity.User{}) {
+		receiver.Avatar = ""
+		receiver.Username = ""
+	}
 	convertedTxn := api.Transaction{
-		ID: int(txn.ID),
-		Name: txn.Name,
-		Status: txn.Status,
-		Amount: "",
-		Currency: txn.Currency, 
-		Blockchain: txn.Blockchain, 
-		Symbol: txn.Symbol, 
-		SenderID: int(txn.SenderId), 
-		SenderUrl: senderUrl, 
-		SenderPubkey: "",
-		ReceiverID: int(txn.ReceiverId), 
-		ReceiverUrl: receiverUrl, 
-		ReceiverPubkey: "",
-		TransactionType: txn.TransactionType,
-		Message: txn.Message,
+		ID:               int(txn.ID),
+		Name:             txn.Name,
+		Status:           txn.Status,
+		Amount:           "",
+		Currency:         txn.Currency,
+		Blockchain:       txn.Blockchain,
+		Symbol:           txn.Symbol,
+		SenderID:         txn.SenderId,
+		SenderUrl:        sender.Avatar,
+		SenderUsername:   sender.Username,
+		SenderPubkey:     "",
+		ReceiverID:       txn.ReceiverId,
+		ReceiverUrl:      receiver.Avatar,
+		ReceiverUsername: receiver.Username,
+		ReceiverPubkey:   "",
+		TransactionType:  txn.TransactionType,
+		Message:          txn.Message,
 	}
 	if !prune {
 		convertedTxn.Amount = utils.GetFloatPointString(txn.Amount)
