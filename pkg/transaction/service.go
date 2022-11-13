@@ -96,7 +96,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 	if req.TransactionType != "" {
 		txn.TransactionType = req.TransactionType
 	} else {
-		txn.TransactionType = "Regular"
+		txn.TransactionType = "standard"
 	}
 	createdTxn, err := s.transactionRepo.Add(ctx, txn)
 	if err != nil {

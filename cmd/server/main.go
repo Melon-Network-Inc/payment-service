@@ -36,13 +36,13 @@ import (
 var swagHandler gin.HandlerFunc
 
 type Server struct {
-	App      		*gin.Engine
-	Cache    		*dbcontext.Cache
-	Database 		*dbcontext.DB
-	Cronjob  		*gocron.Scheduler
-	StorageClient	*storage.StorageClient
-	FcmClient       *message.FCMClient
-	Logger   		log.Logger
+	App           *gin.Engine
+	Cache         *dbcontext.Cache
+	Database      *dbcontext.DB
+	Cronjob       *gocron.Scheduler
+	StorageClient *storage.StorageClient
+	FcmClient     *message.FCMClient
+	Logger        log.Logger
 }
 
 func init() {
@@ -88,13 +88,20 @@ func main() {
 	}
 	storageClient := storage.NewStorageClient(gcsClient)
 
+	fcmClient, err := message.NewNotificationClient(context.Background(), logger)
+	if err != nil {
+		logger.Error(err)
+		os.Exit(-1)
+	}
+
 	s := Server{
-		App:      		router,
-		Cache:    		dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
-		Database: 		dbcontext.NewDatabase(db),
-		Cronjob:  		gocron.NewScheduler(serverLocation),
-		StorageClient:  &storageClient,
-		Logger:   		logger,
+		App:           router,
+		Cache:         dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
+		Database:      dbcontext.NewDatabase(db),
+		Cronjob:       gocron.NewScheduler(serverLocation),
+		StorageClient: &storageClient,
+		FcmClient:     fcmClient,
+		Logger:        logger,
 	}
 
 	// Bind all handlers to wallet server
@@ -150,12 +157,12 @@ func (s *Server) buildHandlers() {
 
 	newsClient := news.NewClient(s.Logger)
 
-	transactionService := transaction.NewService(transactionRepo, 
-		userRepo, 
-		friendRepo, 
-		deviceRepo, 
-		notificationRepo, 
-		s.FcmClient, 
+	transactionService := transaction.NewService(transactionRepo,
+		userRepo,
+		friendRepo,
+		deviceRepo,
+		notificationRepo,
+		s.FcmClient,
 		s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
 	newsService := news.NewService(newsRepo, newsClient, s.Logger)
