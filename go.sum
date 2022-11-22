@@ -74,10 +74,10 @@ github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030IGemrRc=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
-github.com/Melon-Network-Inc/account-service v0.0.0-20221113054616-5302aeb6c1fc h1:es27k13wH3qrM+np23JlWtlG/jrmjOKVkExFKv04njA=
-github.com/Melon-Network-Inc/account-service v0.0.0-20221113054616-5302aeb6c1fc/go.mod h1:tCX0lcFQyVoM5dPeAuEmuLuffKiDjj2VpukQTb+a8yc=
-github.com/Melon-Network-Inc/common v1.0.112 h1:F0RslkonhabgcTcsnVs0uCB+IOCuSMhAvjrygI82+7k=
-github.com/Melon-Network-Inc/common v1.0.112/go.mod h1:6InhZJXlJt6GWYKs9alCvQFHKEZqUFAnQ5qm0xXq63Y=
+github.com/Melon-Network-Inc/account-service v0.0.0-20221122093450-12ba6c594890 h1:wkI3jF8sIwt1PRCwhrn9ItoXjuARjpkopFBILTx3c7A=
+github.com/Melon-Network-Inc/account-service v0.0.0-20221122093450-12ba6c594890/go.mod h1:u9nJDTtzO/Sw+SJfAynChHVaTUD0wcHn4fSW/0c+Vmo=
+github.com/Melon-Network-Inc/common v1.0.119 h1:7E+utlQobzSoVbHObaEu1bGo1MSPQZG+DZMiOozzsik=
+github.com/Melon-Network-Inc/common v1.0.119/go.mod h1:6InhZJXlJt6GWYKs9alCvQFHKEZqUFAnQ5qm0xXq63Y=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
