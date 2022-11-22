@@ -433,7 +433,7 @@ paths:
       summary: Update a transaction
       tags:
       - transactions
-  /transaction/:id:
+  /transaction/{id}:
     get:
       consumes:
       - application/json
@@ -468,7 +468,7 @@ paths:
       summary: Get a transaction
       tags:
       - transactions
-  /transaction/query/:id:
+  /transaction/query/{id}:
     get:
       consumes:
       - application/json
@@ -513,7 +513,7 @@ paths:
       summary: Query requester's transactions by page
       tags:
       - transactions
-  /transaction/user/:id:
+  /transaction/user/{id}:
     get:
       consumes:
       - application/json

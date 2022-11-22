@@ -74,7 +74,7 @@ func (r resource) AddTransaction(c *gin.Context) {
 // @Failure      400
 // @Failure      401
 // @Failure      404
-// @Router       /transaction/:id [get]
+// @Router       /transaction/{id} [get]
 func (r resource) GetTransaction(c *gin.Context) {
 	transaction, err := r.service.Get(c, c.Param("id"))
 	if err != nil {
@@ -125,7 +125,7 @@ func (r resource) GetAllTransactions(c *gin.Context) {
 // @Failure      400
 // @Failure      401
 // @Failure      404
-// @Router       /transaction/query/:id [get]
+// @Router       /transaction/query/{id} [get]
 func (r resource) QueryTransactions(c *gin.Context) {
 	showType, count, err := r.service.CountByUser(c, c.Param("id"))
 	if err != nil {
@@ -157,7 +157,7 @@ func (r resource) QueryTransactions(c *gin.Context) {
 // @Failure      401
 // @Failure      404
 // @Failure      500
-// @Router       /transaction/user/:id [get]
+// @Router       /transaction/user/{id} [get]
 func (r resource) GetAllTransactionsByUser(c *gin.Context) {
 	transactions, err := r.service.ListByUser(c, c.Param("id"))
 	if err != nil {
