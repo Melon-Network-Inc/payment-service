@@ -126,7 +126,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		UserRef:    uint(req.ReceiverId),
 		ActorRef:   uint(req.SenderId),
 		Device:     aggregatedDevices,
-		Type:       entity.FriendRequestType,
+		Type:       entity.TransactionConfirmationType,
 		Actor:      entity.ActorUserType,
 		Title:      "Transaction Notification",
 		Message:    CreateTransactionMessage(user, otherUser, createdTxn),
