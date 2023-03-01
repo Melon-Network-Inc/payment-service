@@ -22,16 +22,27 @@ import (
 
 // Service encapsulates use case logic for transactions.
 type Service interface {
+	// Add adds a new transaction.
 	Add(ctx *gin.Context, input api.AddTransactionRequest) (api.TransactionResponse, error)
+	// Get returns the transaction with the specified transaction ID.
 	Get(c *gin.Context, ID string) (api.TransactionResponse, error)
+	// List returns the list of transactions.
 	List(ctx *gin.Context) ([]api.TransactionResponse, error)
+	// ListByUser returns the list of transactions by user ID.
 	ListByUser(ctx *gin.Context, ID string) ([]api.TransactionResponse, error)
+	// ListByUserWithShowType returns the list of transactions by user ID and showType.
 	ListByUserWithShowType(ctx *gin.Context, ID string, showType string) ([]api.TransactionResponse, error)
+	// Update updates the transaction with the specified ID.
 	Update(ctx *gin.Context, ID string, input api.UpdateTransactionRequest) (api.TransactionResponse, error)
+	// Delete deletes the transaction with the specified ID.
 	Delete(ctx *gin.Context, ID string) (api.TransactionResponse, error)
+	// Count returns the number of transactions.
 	Count(c *gin.Context) (string, int, error)
+	// CountByUser returns the number of transactions by user ID.
 	CountByUser(c *gin.Context, ID string) (string, int, error)
+	// CountByUserWithShowType returns the number of transactions by user ID and showType.
 	CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error)
+	// ListByUserWithShowTypeAndOffsetAndLimit returns the list of transactions by user ID, showType, offset and limit.
 	Query(c *gin.Context, ID, showType string, offset, limit int) ([]api.TransactionResponse, error)
 }
 
@@ -103,6 +114,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 
+	// Send notification to receiver.
 	user, err := s.userRepo.Get(ctx, uint(req.SenderId))
 	if err != nil {
 		return convert(createdTxn, entity.User{}, entity.User{}, false), mwerrors.NewResourcesNotFound(err)
@@ -132,16 +144,30 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		Message:    CreateTransactionMessage(user, otherUser, createdTxn),
 		TemplateID: 1,
 	}
+
+	// Create notification.
 	createNotification, err := s.notificationRepo.CreateNotification(ctx, newNotification)
 	if err != nil {
 		return api.TransactionResponse{}, mwerrors.NewServerError(err)
 	}
 
+	// If the other user has no device, return the transaction.
 	if len(devices) == 0 {
 		return convert(createdTxn, user, otherUser, false), nil
 	}
-	if err = s.fcmClient.NotifyDevices(ctx, tokenList, createNotification); err != nil {
+
+	// Send notification to devices of the other user.
+	devicesToRemove, err := s.fcmClient.NotifyDevices(ctx, tokenList, createNotification)
+	if err != nil {
 		return convert(createdTxn, user, otherUser, false), mwerrors.NewServerError(err)
+	}
+
+	// Remove expired devices.
+	if len(devicesToRemove) != 0 {
+		if err := s.deviceRepo.RemoveExpiredDevices(ctx, otherUser, devicesToRemove); err != nil {
+			return convert(createdTxn, user, otherUser, false), mwerrors.NewServerError(err)
+		}
+		return convert(createdTxn, user, otherUser, false), nil
 	}
 
 	return convert(createdTxn, user, otherUser, false), nil
@@ -420,6 +446,7 @@ func (s service) ConvertToApiTransaction(c *gin.Context, txn entity.Transaction,
 	return res[0], nil
 }
 
+// ConvertToApiTransactions converts the entity.Transaction to api.TransactionResponse.
 func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transaction, isPrune bool) ([]api.TransactionResponse, error) {
 	userMap := make(map[uint]entity.User)
 	userIDSet := hashset.New()
@@ -449,14 +476,17 @@ func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transact
 	return result, nil
 }
 
+// Get returns the transaction by ID.
 func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
 	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
 }
 
+// Get returns the transaction by ID.
 func CreateTransactionMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
 	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
 }
 
+// Get returns the transaction by ID.
 func convert(txn entity.Transaction, sender, receiver entity.User, prune bool) api.TransactionResponse {
 	if reflect.DeepEqual(sender, entity.User{}) {
 		sender.Avatar = ""

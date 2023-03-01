@@ -822,15 +822,15 @@ def go_dependencies():
         name = "com_github_melon_network_inc_account_service",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:G59ZLlTYGZ/5WA2cqg/3xXO+gbzuvUvxg94/2lfI0cY=",
-        version = "v0.0.0-20230226014020-1433c4978bd9",
+        sum = "h1:z7rRtQv1fTeSRNtMW1zZWGHRjKNyJNZ5hC4aMlNrWIU=",
+        version = "v0.0.0-20230301105249-09df12068fdc",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:QNuBBbnRk9VcxLmHPqx+aFoblhLqw5v7oENxnrRldOw=",
-        version = "v1.0.126",
+        sum = "h1:JcBw/ZJZ9zlzHyAsALxE4wVkgh1M7pTC7/UNieKtwJE=",
+        version = "v1.0.132",
     )
     go_repository(
         name = "com_github_mitchellh_go_homedir",
@@ -1508,8 +1508,8 @@ def go_dependencies():
         name = "org_golang_x_mod",
         build_file_proto_mode = "disable_global",
         importpath = "golang.org/x/mod",
-        sum = "h1:6zppjxzCulZykYSLyVDYbneBfbaBIQPYMevg0bEwv2s=",
-        version = "v0.6.0-dev.0.20220419223038-86c51ed26bb4",
+        sum = "h1:b9gGHsz9/HhJ3HF5DHQytPpuwocVTChQJK3AvoLRD5I=",
+        version = "v0.6.0",
     )
     go_repository(
         name = "org_golang_x_net",
@@ -1564,8 +1564,8 @@ def go_dependencies():
         name = "org_golang_x_tools",
         build_file_proto_mode = "disable_global",
         importpath = "golang.org/x/tools",
-        sum = "h1:VveCTK38A2rkS8ZqFY25HIDFscX5X9OoEhJd3quQmXU=",
-        version = "v0.1.12",
+        sum = "h1:G6AHpWxTMGY1KyEYoAQ5WTtIekUUvDNjan3ugu60JvE=",
+        version = "v0.2.0",
     )
     go_repository(
         name = "org_golang_x_xerrors",
