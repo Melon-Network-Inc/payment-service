@@ -52,6 +52,7 @@ func (r resource) AddTransaction(c *gin.Context) {
 		return
 	}
 
+	r.logger.Debug("AddTransaction", input)
 	transaction, err := r.service.Add(c, input)
 	if err != nil {
 		mwerrors.HandleErrorResponse(c, r.logger, err)
