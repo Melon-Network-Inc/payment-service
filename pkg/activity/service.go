@@ -1,9 +1,10 @@
 package activity
 
 import (
+	"sort"
+
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
 	"github.com/emirpasic/gods/sets/hashset"
-	"sort"
 
 	"github.com/Melon-Network-Inc/common/pkg/mwerrors"
 
@@ -67,16 +68,13 @@ func (s service) Count(c *gin.Context) (uint, []uint, int, error) {
 }
 
 // Query returns all friend's activities by page.
-func (s service) Query(c *gin.Context,
-	offset, limit int,
-	ownerID uint,
-	friendIDs []uint) ([]api.Post, error) {
+func (s service) Query(c *gin.Context, offset, limit int, ownerID uint, friendIDs []uint) ([]api.Post, error) {
 	items, err := s.transactionRepo.QueryByFriendIDs(c, offset, limit, ownerID, friendIDs)
 	if err != nil {
 		return []api.Post{}, mwerrors.NewResourcesNotFound(err)
 	}
 
-	convertedTxns, err := s.ConvertToApiTransactions(c, items, true)
+	convertedTxns, err := s.ConvertToApiTransactions(c, ownerID, items, true)
 	if err != nil {
 		return []api.Post{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
@@ -131,7 +129,7 @@ func (s service) List(c *gin.Context) (api.ActivityResponse, error) {
 	})
 
 	// Convert entity transaction to api transactions.
-	convertedTxns, err := s.ConvertToApiTransactions(c, txnsActivities, true)
+	convertedTxns, err := s.ConvertToApiTransactions(c, ownerID, txnsActivities, true)
 	if err != nil {
 		return api.ActivityResponse{}, mwerrors.NewResourceNotFoundWithPublicError(err)
 	}
@@ -148,7 +146,8 @@ func (s service) List(c *gin.Context) (api.ActivityResponse, error) {
 	return api.ActivityResponse{Posts: posts}, nil
 }
 
-func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transaction, isPrune bool) ([]api.TransactionResponse, error) {
+// ConvertToApiTransactions converts entity transactions to api transactions.
+func (s service) ConvertToApiTransactions(c *gin.Context, ownerID uint, txns []entity.Transaction, isPrune bool) ([]api.TransactionResponse, error) {
 	userMap := make(map[uint]entity.User)
 	userIDSet := hashset.New()
 
@@ -172,11 +171,14 @@ func (s service) ConvertToApiTransactions(c *gin.Context, txns []entity.Transact
 	for _, txn := range txns {
 		sender := userMap[uint(txn.SenderId)]
 		receiver := userMap[uint(txn.ReceiverId)]
+		isPrune := txn.SenderId != int(ownerID) && txn.ReceiverId != int(ownerID)
+
 		result = append(result, convert(txn, sender, receiver, isPrune))
 	}
 	return result, nil
 }
 
+// convert converts entity transaction to api transaction.
 func convert(txn entity.Transaction, sender, receiver entity.User, prune bool) api.TransactionResponse {
 	convertedTxn := api.Transaction{
 		ID:               int(txn.ID),
