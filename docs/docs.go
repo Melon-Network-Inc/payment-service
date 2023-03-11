@@ -618,7 +618,6 @@ const docTemplate = `{
         "api.AddTransactionRequest": {
             "type": "object",
             "required": [
-                "amount",
                 "blockchain",
                 "name",
                 "show_type",
