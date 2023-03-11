@@ -41,7 +41,6 @@ definitions:
       transaction_type:
         type: string
     required:
-    - amount
     - blockchain
     - name
     - show_type
