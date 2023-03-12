@@ -858,7 +858,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Melon Wallet Service API",
-	Description:      "This is backend server for Melon Wallet..",
+	Description:      "This is backend server for Melon Wallet.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

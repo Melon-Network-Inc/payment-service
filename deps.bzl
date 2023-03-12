@@ -792,8 +792,8 @@ def go_dependencies():
         name = "com_github_melon_network_inc_account_service",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:7q6ZUYmUN7fqrgCUvqsa789SCBmzPct4Qf36v1BOy/g=",
-        version = "v0.0.0-20230311061534-ba5e4c4579b7",
+        sum = "h1:ZVEjdfEzqD4i7StcrHUXPYhn7MG70UZiwUJMlCinCVQ=",
+        version = "v0.0.0-20230312214310-98c0f871571a",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
