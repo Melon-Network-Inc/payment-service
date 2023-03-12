@@ -51,7 +51,7 @@ func init() {
 
 // @title Melon Wallet Service API
 // @host localhost:8080
-// @description This is backend server for Melon Wallet..
+// @description This is backend server for Melon Wallet.
 // @version 1.0
 // @BasePath /api/v1
 

@@ -170,7 +170,7 @@ info:
     email: support@melonnetwork.io
     name: API Support
     url: https://melonnetwork.io
-  description: This is backend server for Melon Wallet..
+  description: This is backend server for Melon Wallet.
   title: Melon Wallet Service API
   version: "1.0"
 paths:
