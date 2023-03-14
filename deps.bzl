@@ -792,15 +792,15 @@ def go_dependencies():
         name = "com_github_melon_network_inc_account_service",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:ZVEjdfEzqD4i7StcrHUXPYhn7MG70UZiwUJMlCinCVQ=",
-        version = "v0.0.0-20230312214310-98c0f871571a",
+        sum = "h1:6UWmdxWOXXqAql9gapJIkc3cGrp1ULOGB04qaouivVI=",
+        version = "v0.0.0-20230314022325-a447536572bb",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:Uv9rdFrJAxuvIkXUVpV2xGvFzImAH4Su+3qOn3cZeYU=",
-        version = "v1.0.135",
+        sum = "h1:YZaAr3PTSWEqtXtJ5ZZlnr4ckBTm7a1GfRXm2F7KZ6U=",
+        version = "v1.0.136",
     )
     go_repository(
         name = "com_github_mitchellh_go_homedir",
@@ -2355,4 +2355,11 @@ def go_repositories():
         importpath = "cloud.google.com/go/workflows",
         sum = "h1:FfGp9w0cYnaKZJhUOMqCOJCYT/WlvYBfTQhFWV3sRKI=",
         version = "v1.10.0",
+    )
+    go_repository(
+        name = "com_gitlab_blockdaemon_ubiquity_ubiquity_go_client",
+        build_file_proto_mode = "disable_global",
+        importpath = "gitlab.com/Blockdaemon/ubiquity/ubiquity-go-client",
+        sum = "h1:tDFLfuVe/XtAxr9+c2s5Ek65rEJ0bzZYKF322ovWdh4=",
+        version = "v1.4.0",
     )
