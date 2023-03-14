@@ -29,7 +29,11 @@ go_library(
 
 go_binary(
     name = "server",
-    data = ["//config:payment.yml"],
+    data = [
+        "//config:payment.yml", 
+        "//config:blockchain.yml",
+        "//config:email.yml"
+    ],
     embed = [":server_lib"],
     visibility = ["//visibility:public"],
 )

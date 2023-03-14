@@ -4,8 +4,8 @@ go 1.20
 
 require (
 	cloud.google.com/go/storage v1.29.0
-	github.com/Melon-Network-Inc/account-service v0.0.0-20230312214310-98c0f871571a
-	github.com/Melon-Network-Inc/common v1.0.135
+	github.com/Melon-Network-Inc/account-service v0.0.0-20230314022325-a447536572bb
+	github.com/Melon-Network-Inc/common v1.0.136
 	github.com/badoux/goscraper v0.0.0-20190827161153-36995ce6b19f
 	github.com/emirpasic/gods v1.18.1
 	github.com/gin-gonic/gin v1.8.1

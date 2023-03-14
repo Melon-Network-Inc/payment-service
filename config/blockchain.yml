@@ -1,0 +1,14 @@
+name: blockchain-config
+version: v1.20230313.1
+prod:
+  ubi_access_token: xzCdUY8vbrXfAzkWpxQYJhRZsA-f0rL5kMyvsYYSGRxVCW0c
+  ubi_endpoint: https://svc.blockdaemon.com/universal/v1/
+staging:
+  ubi_access_token: xzCdUY8vbrXfAzkWpxQYJhRZsA-f0rL5kMyvsYYSGRxVCW0c
+  ubi_endpoint: https://svc.blockdaemon.com/universal/v1/
+dev:
+  ubi_access_token: xzCdUY8vbrXfAzkWpxQYJhRZsA-f0rL5kMyvsYYSGRxVCW0c
+  ubi_endpoint: https://svc.blockdaemon.com/universal/v1/
+test:
+  ubi_access_token: xzCdUY8vbrXfAzkWpxQYJhRZsA-f0rL5kMyvsYYSGRxVCW0c
+  ubi_endpoint: https://svc.blockdaemon.com/universal/v1/
