@@ -42,7 +42,7 @@ type Service interface {
 	CountByUser(c *gin.Context, ID string) (string, int, error)
 	// CountByUserWithShowType returns the number of transactions by user ID and showType.
 	CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error)
-	// ListByUserWithShowTypeAndOffsetAndLimit returns the list of transactions by user ID, showType, offset and limit.
+	// Query returns the list of transactions by user ID, showType, offset and limit.
 	Query(c *gin.Context, ID, showType string, offset, limit int) ([]api.TransactionResponse, error)
 }
 
@@ -423,6 +423,7 @@ func (s service) Query(c *gin.Context, ID, showType string, offset, limit int) (
 	return resp, nil
 }
 
+// extractDeviceNameAndToken extracts the device name and device token from the given devices.
 func extractDeviceNameAndToken(devices []entity.Device) (string, []string) {
 	var aggregatedIDs string
 	var tokenList []string
@@ -437,6 +438,7 @@ func extractDeviceNameAndToken(devices []entity.Device) (string, []string) {
 	return aggregatedIDs, tokenList
 }
 
+// ConvertToApiTransaction converts the entity.Transaction to api.TransactionResponse.
 func (s service) ConvertToApiTransaction(c *gin.Context, txn entity.Transaction, isPrune bool) (api.TransactionResponse, error) {
 	txns := []entity.Transaction{txn}
 	res, err := s.ConvertToApiTransactions(c, txns, isPrune)
@@ -481,7 +483,7 @@ func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
 	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
 }
 
-// Get returns the transaction by ID.
+// CreateTransactionMessage returns the transaction by ID.
 func CreateTransactionMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
 	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
 }

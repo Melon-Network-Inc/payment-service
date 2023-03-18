@@ -125,7 +125,7 @@ func (r transactionRepository) Delete(c *gin.Context, transaction entity.Transac
 	return r.db.With(c).Delete(&transaction).Error
 }
 
-// Count returns the number of user's transactions in the database by the friend IDs.
+// CountByFriendIDs returns the number of user's transactions in the database by the friend IDs.
 func (r transactionRepository) CountByFriendIDs(ctx *gin.Context, requesterID uint, friendsIDs []uint) (int, error) {
 	var rows int64
 	result := r.db.With(ctx).Model(&entity.Transaction{}).
