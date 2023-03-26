@@ -792,15 +792,15 @@ def go_dependencies():
         name = "com_github_melon_network_inc_account_service",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:I4ZCDNDfzKBZnhEZoJT5+qCiqAxqC+emscU+T0Cirpo=",
-        version = "v0.0.0-20230326075804-845c596c80bb",
+        sum = "h1:pvq5kRTGKUlUVTEeUF5PL875CJRDr9rHoMyo9LiOOwc=",
+        version = "v0.0.0-20230326182700-9d863dab6742",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:o56fn9EtaXqGIY+MjWh/phO7bA+OIHxJLA38QeyglpY=",
-        version = "v1.0.150",
+        sum = "h1:xJDey5cnfKwqqe66l2zhhzAqtASuy3+pYtHL5R05Uek=",
+        version = "v1.0.152",
     )
     go_repository(
         name = "com_github_mitchellh_go_homedir",
@@ -1280,13 +1280,6 @@ def go_dependencies():
         importpath = "gopkg.in/tomb.v1",
         sum = "h1:uRGJdciOHaEIrze2W8Q3AKkepLTh2hOroT7a+7czfdQ=",
         version = "v1.0.0-20141024135613-dd632973f1e7",
-    )
-    go_repository(
-        name = "in_gopkg_vmihailenco_msgpack_v2",
-        build_file_proto_mode = "disable_global",
-        importpath = "gopkg.in/vmihailenco/msgpack.v2",
-        sum = "h1:gjPqo9orRVlSAH/065qw3MsFCDpH7fa1KpiizXyllY4=",
-        version = "v2.9.2",
     )
     go_repository(
         name = "in_gopkg_yaml_v2",
@@ -2362,4 +2355,123 @@ def go_repositories():
         importpath = "gitlab.com/Blockdaemon/ubiquity/ubiquity-go-client",
         sum = "h1:tDFLfuVe/XtAxr9+c2s5Ek65rEJ0bzZYKF322ovWdh4=",
         version = "v1.4.0",
+    )
+    go_repository(
+        name = "com_github_aws_aws_sdk_go",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/aws/aws-sdk-go",
+        sum = "h1:2708Bj4uV+ym62MOtBnErm/CDX61C4mFe9V2gXy1caE=",
+        version = "v1.43.45",
+    )
+    go_repository(
+        name = "com_github_bsm_redislock",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/bsm/redislock",
+        sum = "h1:jggqOio8JyX9FJBKIfjF3fTxAu/v7zC5mAID9LveqG4=",
+        version = "v0.7.2",
+    )
+    go_repository(
+        name = "com_github_capnm_sysinfo",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/capnm/sysinfo",
+        sum = "h1:IHZ1Le1ejzkmS7Si7dIzJvYDWe+BIoNmqMnfWHBZSVw=",
+        version = "v0.0.0-20130621111458-5909a53897f3",
+    )
+    go_repository(
+        name = "com_github_dgryski_go_farm",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/dgryski/go-farm",
+        sum = "h1:fAjc9m62+UWV/WAFKLNi6ZS0675eEUC9y3AlwSbQu1Y=",
+        version = "v0.0.0-20200201041132-a6ae2369ad13",
+    )
+    go_repository(
+        name = "com_github_go_redis_redis_rate_v9",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/go-redis/redis_rate/v9",
+        sum = "h1:H0l5VzoAtOE6ydd38j8MCq3ABlGLnvvbA1xDSVVCHgQ=",
+        version = "v9.1.2",
+    )
+    go_repository(
+        name = "com_github_go_redis_redis_v8",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/go-redis/redis/v8",
+        sum = "h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC0oI=",
+        version = "v8.11.5",
+    )
+    go_repository(
+        name = "com_github_go_task_slim_sprig",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/go-task/slim-sprig",
+        sum = "h1:p104kn46Q8WdvHunIJ9dAyjPVtrBPhSr3KT2yUst43I=",
+        version = "v0.0.0-20210107165309-348f09dbbbc0",
+    )
+    go_repository(
+        name = "com_github_hpcloud_tail",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/hpcloud/tail",
+        sum = "h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=",
+        version = "v1.0.0",
+    )
+    go_repository(
+        name = "com_github_iron_io_iron_go3",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/iron-io/iron_go3",
+        sum = "h1:w5wltlINIIqRTqQ64dASrCo0fM7k9nosPbKCZnkL0W0=",
+        version = "v0.0.0-20190916120531-a4a7f74b73ac",
+    )
+    go_repository(
+        name = "com_github_jeffh_go_bdd",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/jeffh/go.bdd",
+        sum = "h1:gyfyP8SEIZHs1u2ivTdIbWRtfaKbg5K79d06vnqroJo=",
+        version = "v0.0.0-20120717032931-88f798ee0c74",
+    )
+    go_repository(
+        name = "com_github_jmespath_go_jmespath",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/jmespath/go-jmespath",
+        sum = "h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=",
+        version = "v0.4.0",
+    )
+    go_repository(
+        name = "com_github_klauspost_compress",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/klauspost/compress",
+        sum = "h1:y9FcTHGyrebwfP0ZZqFiaxTaiDnUrGkJkI+f583BL1A=",
+        version = "v1.15.1",
+    )
+    go_repository(
+        name = "com_github_vmihailenco_msgpack_v5",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/vmihailenco/msgpack/v5",
+        sum = "h1:5gO0H1iULLWGhs2H5tbAHIZTV8/cYafcFOr9znI5mJU=",
+        version = "v5.3.5",
+    )
+    go_repository(
+        name = "com_github_vmihailenco_tagparser_v2",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/vmihailenco/tagparser/v2",
+        sum = "h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=",
+        version = "v2.0.0",
+    )
+    go_repository(
+        name = "com_github_vmihailenco_taskq_v3",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/vmihailenco/taskq/v3",
+        sum = "h1:QE1O8IJlh4xvSB9MJsnEBzNzmJc61y320xAyBeQZ/40=",
+        version = "v3.2.9",
+    )
+    go_repository(
+        name = "in_gopkg_fsnotify_v1",
+        build_file_proto_mode = "disable_global",
+        importpath = "gopkg.in/fsnotify.v1",
+        sum = "h1:xOHLXZwVvI9hhs+cLKq5+I5onOuwQLhQwiu63xxlHs4=",
+        version = "v1.4.7",
+    )
+    go_repository(
+        name = "in_gopkg_vmihailenco_msgpack_v2",
+        build_file_proto_mode = "disable_global",
+        importpath = "gopkg.in/vmihailenco/msgpack.v2",
+        sum = "h1:gjPqo9orRVlSAH/065qw3MsFCDpH7fa1KpiizXyllY4=",
+        version = "v2.9.2",
     )
