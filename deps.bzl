@@ -792,15 +792,15 @@ def go_dependencies():
         name = "com_github_melon_network_inc_account_service",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/account-service",
-        sum = "h1:kQJuafdmznKz13g8pyNj3R8ojZNR3SIlT8/qSugDYWs=",
-        version = "v0.0.0-20230315112951-fe6bfb8e5a68",
+        sum = "h1:I4ZCDNDfzKBZnhEZoJT5+qCiqAxqC+emscU+T0Cirpo=",
+        version = "v0.0.0-20230326075804-845c596c80bb",
     )
     go_repository(
         name = "com_github_melon_network_inc_common",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/Melon-Network-Inc/common",
-        sum = "h1:2w38zDTDORJXEmbLWnLNEis4me6jdtUuIPlxdeuAbJ8=",
-        version = "v1.0.144",
+        sum = "h1:o56fn9EtaXqGIY+MjWh/phO7bA+OIHxJLA38QeyglpY=",
+        version = "v1.0.150",
     )
     go_repository(
         name = "com_github_mitchellh_go_homedir",
@@ -1103,8 +1103,8 @@ def go_dependencies():
         name = "com_github_stretchr_testify",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/stretchr/testify",
-        sum = "h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=",
-        version = "v1.8.1",
+        sum = "h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=",
+        version = "v1.8.2",
     )
     go_repository(
         name = "com_github_subosito_gotenv",

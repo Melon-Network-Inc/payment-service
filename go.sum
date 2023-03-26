@@ -59,10 +59,10 @@ github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030IGemrRc=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
-github.com/Melon-Network-Inc/account-service v0.0.0-20230315112951-fe6bfb8e5a68 h1:kQJuafdmznKz13g8pyNj3R8ojZNR3SIlT8/qSugDYWs=
-github.com/Melon-Network-Inc/account-service v0.0.0-20230315112951-fe6bfb8e5a68/go.mod h1:BBI174jL0H8q3OzUHsTZtKLMa8tH8fkYu8Z7p/zlCs0=
-github.com/Melon-Network-Inc/common v1.0.144 h1:2w38zDTDORJXEmbLWnLNEis4me6jdtUuIPlxdeuAbJ8=
-github.com/Melon-Network-Inc/common v1.0.144/go.mod h1:nYTwvGjmqHAtafs44BopymoP6bbNYM6io8xxBU2mpH4=
+github.com/Melon-Network-Inc/account-service v0.0.0-20230326075804-845c596c80bb h1:I4ZCDNDfzKBZnhEZoJT5+qCiqAxqC+emscU+T0Cirpo=
+github.com/Melon-Network-Inc/account-service v0.0.0-20230326075804-845c596c80bb/go.mod h1:Bkxukoz4X6KuF32uuofs51LpWAmpAleMaZd0kmX5za0=
+github.com/Melon-Network-Inc/common v1.0.150 h1:o56fn9EtaXqGIY+MjWh/phO7bA+OIHxJLA38QeyglpY=
+github.com/Melon-Network-Inc/common v1.0.150/go.mod h1:nYTwvGjmqHAtafs44BopymoP6bbNYM6io8xxBU2mpH4=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
@@ -403,8 +403,8 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
-github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/subosito/gotenv v1.3.0 h1:mjC+YW8QpAdXibNi+vNWgzmgBH4+5l5dCXv8cNysBLI=
 github.com/subosito/gotenv v1.3.0/go.mod h1:YzJjq/33h7nrwdY+iHMhEOEEbW0ovIz0tB6t6PwAXzs=
 github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe/go.mod h1:lKJPbtWzJ9JhsTN1k1gZgleJWY/cqq0psdoMmaThG3w=
