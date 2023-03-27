@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/Melon-Network-Inc/common/pkg/blockchain"
 	"github.com/Melon-Network-Inc/payment-service/feature"
@@ -50,6 +51,8 @@ type Service interface {
 	CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error)
 	// Query returns the list of transactions by user ID, showType, offset and limit.
 	Query(c *gin.Context, ID, showType string, offset, limit int) ([]api.TransactionResponse, error)
+	// GetTaskQueueManager returns the task queue manager.
+	GetTaskQueueManager() *taskq.QueueManager
 }
 
 type service struct {
@@ -113,6 +116,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		Amount:         req.Amount,
 		Symbol:         req.Symbol,
 		Blockchain:     req.Blockchain,
+		TxId:      		req.TxId,
 		SenderId:       req.SenderId,
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
@@ -189,12 +193,23 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		return convert(createdTxn, user, otherUser, false), nil
 	}
 
-	if feature.EnablePullTxnStatus.Get() && createdTxn.Status == "Pending" {
+	if feature.EnablePullTxnStatus.Get() && utils.Capitalizer(createdTxn.Status) == "PENDING" {
 		// Add task to task queue.
 		err := s.taskQueueMgr.RegisterTxnStatusTask(ctx, createdTxn, s.CheckStatus)
 		if err != nil {
 			return api.TransactionResponse{}, err
 		}
+		go func() {
+			// Wait for 30 seconds to check the status of the transaction.
+			time.Sleep(2 * time.Second)
+			s.logger.Info("Start to check the status of the transaction", "txId", createdTxn.TxId)
+
+			// Check the status of the transaction.
+			err := s.taskQueueMgr.StartConsumers(ctx)
+			if err != nil {
+				return
+			}
+		}()
 	}
 
 	return convert(createdTxn, user, otherUser, false), nil
@@ -202,9 +217,9 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 
 // CheckStatus checks the status of the transaction.
 func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
-	if err := s.blockClient.WaitForTxConfirmation(ctx, txn.Blockchain, txn.ReceiverPubkey, txn.TxId); err != nil {
-		return mwerrors.NewServerError(err)
-	}
+	// if err := s.blockClient.WaitForTxConfirmation(ctx, txn.Blockchain, txn.ReceiverPubkey, txn.TxId); err != nil {
+	// 	return mwerrors.NewServerError(err)
+	// }
 	realTxn, err := s.blockClient.GetTxByHash(ctx, txn.Blockchain, txn.TxId)
 	if err != nil {
 		return mwerrors.NewServerError(err)
@@ -218,7 +233,7 @@ func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
 		return mwerrors.NewServerError(err)
 	}
 
-	// Send notification to receiver.
+	// Send a notification to receiver.
 	user, err := s.userRepo.Get(ctx, uint(txn.SenderId))
 	if err != nil {
 		return mwerrors.NewResourcesNotFound(err)
@@ -632,4 +647,9 @@ func convert(txn entity.Transaction, sender, receiver entity.User, prune bool) a
 		convertedTxn.ReceiverPubkey = txn.ReceiverPubkey
 	}
 	return api.TransactionResponse{Transaction: convertedTxn}
+}
+
+// Get TaskQueueManager from service.
+func (s service) GetTaskQueueManager() *taskq.QueueManager {
+	return &s.taskQueueMgr
 }

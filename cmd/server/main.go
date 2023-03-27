@@ -100,7 +100,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	blockClient := blockchain.NewBlockDaemonClient(blockchainConfig.UbiAccessToken, blockchainConfig.UbiAccessToken)
+	blockClient := blockchain.NewBlockDaemonClient(blockchainConfig.UbiAccessToken, blockchainConfig.UbiEndpoint, logger)
 
 	s := Server{
 		App:           router,
@@ -179,30 +179,30 @@ func (s *Server) buildHandlers() {
 		s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
 	newsService := news.NewService(newsRepo, newsClient, s.Logger)
+	taskqService := taskq.NewService(s.QueueManager, s.Logger)
+
+	newsConsumer := news.NewConsumer(newsService, s.Logger)
+	transactionConsumer := transaction.NewConsumer(transactionService, s.Logger)
 
 	v1 := s.App.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, s.Logger)
 	activity.RegisterHandler(v1, activityService, s.Logger)
 	news.RegisterHandler(v1, newsService, s.Logger)
+	taskq.RegisterHandler(v1, taskqService, s.Logger)
 
 	if !utils.IsProdEnvironment() && swagHandler != nil {
 		s.buildSwagger()
 		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	s.pullDataIfEmpty(newsService)
-	s.setupCronJob(newsService)
+	s.setupCronJob(newsConsumer, transactionConsumer)
 }
 
-func (s *Server) pullDataIfEmpty(newsService news.Service) {
-	go func() {
-		newsService.InitializeNewsTable()
-		s.Logger.Info("data table setup completed")
-	}()
-}
-
-func (s *Server) setupCronJob(newsService news.Service) {
-	_, err := s.Cronjob.Every(1).Day().At("8:00").Do(newsService.Collect)
+func (s *Server) setupCronJob(
+	newsConsumer news.Consumer, 
+	transactionConsumer transaction.Consumer) {
+	var err error
+	_, err = s.Cronjob.Every(1).Day().At("8:00").Do(newsConsumer.Collect)
 	if err != nil {
 		s.Logger.Error("cannot schedule new cron job due to ", err)
 	}

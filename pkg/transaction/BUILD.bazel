@@ -4,6 +4,7 @@ go_library(
     name = "transaction",
     srcs = [
         "api.go",
+        "consumer.go",
         "service.go",
     ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/transaction",
