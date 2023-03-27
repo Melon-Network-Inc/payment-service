@@ -1,7 +1,9 @@
 package taskq
 
 import (
+	"context"
 	"fmt"
+
 	"github.com/Melon-Network-Inc/common/pkg/config"
 	"github.com/Melon-Network-Inc/common/pkg/entity"
 	"github.com/gin-gonic/gin"
@@ -15,13 +17,13 @@ type QueueManager interface {
 	RegisterTxnStatusQueue(serverConfig config.ServiceConfig)
 	// RegisterTxnStatusTask registers a task for the txn status worker
 	RegisterTxnStatusTask(
-		*gin.Context,
+		context.Context,
 		entity.Transaction,
 		func(ctx *gin.Context, txn entity.Transaction) error) error
 	// Range iterates over all registered queues.
 	Range(func(taskq.Queue) bool)
 	// StartConsumers starts all registered queues.
-	StartConsumers(ctx *gin.Context) error
+	StartConsumers(ctx context.Context) error
 	// StopConsumers stops all registered queues.
 	StopConsumers() error
 	// Close closes all registered queues.
@@ -45,7 +47,7 @@ func (q queueManager) RegisterTxnStatusQueue(serverConfig config.ServiceConfig) 
 
 // RegisterTxnStatusTask registers a task for the txn status worker
 func (q queueManager) RegisterTxnStatusTask(
-	ctx *gin.Context,
+	ctx context.Context,
 	txn entity.Transaction,
 	checkStatus func(ctx *gin.Context, txn entity.Transaction) error) error {
 	task := taskq.RegisterTask(&taskq.TaskOptions{
@@ -65,7 +67,7 @@ func (q queueManager) Range(fn func(taskq.Queue) bool) {
 }
 
 // StartConsumers starts all registered queues.
-func (q queueManager) StartConsumers(ctx *gin.Context) error {
+func (q queueManager) StartConsumers(ctx context.Context) error {
 	return q.factory.StartConsumers(ctx)
 }
 

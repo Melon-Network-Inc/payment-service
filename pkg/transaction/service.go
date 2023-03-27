@@ -22,6 +22,7 @@ import (
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,6 +34,8 @@ type Service interface {
 	Get(c *gin.Context, ID string) (api.TransactionResponse, error)
 	// CheckStatus returns the transaction with the specified transaction ID.
 	CheckStatus(c *gin.Context, txn entity.Transaction) error
+	// NotifyReceipient notifies the receipient after transaction completed.
+	NotifyReceipient(ctx *gin.Context, txn entity.Transaction) error
 	// List returns the list of transactions.
 	List(ctx *gin.Context) ([]api.TransactionResponse, error)
 	// ListByUser returns the list of transactions by user ID.
@@ -200,8 +203,8 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 			return api.TransactionResponse{}, err
 		}
 		go func() {
-			// Wait for 30 seconds to check the status of the transaction.
-			time.Sleep(2 * time.Second)
+			// Wait for 3 seconds to check the status of the transaction.
+			time.Sleep(3 * time.Second)
 			s.logger.Info("Start to check the status of the transaction", "txId", createdTxn.TxId)
 
 			// Check the status of the transaction.
@@ -217,23 +220,35 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 
 // CheckStatus checks the status of the transaction.
 func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
-	// if err := s.blockClient.WaitForTxConfirmation(ctx, txn.Blockchain, txn.ReceiverPubkey, txn.TxId); err != nil {
-	// 	return mwerrors.NewServerError(err)
-	// }
-	realTxn, err := s.blockClient.GetTxByHash(ctx, txn.Blockchain, txn.TxId)
-	if err != nil {
-		return mwerrors.NewServerError(err)
+	// Check the status of the transaction and timeout after 60 minutes.
+	for i := 0; i < 30; i++ {
+		realTxn, err := s.blockClient.GetTxByHash(ctx, txn.Blockchain, txn.TxId)
+		if err != nil {
+			return mwerrors.NewServerError(err)
+		}
+		if realTxn.Status != nil && *(realTxn.Status) == "completed" {
+			txn.Status = "Completed"
+			break
+		}
+		time.Sleep(2 * time.Minute)
 	}
-	if realTxn.Status != nil && *(realTxn.Status) == "completed" {
-		txn.Status = "Completed"
-	} else {
+
+	if txn.Status != "Completed" {
 		txn.Status = "Failed"
 	}
+
 	if err := s.transactionRepo.Update(ctx, txn); err != nil {
 		return mwerrors.NewServerError(err)
 	}
 
-	// Send a notification to receiver.
+	if txn.Status != "Completed" {
+		return nil
+	}
+	return s.NotifyReceipient(ctx, txn)
+}
+
+// Send a notification to receiver.
+func (s service) NotifyReceipient(ctx *gin.Context, txn entity.Transaction) error {
 	user, err := s.userRepo.Get(ctx, uint(txn.SenderId))
 	if err != nil {
 		return mwerrors.NewResourcesNotFound(err)

@@ -207,6 +207,13 @@ func (s *Server) setupCronJob(
 		s.Logger.Error("cannot schedule new cron job due to ", err)
 	}
 
+	// if feature.EnablePullTxnStatus.Get() {
+	// 	_, err = s.Cronjob.Every(20).Second().StartImmediately().Do(transactionConsumer.CheckPendingTxns)
+	// 	if err != nil {
+	// 		s.Logger.Error("cannot schedule new cron job due to ", err)
+	// 	}
+	// }
+
 	s.Cronjob.StartAsync()
 }
 

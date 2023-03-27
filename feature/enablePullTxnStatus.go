@@ -13,7 +13,7 @@ type EnablePullTxnStatusExperiment struct {
 
 var EnablePullTxnStatus = EnablePullTxnStatusExperiment{
 	Production:  false,
-	Staging:     false,
+	Staging:     true,
 	Development: true,
 	Testing:     true,
 }

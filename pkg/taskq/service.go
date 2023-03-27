@@ -15,6 +15,9 @@ type service struct {
 
 // Shutdown stops all registered queues.
 func (s service) Shutdown() error {
+	if err := s.queueManager.Close(); err != nil {
+		return err
+	}
 	return s.queueManager.StopConsumers()
 }
 
