@@ -244,8 +244,8 @@ func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
 		Device:     aggregatedDevices,
 		Type:       entity.TransactionConfirmationType,
 		Actor:      entity.ActorUserType,
-		Title:      "Transaction Notification",
-		Message:    CreateTransactionMessage(user, otherUser, txn),
+		Title:      "Transaction Confirmation Notification",
+		Message:    CreateTransactionConfirmationMessage(user, otherUser, txn),
 		TemplateID: 1,
 	}
 
@@ -587,9 +587,14 @@ func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
 	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
 }
 
-// CreateTransactionMessage returns the transaction by ID.
+// CreateTransactionMessage creates a transaction notification message.
 func CreateTransactionMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
 	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
+}
+
+// CreateTransactionConfirmationMessage a transaction confirmation notification message.
+func CreateTransactionConfirmationMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
+	return fmt.Sprintf("Hi %s, the transaction (%f %s) from %s is confirmed!", receiver.Username, txn.Amount, txn.Symbol, requester.Username)
 }
 
 // Get returns the transaction by ID.
