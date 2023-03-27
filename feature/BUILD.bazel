@@ -5,4 +5,5 @@ go_library(
     srcs = ["enablePullTxnStatus.go"],
     importpath = "github.com/Melon-Network-Inc/payment-service/feature",
     visibility = ["//visibility:public"],
+    deps = ["@com_github_melon_network_inc_common//pkg/utils"],
 )

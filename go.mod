@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/storage v1.29.0
 	github.com/Melon-Network-Inc/account-service v0.0.0-20230326182700-9d863dab6742
-	github.com/Melon-Network-Inc/common v1.0.152
+	github.com/Melon-Network-Inc/common v1.0.154
 	github.com/badoux/goscraper v0.0.0-20190827161153-36995ce6b19f
 	github.com/emirpasic/gods v1.18.1
 	github.com/gin-gonic/gin v1.8.1
@@ -52,6 +52,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -90,6 +91,7 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
+	gitlab.com/Blockdaemon/ubiquity/ubiquity-go-client v1.5.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect

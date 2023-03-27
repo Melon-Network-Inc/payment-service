@@ -12,9 +12,12 @@ import (
 
 type QueueManager interface {
 	// RegisterTxnStatusQueue registers a queue for the txn status worker
-	RegisterTxnStatusQueue(serverConfig *config.ServiceConfig)
+	RegisterTxnStatusQueue(serverConfig config.ServiceConfig)
 	// RegisterTxnStatusTask registers a task for the txn status worker
-	RegisterTxnStatusTask(ctx *gin.Context, txn entity.Transaction, checkStatus func() error) error
+	RegisterTxnStatusTask(
+		*gin.Context,
+		entity.Transaction,
+		func(ctx *gin.Context, txn entity.Transaction) error) error
 	// Range iterates over all registered queues.
 	Range(func(taskq.Queue) bool)
 	// StartConsumers starts all registered queues.
@@ -31,7 +34,7 @@ type queueManager struct {
 }
 
 // RegisterTxnStatusQueue registers a queue for the txn status worker
-func (q queueManager) RegisterTxnStatusQueue(serverConfig *config.ServiceConfig) {
+func (q queueManager) RegisterTxnStatusQueue(serverConfig config.ServiceConfig) {
 	q.queues["txn-status-worker"] = q.factory.RegisterQueue(&taskq.QueueOptions{
 		Name: "txn-status-worker",
 		Redis: redis.NewClient(&redis.Options{
@@ -41,13 +44,16 @@ func (q queueManager) RegisterTxnStatusQueue(serverConfig *config.ServiceConfig)
 }
 
 // RegisterTxnStatusTask registers a task for the txn status worker
-func (q queueManager) RegisterTxnStatusTask(ctx *gin.Context, txn entity.Transaction, checkStatus func() error) error {
-	CheckStatusTask := taskq.RegisterTask(&taskq.TaskOptions{
+func (q queueManager) RegisterTxnStatusTask(
+	ctx *gin.Context,
+	txn entity.Transaction,
+	checkStatus func(ctx *gin.Context, txn entity.Transaction) error) error {
+	task := taskq.RegisterTask(&taskq.TaskOptions{
 		Name:    fmt.Sprintf("check-status-%s-%s", txn.Blockchain, txn.TxId),
 		Handler: checkStatus,
 	})
-	err := q.queues["txn-status-worker"].Add(CheckStatusTask.WithArgs(ctx))
-	if err != nil {
+	message := task.WithArgs(ctx, txn)
+	if err := q.queues["txn-status-worker"].Add(message); err != nil {
 		return err
 	}
 	return nil
@@ -71,6 +77,15 @@ func (q queueManager) StopConsumers() error {
 // Close closes all registered queues.
 func (q queueManager) Close() error {
 	return q.factory.Close()
+}
+
+func NewTaskQueueManager(serverConfig config.ServiceConfig) QueueManager {
+	qm := queueManager{
+		factory: redisq.NewFactory(),
+		queues:  make(map[string]taskq.Queue),
+	}
+	qm.RegisterTxnStatusQueue(serverConfig)
+	return &qm
 }
 
 func NewQueueManager() QueueManager {

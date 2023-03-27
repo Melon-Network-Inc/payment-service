@@ -5,6 +5,10 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/Melon-Network-Inc/common/pkg/blockchain"
+	"github.com/Melon-Network-Inc/payment-service/feature"
+	"github.com/Melon-Network-Inc/payment-service/pkg/taskq"
+
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
 	"github.com/emirpasic/gods/sets/hashset"
@@ -26,6 +30,8 @@ type Service interface {
 	Add(ctx *gin.Context, input api.AddTransactionRequest) (api.TransactionResponse, error)
 	// Get returns the transaction with the specified transaction ID.
 	Get(c *gin.Context, ID string) (api.TransactionResponse, error)
+	// CheckStatus returns the transaction with the specified transaction ID.
+	CheckStatus(c *gin.Context, txn entity.Transaction) error
 	// List returns the list of transactions.
 	List(ctx *gin.Context) ([]api.TransactionResponse, error)
 	// ListByUser returns the list of transactions by user ID.
@@ -52,6 +58,8 @@ type service struct {
 	friendRepo       accountRepo.FriendRepository
 	deviceRepo       accountRepo.DeviceRepository
 	notificationRepo accountRepo.NotificationRepository
+	taskQueueMgr     taskq.QueueManager
+	blockClient      blockchain.BlockDaemonClient
 	fcmClient        *notification.FCMClient
 	logger           log.Logger
 }
@@ -63,9 +71,20 @@ func NewService(
 	friendRepo accountRepo.FriendRepository,
 	deviceRepo accountRepo.DeviceRepository,
 	notificationRepo accountRepo.NotificationRepository,
+	taskQueueMgr taskq.QueueManager,
+	blockClient blockchain.BlockDaemonClient,
 	fcmClient *notification.FCMClient,
 	logger log.Logger) Service {
-	return service{transactionRepo, userRepo, friendRepo, deviceRepo, notificationRepo, fcmClient, logger}
+	return service{
+		transactionRepo,
+		userRepo,
+		friendRepo,
+		deviceRepo,
+		notificationRepo,
+		taskQueueMgr,
+		blockClient,
+		fcmClient,
+		logger}
 }
 
 // Add creates a new transaction.
@@ -170,7 +189,92 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		return convert(createdTxn, user, otherUser, false), nil
 	}
 
+	if feature.EnablePullTxnStatus.Get() && createdTxn.Status == "Pending" {
+		// Add task to task queue.
+		err := s.taskQueueMgr.RegisterTxnStatusTask(ctx, createdTxn, s.CheckStatus)
+		if err != nil {
+			return api.TransactionResponse{}, err
+		}
+	}
+
 	return convert(createdTxn, user, otherUser, false), nil
+}
+
+// CheckStatus checks the status of the transaction.
+func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
+	if err := s.blockClient.WaitForTxConfirmation(ctx, txn.Blockchain, txn.ReceiverPubkey, txn.TxId); err != nil {
+		return mwerrors.NewServerError(err)
+	}
+	realTxn, err := s.blockClient.GetTxByHash(ctx, txn.Blockchain, txn.TxId)
+	if err != nil {
+		return mwerrors.NewServerError(err)
+	}
+	if realTxn.Status != nil && *(realTxn.Status) == "completed" {
+		txn.Status = "Completed"
+	} else {
+		txn.Status = "Failed"
+	}
+	if err := s.transactionRepo.Update(ctx, txn); err != nil {
+		return mwerrors.NewServerError(err)
+	}
+
+	// Send notification to receiver.
+	user, err := s.userRepo.Get(ctx, uint(txn.SenderId))
+	if err != nil {
+		return mwerrors.NewResourcesNotFound(err)
+	}
+	otherUser, err := s.userRepo.Get(ctx, uint(txn.ReceiverId))
+	if err != nil {
+		return mwerrors.NewResourcesNotFound(err)
+	}
+	devices, err := s.deviceRepo.GetDevices(ctx, otherUser)
+	if err != nil {
+		return mwerrors.NewResourceNotFoundWithPublicError(err)
+	}
+
+	var aggregatedDevices string
+	var tokenList []string
+	if len(devices) != 0 {
+		aggregatedDevices, tokenList = extractDeviceNameAndToken(devices)
+	}
+
+	newNotification := entity.Notification{
+		UserRef:    uint(txn.ReceiverId),
+		ActorRef:   uint(txn.SenderId),
+		Device:     aggregatedDevices,
+		Type:       entity.TransactionConfirmationType,
+		Actor:      entity.ActorUserType,
+		Title:      "Transaction Notification",
+		Message:    CreateTransactionMessage(user, otherUser, txn),
+		TemplateID: 1,
+	}
+
+	// Create notification.
+	createNotification, err := s.notificationRepo.CreateNotification(ctx, newNotification)
+	if err != nil {
+		return mwerrors.NewServerError(err)
+	}
+
+	// If the other user has no device, return the transaction.
+	if len(devices) == 0 {
+		return nil
+	}
+
+	// Send notification to devices of the other user.
+	devicesToRemove, err := s.fcmClient.NotifyDevices(ctx, tokenList, createNotification)
+	if err != nil {
+		return mwerrors.NewServerError(err)
+	}
+
+	// Remove expired devices.
+	if len(devicesToRemove) != 0 {
+		if err := s.deviceRepo.RemoveExpiredDevices(ctx, otherUser, devicesToRemove); err != nil {
+			return mwerrors.NewServerError(err)
+		}
+		return nil
+	}
+
+	return nil
 }
 
 // Get returns the transaction with the specified the transaction ID.

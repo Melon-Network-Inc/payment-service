@@ -13,6 +13,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Melon-Network-Inc/common/pkg/blockchain"
+	"github.com/Melon-Network-Inc/payment-service/pkg/taskq"
+
 	gcs "cloud.google.com/go/storage"
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/common/pkg/config"
@@ -40,6 +43,8 @@ type Server struct {
 	Cache         *dbcontext.Cache
 	Database      *dbcontext.DB
 	Cronjob       *gocron.Scheduler
+	QueueManager  taskq.QueueManager
+	BlockClient   blockchain.BlockDaemonClient
 	StorageClient *storage.StorageClient
 	FcmClient     *message.FCMClient
 	Logger        log.Logger
@@ -62,6 +67,7 @@ func init() {
 // @query.collection.format  multi
 func main() {
 	serverConfig := config.BuildServerConfig("config/payment.yml")
+	blockchainConfig := config.BuildBlockchainConfig("config/blockchain.yml")
 
 	// create root logger tagged with server version
 	logger := log.New(serverConfig.ServiceName).Default(context.Background(), serverConfig, "version", serverConfig.Version)
@@ -94,11 +100,15 @@ func main() {
 		os.Exit(-1)
 	}
 
+	blockClient := blockchain.NewBlockDaemonClient(blockchainConfig.UbiAccessToken, blockchainConfig.UbiAccessToken)
+
 	s := Server{
 		App:           router,
 		Cache:         dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
 		Database:      dbcontext.NewDatabase(db),
 		Cronjob:       gocron.NewScheduler(serverLocation),
+		QueueManager:  taskq.NewTaskQueueManager(serverConfig),
+		BlockClient:   blockClient,
 		StorageClient: &storageClient,
 		FcmClient:     fcmClient,
 		Logger:        logger,
@@ -157,11 +167,14 @@ func (s *Server) buildHandlers() {
 
 	newsClient := news.NewClient(s.Logger)
 
-	transactionService := transaction.NewService(transactionRepo,
+	transactionService := transaction.NewService(
+		transactionRepo,
 		userRepo,
 		friendRepo,
 		deviceRepo,
 		notificationRepo,
+		s.QueueManager,
+		s.BlockClient,
 		s.FcmClient,
 		s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
