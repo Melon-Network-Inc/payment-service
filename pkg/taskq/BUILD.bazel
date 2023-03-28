@@ -2,15 +2,21 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "taskq",
-    srcs = ["mwtaskq.go"],
+    srcs = [
+        "api.go",
+        "mwtaskq.go",
+        "service.go",
+    ],
     importpath = "github.com/Melon-Network-Inc/payment-service/pkg/taskq",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gin_gonic_gin//:gin",
-        "@com_github_go_redis_redis_v9//:redis",
+        "@com_github_go_redis_redis_v8//:redis",
         "@com_github_melon_network_inc_common//pkg/config",
         "@com_github_melon_network_inc_common//pkg/entity",
-        "@com_github_vmihailenco_taskq_v3//:go_default_library",
-        "@com_github_vmihailenco_taskq_v3//redisq:go_default_library",
+        "@com_github_melon_network_inc_common//pkg/log",
+        "@com_github_melon_network_inc_common//pkg/mwerrors",
+        "@com_github_vmihailenco_taskq_v3//:taskq",
+        "@com_github_vmihailenco_taskq_v3//redisq",
     ],
 )

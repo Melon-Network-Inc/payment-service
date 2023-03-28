@@ -13,6 +13,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Melon-Network-Inc/common/pkg/blockchain"
+	"github.com/Melon-Network-Inc/payment-service/pkg/taskq"
+
 	gcs "cloud.google.com/go/storage"
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/common/pkg/config"
@@ -40,6 +43,8 @@ type Server struct {
 	Cache         *dbcontext.Cache
 	Database      *dbcontext.DB
 	Cronjob       *gocron.Scheduler
+	QueueManager  taskq.QueueManager
+	BlockClient   blockchain.BlockDaemonClient
 	StorageClient *storage.StorageClient
 	FcmClient     *message.FCMClient
 	Logger        log.Logger
@@ -62,6 +67,7 @@ func init() {
 // @query.collection.format  multi
 func main() {
 	serverConfig := config.BuildServerConfig("config/payment.yml")
+	blockchainConfig := config.BuildBlockchainConfig("config/blockchain.yml")
 
 	// create root logger tagged with server version
 	logger := log.New(serverConfig.ServiceName).Default(context.Background(), serverConfig, "version", serverConfig.Version)
@@ -94,11 +100,15 @@ func main() {
 		os.Exit(-1)
 	}
 
+	blockClient := blockchain.NewBlockDaemonClient(blockchainConfig.UbiAccessToken, blockchainConfig.UbiEndpoint, logger)
+
 	s := Server{
 		App:           router,
 		Cache:         dbcontext.NewCache(dbcontext.ConnectToCache(serverConfig.CacheUrl), logger),
 		Database:      dbcontext.NewDatabase(db),
 		Cronjob:       gocron.NewScheduler(serverLocation),
+		QueueManager:  taskq.NewTaskQueueManager(serverConfig),
+		BlockClient:   blockClient,
 		StorageClient: &storageClient,
 		FcmClient:     fcmClient,
 		Logger:        logger,
@@ -157,42 +167,52 @@ func (s *Server) buildHandlers() {
 
 	newsClient := news.NewClient(s.Logger)
 
-	transactionService := transaction.NewService(transactionRepo,
+	transactionService := transaction.NewService(
+		transactionRepo,
 		userRepo,
 		friendRepo,
 		deviceRepo,
 		notificationRepo,
+		s.QueueManager,
+		s.BlockClient,
 		s.FcmClient,
 		s.Logger)
 	activityService := activity.NewService(userRepo, transactionRepo, friendRepo, s.Logger)
 	newsService := news.NewService(newsRepo, newsClient, s.Logger)
+	taskqService := taskq.NewService(s.QueueManager, s.Logger)
+
+	newsConsumer := news.NewConsumer(newsService, s.Logger)
+	transactionConsumer := transaction.NewConsumer(transactionService, s.Logger)
 
 	v1 := s.App.Group("api/v1")
 	transaction.RegisterHandlers(v1, transactionService, s.Logger)
 	activity.RegisterHandler(v1, activityService, s.Logger)
 	news.RegisterHandler(v1, newsService, s.Logger)
+	taskq.RegisterHandler(v1, taskqService, s.Logger)
 
 	if !utils.IsProdEnvironment() && swagHandler != nil {
 		s.buildSwagger()
 		s.App.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	s.pullDataIfEmpty(newsService)
-	s.setupCronJob(newsService)
+	s.setupCronJob(newsConsumer, transactionConsumer)
 }
 
-func (s *Server) pullDataIfEmpty(newsService news.Service) {
-	go func() {
-		newsService.InitializeNewsTable()
-		s.Logger.Info("data table setup completed")
-	}()
-}
-
-func (s *Server) setupCronJob(newsService news.Service) {
-	_, err := s.Cronjob.Every(1).Day().At("8:00").Do(newsService.Collect)
+func (s *Server) setupCronJob(
+	newsConsumer news.Consumer, 
+	transactionConsumer transaction.Consumer) {
+	var err error
+	_, err = s.Cronjob.Every(1).Day().At("8:00").Do(newsConsumer.Collect)
 	if err != nil {
 		s.Logger.Error("cannot schedule new cron job due to ", err)
 	}
+
+	// if feature.EnablePullTxnStatus.Get() {
+	// 	_, err = s.Cronjob.Every(20).Second().StartImmediately().Do(transactionConsumer.CheckPendingTxns)
+	// 	if err != nil {
+	// 		s.Logger.Error("cannot schedule new cron job due to ", err)
+	// 	}
+	// }
 
 	s.Cronjob.StartAsync()
 }

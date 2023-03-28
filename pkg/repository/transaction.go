@@ -114,7 +114,7 @@ func createTransactionByShowType(showType string, tx *gorm.DB) *gorm.DB {
 
 // Update updates the transaction with the specified transaction ID.
 func (r transactionRepository) Update(c *gin.Context, transaction entity.Transaction) error {
-	if result := r.db.With(c).First(&transaction, transaction.ID); result.Error != nil {
+	if result := r.db.With(c).Updates(transaction); result.Error != nil {
 		return result.Error
 	}
 	return r.db.With(c).Save(&transaction).Error

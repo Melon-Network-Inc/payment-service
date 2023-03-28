@@ -4,6 +4,11 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
+
+	"github.com/Melon-Network-Inc/common/pkg/blockchain"
+	"github.com/Melon-Network-Inc/payment-service/feature"
+	"github.com/Melon-Network-Inc/payment-service/pkg/taskq"
 
 	accountRepo "github.com/Melon-Network-Inc/account-service/pkg/repository"
 	"github.com/Melon-Network-Inc/payment-service/pkg/repository"
@@ -17,6 +22,7 @@ import (
 
 	"github.com/Melon-Network-Inc/payment-service/pkg/processor"
 	"github.com/Melon-Network-Inc/payment-service/pkg/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,6 +32,10 @@ type Service interface {
 	Add(ctx *gin.Context, input api.AddTransactionRequest) (api.TransactionResponse, error)
 	// Get returns the transaction with the specified transaction ID.
 	Get(c *gin.Context, ID string) (api.TransactionResponse, error)
+	// CheckStatus returns the transaction with the specified transaction ID.
+	CheckStatus(c *gin.Context, txn entity.Transaction) error
+	// NotifyReceipient notifies the receipient after transaction completed.
+	NotifyReceipient(ctx *gin.Context, txn entity.Transaction) error
 	// List returns the list of transactions.
 	List(ctx *gin.Context) ([]api.TransactionResponse, error)
 	// ListByUser returns the list of transactions by user ID.
@@ -44,6 +54,8 @@ type Service interface {
 	CountByUserWithShowType(c *gin.Context, ID string, showType string) (string, int, error)
 	// Query returns the list of transactions by user ID, showType, offset and limit.
 	Query(c *gin.Context, ID, showType string, offset, limit int) ([]api.TransactionResponse, error)
+	// GetTaskQueueManager returns the task queue manager.
+	GetTaskQueueManager() *taskq.QueueManager
 }
 
 type service struct {
@@ -52,6 +64,8 @@ type service struct {
 	friendRepo       accountRepo.FriendRepository
 	deviceRepo       accountRepo.DeviceRepository
 	notificationRepo accountRepo.NotificationRepository
+	taskQueueMgr     taskq.QueueManager
+	blockClient      blockchain.BlockDaemonClient
 	fcmClient        *notification.FCMClient
 	logger           log.Logger
 }
@@ -63,9 +77,20 @@ func NewService(
 	friendRepo accountRepo.FriendRepository,
 	deviceRepo accountRepo.DeviceRepository,
 	notificationRepo accountRepo.NotificationRepository,
+	taskQueueMgr taskq.QueueManager,
+	blockClient blockchain.BlockDaemonClient,
 	fcmClient *notification.FCMClient,
 	logger log.Logger) Service {
-	return service{transactionRepo, userRepo, friendRepo, deviceRepo, notificationRepo, fcmClient, logger}
+	return service{
+		transactionRepo,
+		userRepo,
+		friendRepo,
+		deviceRepo,
+		notificationRepo,
+		taskQueueMgr,
+		blockClient,
+		fcmClient,
+		logger}
 }
 
 // Add creates a new transaction.
@@ -94,6 +119,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		Amount:         req.Amount,
 		Symbol:         req.Symbol,
 		Blockchain:     req.Blockchain,
+		TxId:      		req.TxId,
 		SenderId:       req.SenderId,
 		SenderPubkey:   req.SenderPubkey,
 		ReceiverId:     req.ReceiverId,
@@ -170,7 +196,115 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 		return convert(createdTxn, user, otherUser, false), nil
 	}
 
+	if feature.EnablePullTxnStatus.Get() && utils.Capitalizer(createdTxn.Status) == "PENDING" {
+		// Add task to task queue.
+		err := s.taskQueueMgr.RegisterTxnStatusTask(ctx, createdTxn, s.CheckStatus)
+		if err != nil {
+			return api.TransactionResponse{}, err
+		}
+		go func() {
+			// Wait for 3 seconds to check the status of the transaction.
+			time.Sleep(3 * time.Second)
+			s.logger.Info("Start to check the status of the transaction", "txId", createdTxn.TxId)
+
+			// Check the status of the transaction.
+			err := s.taskQueueMgr.StartConsumers(ctx)
+			if err != nil {
+				return
+			}
+		}()
+	}
+
 	return convert(createdTxn, user, otherUser, false), nil
+}
+
+// CheckStatus checks the status of the transaction.
+func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
+	// Check the status of the transaction and timeout after 60 minutes.
+	for i := 0; i < 30; i++ {
+		realTxn, err := s.blockClient.GetTxByHash(ctx, txn.Blockchain, txn.TxId)
+		if err != nil {
+			return mwerrors.NewServerError(err)
+		}
+		if realTxn.Status != nil && *(realTxn.Status) == "completed" {
+			txn.Status = "Completed"
+			break
+		}
+		time.Sleep(2 * time.Minute)
+	}
+
+	if txn.Status != "Completed" {
+		txn.Status = "Failed"
+	}
+
+	if err := s.transactionRepo.Update(ctx, txn); err != nil {
+		return mwerrors.NewServerError(err)
+	}
+
+	if txn.Status != "Completed" {
+		return nil
+	}
+	return s.NotifyReceipient(ctx, txn)
+}
+
+// Send a notification to receiver.
+func (s service) NotifyReceipient(ctx *gin.Context, txn entity.Transaction) error {
+	user, err := s.userRepo.Get(ctx, uint(txn.SenderId))
+	if err != nil {
+		return mwerrors.NewResourcesNotFound(err)
+	}
+	otherUser, err := s.userRepo.Get(ctx, uint(txn.ReceiverId))
+	if err != nil {
+		return mwerrors.NewResourcesNotFound(err)
+	}
+	devices, err := s.deviceRepo.GetDevices(ctx, otherUser)
+	if err != nil {
+		return mwerrors.NewResourceNotFoundWithPublicError(err)
+	}
+
+	var aggregatedDevices string
+	var tokenList []string
+	if len(devices) != 0 {
+		aggregatedDevices, tokenList = extractDeviceNameAndToken(devices)
+	}
+
+	newNotification := entity.Notification{
+		UserRef:    uint(txn.ReceiverId),
+		ActorRef:   uint(txn.SenderId),
+		Device:     aggregatedDevices,
+		Type:       entity.TransactionConfirmationType,
+		Actor:      entity.ActorUserType,
+		Title:      "Transaction Confirmation Notification",
+		Message:    CreateTransactionConfirmationMessage(user, otherUser, txn),
+		TemplateID: 1,
+	}
+
+	// Create notification.
+	createNotification, err := s.notificationRepo.CreateNotification(ctx, newNotification)
+	if err != nil {
+		return mwerrors.NewServerError(err)
+	}
+
+	// If the other user has no device, return the transaction.
+	if len(devices) == 0 {
+		return nil
+	}
+
+	// Send notification to devices of the other user.
+	devicesToRemove, err := s.fcmClient.NotifyDevices(ctx, tokenList, createNotification)
+	if err != nil {
+		return mwerrors.NewServerError(err)
+	}
+
+	// Remove expired devices.
+	if len(devicesToRemove) != 0 {
+		if err := s.deviceRepo.RemoveExpiredDevices(ctx, otherUser, devicesToRemove); err != nil {
+			return mwerrors.NewServerError(err)
+		}
+		return nil
+	}
+
+	return nil
 }
 
 // Get returns the transaction with the specified the transaction ID.
@@ -483,9 +617,14 @@ func checkAllowsOperation(transaction entity.Transaction, ownerID uint) bool {
 	return transaction.SenderId != int(ownerID) && transaction.ReceiverId != int(ownerID)
 }
 
-// CreateTransactionMessage returns the transaction by ID.
+// CreateTransactionMessage creates a transaction notification message.
 func CreateTransactionMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
 	return fmt.Sprintf("Hi %s, %s sent you %f %s!", receiver.Username, requester.Username, txn.Amount, txn.Symbol)
+}
+
+// CreateTransactionConfirmationMessage a transaction confirmation notification message.
+func CreateTransactionConfirmationMessage(requester entity.User, receiver entity.User, txn entity.Transaction) string {
+	return fmt.Sprintf("Hi %s, the transaction (%f %s) from %s is confirmed!", receiver.Username, txn.Amount, txn.Symbol, requester.Username)
 }
 
 // Get returns the transaction by ID.
@@ -523,4 +662,9 @@ func convert(txn entity.Transaction, sender, receiver entity.User, prune bool) a
 		convertedTxn.ReceiverPubkey = txn.ReceiverPubkey
 	}
 	return api.TransactionResponse{Transaction: convertedTxn}
+}
+
+// Get TaskQueueManager from service.
+func (s service) GetTaskQueueManager() *taskq.QueueManager {
+	return &s.taskQueueMgr
 }
