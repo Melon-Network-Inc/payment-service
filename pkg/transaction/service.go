@@ -221,7 +221,7 @@ func (s service) Add(ctx *gin.Context, req api.AddTransactionRequest) (api.Trans
 // CheckStatus checks the status of the transaction.
 func (s service) CheckStatus(ctx *gin.Context, txn entity.Transaction) error {
 	// Check the status of the transaction and timeout after 60 minutes.
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 120; i++ {
 		realTxn, err := s.blockClient.GetTxByHash(ctx, txn.Blockchain, txn.TxId)
 		if err != nil {
 			return mwerrors.NewServerError(err)
